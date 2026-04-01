@@ -1,11 +1,157 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.ts';
+@source '../**/*.vue';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+:root {
+    --pc-font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --pc-font-heading: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+
+    --pc-bg: #f4f7fb;
+    --pc-surface: #ffffff;
+    --pc-border: #d7deea;
+    --pc-text: #14213d;
+    --pc-muted: #4f5d75;
+    --pc-brand: #155eef;
+    --pc-brand-strong: #1149bb;
+    --pc-success-bg: #eafaf2;
+    --pc-success-border: #90e3b8;
+    --pc-success-text: #0d6b39;
+    --pc-warning-bg: #fff8e6;
+    --pc-warning-border: #f3d17a;
+    --pc-warning-text: #8a5b00;
+    --pc-danger-bg: #fff0f0;
+    --pc-danger-border: #f2a7a7;
+    --pc-danger-text: #a32020;
+}
+
+@layer components {
+    .pc-page {
+        min-height: 100vh;
+        background: var(--pc-bg);
+        color: var(--pc-text);
+        font-family: var(--pc-font-body);
+    }
+
+    .pc-shell {
+        margin-inline: auto;
+        max-width: 64rem;
+        padding: 2.5rem 1rem;
+    }
+
+    .pc-card {
+        border: 1px solid var(--pc-border);
+        background: var(--pc-surface);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+
+    .pc-title {
+        font-family: var(--pc-font-heading);
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 700;
+        color: var(--pc-text);
+    }
+
+    .pc-subtitle {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--pc-muted);
+    }
+
+    .pc-form-card {
+        border: 1px solid var(--pc-border);
+        border-radius: 0.75rem;
+        padding: 1rem;
+    }
+
+    .pc-label {
+        margin-top: 0.75rem;
+        display: block;
+        font-size: 0.875rem;
+        color: var(--pc-text);
+    }
+
+    .pc-input {
+        margin-top: 0.25rem;
+        width: 100%;
+        border-radius: 0.5rem;
+        border: 1px solid var(--pc-border);
+        padding: 0.5rem 0.75rem;
+        background: #fff;
+    }
+
+    .pc-input:focus {
+        outline: 2px solid color-mix(in oklab, var(--pc-brand) 25%, white);
+        outline-offset: 1px;
+    }
+
+    .pc-btn {
+        margin-top: 1rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: #fff;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .pc-btn-primary {
+        background: var(--pc-brand);
+    }
+
+    .pc-btn-primary:hover {
+        background: var(--pc-brand-strong);
+    }
+
+    .pc-btn-danger {
+        background: #dc2626;
+    }
+
+    .pc-status {
+        margin-top: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .pc-status-neutral {
+        color: var(--pc-muted);
+    }
+
+    .pc-status-success {
+        color: var(--pc-success-text);
+    }
+
+    .pc-status-error {
+        color: var(--pc-danger-text);
+    }
+
+    .pc-alert-warning {
+        margin-top: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--pc-warning-border);
+        background: var(--pc-warning-bg);
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        color: var(--pc-warning-text);
+    }
+
+    .pc-alert-success {
+        margin-top: 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--pc-success-border);
+        background: var(--pc-success-bg);
+        padding: 1rem;
+    }
 }
