@@ -1,21 +1,14 @@
 <?php
 
-use App\Http\Controllers\Auth\FirebaseSessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('firebase.auth');
+    return redirect()->route('sanctum.auth');
 });
 
-Route::view('/firebase-auth', 'auth.firebase')->name('firebase.auth');
-
-Route::post('/auth/firebase/session-login', [FirebaseSessionController::class, 'store'])
-    ->name('firebase.session.login');
-Route::post('/auth/logout', [FirebaseSessionController::class, 'destroy'])
-    ->name('auth.logout');
-Route::get('/auth/me', [FirebaseSessionController::class, 'me'])
-    ->name('auth.me');
+Route::view('/sanctum-auth', 'auth.sanctum')->name('sanctum.auth');
+Route::view('/sanctum-auth/register', 'auth.sanctum-register')->name('sanctum.auth.register');
 
 Route::middleware(['auth', 'role:owner'])->group(function (): void {
     Route::get('/owner/dashboard', function (Request $request) {

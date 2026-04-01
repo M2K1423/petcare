@@ -18,18 +18,43 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RoleSeeder::class);
 
-        $ownerRoleId = Role::query()
-            ->where('slug', Role::OWNER)
-            ->value('id');
+        $roles = Role::query()->pluck('id', 'slug');
 
-        // User::factory(10)->create();
+        $accounts = [
+            [
+                'name' => 'Owner Demo',
+                'email' => 'owner@example.com',
+                'password' => 'password',
+                'role_slug' => Role::OWNER,
+            ],
+            [
+                'name' => 'Vet Demo',
+                'email' => 'vet@example.com',
+                'password' => 'password',
+                'role_slug' => Role::VET,
+            ],
+            [
+                'name' => 'Receptionist Demo',
+                'email' => 'receptionist@example.com',
+                'password' => 'password',
+                'role_slug' => Role::RECEPTIONIST,
+            ],
+            [
+                'name' => 'Admin Demo',
+                'email' => 'admin@example.com',
+                'password' => 'password',
+                'role_slug' => Role::ADMIN,
+            ],
+        ];
 
-        User::updateOrCreate([
-            'email' => 'test@example.com',
-        ], [
-            'name' => 'Test User',
-            'password' => 'password',
-            'role_id' => $ownerRoleId,
-        ]);
+        foreach ($accounts as $account) {
+            User::updateOrCreate([
+                'email' => $account['email'],
+            ], [
+                'name' => $account['name'],
+                'password' => $account['password'],
+                'role_id' => $roles[$account['role_slug']] ?? null,
+            ]);
+        }
     }
 }
