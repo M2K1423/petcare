@@ -21,6 +21,10 @@ export function initRegisterPage(): void {
             const data = await registerOwner(payload);
             setStatus(data.message ?? 'Register successful.', 'success');
             registerForm.reset();
+
+            if (data.user?.role === 'owner') {
+                window.location.href = '/owner/pets';
+            }
         } catch (error) {
             setStatus((error as Error).message, 'error');
         }

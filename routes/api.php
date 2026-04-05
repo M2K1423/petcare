@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Owner\PetController;
+use App\Http\Controllers\Api\Owner\SpeciesController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -19,6 +21,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
             'role' => Role::OWNER,
         ]);
     })->name('api.owner.dashboard');
+
+    Route::middleware('role:owner')->group(function (): void {
+        Route::get('/owner/species', [SpeciesController::class, 'index'])->name('api.owner.species.index');
+        Route::apiResource('/owner/pets', PetController::class)->names('api.owner.pets');
+    });
 
     Route::middleware('role:vet')->get('/vet/dashboard', function (Request $request) {
         return response()->json([

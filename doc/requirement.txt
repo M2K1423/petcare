@@ -1,0 +1,215 @@
+1. Mục tiêu hệ thống
+•	Quản lý toàn bộ hoạt động phòng khám thú y: 
+o	hồ sơ thú cưng 
+o	lịch khám 
+o	bệnh án 
+o	tiêm phòng 
+o	thanh toán 
+•	Hỗ trợ: 
+o	bác sĩ thú y 
+o	lễ tân 
+o	admin 
+•	Có thể mở rộng: 
+o	AI tư vấn thú y 
+o	nhắc lịch tự động 
+
+2. Actors (Tác nhân)
+Pet Owner (chủ thú cưng – portal web)
+Vet (bác sĩ thú y)
+Receptionist (lễ tân)
+Admin
+
+3. FLOW HỆ THỐNG
+Pet Owner Flow (web portal)
+1.	Đăng ký / đăng nhập 
+2.	Tạo hồ sơ thú cưng: 
+o	tên 
+o	loài 
+o	tuổi 
+3.	Đặt lịch khám 
+4.	Nhận thông báo lịch hẹn 
+5.	Xem: 
+o	bệnh án 
+o	lịch tiêm phòng 
+6.	Thanh toán 
+
+Vet Flow
+1.	Đăng nhập 
+2.	Xem lịch khám 
+3.	Xem hồ sơ thú cưng 
+4.	Nhập: 
+o	triệu chứng 
+o	chẩn đoán 
+o	thuốc 
+5.	Cập nhật bệnh án 
+
+Receptionist Flow
+1.	Tạo / quản lý lịch hẹn 
+2.	Check-in thú cưng 
+3.	Tạo hồ sơ mới 
+4.	Thanh toán 
+
+ Admin Flow
+1.	Quản lý user 
+2.	Quản lý bác sĩ 
+3.	Quản lý dịch vụ 
+4.	Xem báo cáo 
+
+4. USE CASE CHI TIẾT
+PET OWNER USE CASE
+1. Authentication
+•	Đăng ký / đăng nhập 
+
+2. Pet Management
+•	Thêm / sửa / xóa thú cưng 
+
+3. Appointment
+•	Đặt lịch khám 
+•	Hủy lịch 
+•	Xem lịch 
+
+4. Medical Record
+•	Xem bệnh án 
+•	Xem lịch sử tiêm 
+
+5. Payment
+•	Thanh toán online 
+
+6. Notification
+•	Nhắc lịch khám / tiêm 
+
+VET USE CASE
+1. Schedule
+•	Xem lịch khám 
+
+2. Diagnosis
+•	Nhập: 
+o	triệu chứng 
+o	chẩn đoán 
+o	đơn thuốc 
+
+3. Medical Record
+•	Cập nhật hồ sơ 
+
+RECEPTIONIST USE CASE
+•	Quản lý lịch 
+•	Check-in 
+•	Thanh toán 
+
+ADMIN USE CASE
+•	Quản lý user 
+•	Quản lý dịch vụ 
+•	Báo cáo 
+
+5. CHỨC NĂNG HỆ THỐNG
+Core Features
+•	Authentication (Laravel Sanctum) 
+•	Quản lý thú cưng 
+•	Đặt lịch khám 
+•	Bệnh án 
+•	Thanh toán 
+•	Notification 
+
+Advanced Features 
+•	Dashboard thống kê 
+•	Quản lý thuốc 
+•	Lịch tiêm vaccine 
+•	Export báo cáo (Excel/PDF) 
+
+6. AI FEATURES (NÂNG CAO)
+1. Pet Health Assistant 
+•	Nhập triệu chứng → gợi ý bệnh 
+
+2. Vaccine Reminder AI
+•	Gợi ý lịch tiêm phù hợp 
+
+3. Chatbot thú y
+•	Tư vấn cơ bản 
+
+4. Image Recognition (optional)
+•	Nhận diện bệnh ngoài da 
+
+7. KIẾN TRÚC HỆ THỐNG
+Backend (Laravel 12)
+•	MVC: 
+o	Controller 
+o	Service Layer 
+•	REST API (cho mobile nếu mở rộng) 
+
+Frontend
+•	Blade (admin + portal) 
+•	hoặc VueJS (SPA) 
+
+Database
+•	MySQL 
+
+Notification
+•	Email 
+•	Firebase (optional) 
+
+AI Service
+•	Python (optional) 
+
+8. DATABASE DESIGN
+Tables chính:
+•	users 
+•	roles 
+•	pets 
+•	species 
+•	doctors 
+•	appointments 
+•	medical_records 
+•	vaccinations 
+•	medicines 
+•	services 
+•	payments 
+•	notifications 
+
+9. CÔNG NGHỆ SỬ DỤNG
+Backend
+•	Laravel 12 
+•	Eloquent ORM 
+•	Sanctum 
+
+Frontend
+•	Blade / VueJS 
+
+Payment
+•	VNPay 
+
+DevOps
+•	Docker 
+
+10. MODULE SYSTEM
+•	Auth Module 
+•	Pet Module 
+•	Appointment Module 
+•	Medical Module 
+•	Vaccination Module 
+•	Payment Module 
+•	Notification Module 
+________________________________________
+11. Ý TƯỞNG NÂNG CAO (GHI ĐIỂM CAO)
+•	Hồ sơ thú cưng chi tiết 
+•	Dashboard bác sĩ 
+•	Export bệnh án PDF 
+•	Nhắc tiêm vaccine 
+•	AI tư vấn thú y 
+
+12. ROADMAP TRIỂN KHAI
+Phase 1
+•	Auth + Pet + Appointment 
+Phase 2
+•	Medical record + Vet 
+Phase 3
+•	Payment + Notification 
+Phase 4
+•	AI + nâng cao 
+
+13. GỢI Ý GHI ĐIỂM CAO
+•	Nhấn mạnh: 
+o	multi-role system (owner, vet, admin) 
+o	hệ thống thực tế 
+•	Demo: 
+o	tạo pet → đặt lịch → khám → lưu bệnh án
+

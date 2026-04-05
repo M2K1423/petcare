@@ -1,51 +1,45 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register | {{ config('app.name', 'PetCare') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/pages/sanctum-auth.ts'])
-</head>
-<body class="min-h-screen bg-slate-100 text-slate-900">
-    <main class="mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center p-4">
-        <section class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl md:p-8">
-            <div class="mb-6 flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white">PC</div>
-                <div>
-                    <p class="text-lg font-bold text-slate-900">PetCare Clinic</p>
-                    <p class="text-xs text-slate-500">Clinic management portal</p>
-                </div>
+<x-layout.app
+    title="Register | {{ config('app.name', 'PetCare') }}"
+    :vite="['resources/css/app.css', 'resources/js/pages/sanctum-auth.ts']"
+    :showHeader="false"
+    :showFooter="false"
+>
+    <div class="flex min-h-[calc(100vh-5rem)] items-center justify-center">
+    <section class="w-full max-w-md rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_18px_44px_rgba(0,0,0,0.05)] backdrop-blur md:p-8">
+        <div class="mb-6 flex items-center justify-between gap-3">
+            <div>
+                <p class="text-xs uppercase tracking-[0.22em] text-[#4A4A4A]">Owner Onboarding</p>
+                <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-[#333333]">Create Account</h1>
+            </div>
+            <span class="rounded-full border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#4A4A4A]">New</span>
+        </div>
+
+        <p class="text-sm text-[#4A4A4A]">Register a new owner account to start using the system.</p>
+        <p id="sanctum-status" class="mt-4 text-sm text-[#4A4A4A]">Ready.</p>
+
+        <form id="sanctum-register-form" class="mt-5 space-y-4">
+            <div>
+                <label for="name" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Full name</label>
+                <input id="name" name="name" type="text" required placeholder="Pet owner name" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2.5 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
             </div>
 
-            <h1 class="text-3xl font-extrabold tracking-tight text-amber-900">Create account</h1>
-            <p class="mt-2 text-sm text-amber-800/80">Register a new owner account to start using the system.</p>
+            <div>
+                <label for="email" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Email</label>
+                <input id="email" name="email" type="email" required placeholder="owner@example.com" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2.5 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+            </div>
 
-            <p id="sanctum-status" class="mt-4 text-sm text-slate-600">Ready.</p>
+            <div>
+                <label for="password" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Password</label>
+                <input id="password" name="password" type="password" minlength="6" required placeholder="At least 6 characters" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2.5 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+            </div>
 
-            <form id="sanctum-register-form" class="mt-5 space-y-4">
-                <div>
-                    <label for="name" class="mb-1 block text-sm font-medium text-slate-800">Full name</label>
-                    <input id="name" name="name" type="text" required placeholder="Pet owner name" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-                </div>
+            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] focus:outline-none focus:ring-2 focus:ring-[#2A6496]/35">Register</button>
+        </form>
 
-                <div>
-                    <label for="email" class="mb-1 block text-sm font-medium text-slate-800">Email</label>
-                    <input id="email" name="email" type="email" required placeholder="owner@example.com" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-                </div>
-
-                <div>
-                    <label for="password" class="mb-1 block text-sm font-medium text-slate-800">Password</label>
-                    <input id="password" name="password" type="password" minlength="6" required placeholder="At least 6 characters" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-                </div>
-
-                <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">Register</button>
-            </form>
-
-            <p class="mt-6 text-sm text-slate-600">
-                Already have an account?
-                <a href="{{ route('sanctum.auth') }}" class="font-semibold text-blue-600 hover:text-blue-700 hover:underline">Back to login</a>
-            </p>
-        </section>
-    </main>
-</body>
-</html>
+        <p class="mt-6 text-sm text-[#4A4A4A]">
+            Already have an account?
+            <a href="{{ route('sanctum.auth') }}" class="font-semibold text-[#2A6496] transition hover:underline">Back to login</a>
+        </p>
+    </section>
+    </div>
+</x-layout.app>

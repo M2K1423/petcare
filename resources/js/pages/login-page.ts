@@ -20,6 +20,10 @@ export function initLoginPage(): void {
             const data = await login(payload);
             setStatus(data.message ?? 'Login successful.', 'success');
             loginForm.reset();
+
+            if (data.user?.role === 'owner') {
+                window.location.href = '/owner/pets';
+            }
         } catch (error) {
             setStatus((error as Error).message, 'error');
         }
