@@ -1,11 +1,182 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.ts';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+:root {
+    --header-bg: #ffffff;
+    --text-dark: #333333;
+    --text-muted: #999999;
+    --primary-blue: #2a6496;
+    --input-bg: #f1f3f5;
+    --border-light: #dde1e6;
+    --pc-bg: #f9f9fb;
+    --pc-bg-shadow: #eff2f5;
+    --pc-card: #ffffff;
+    --pc-text: #333333;
+    --pc-label: #666666;
+    --pc-border: #dde1e6;
+    --pc-input-bg: #f9f9fb;
+    --pc-header-input-bg: #f1f3f5;
+    --pc-primary: #2a6496;
+    --pc-footer-text: #d1e0f3;
+    --pc-accent-yellow: #fff7d6;
+    --pc-accent-blue: #bfe0ff;
+}
+
+.pc-day {
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(191, 224, 255, 0.16) 0%,
+            transparent 52%
+        ),
+        radial-gradient(
+            circle at 90% 72%,
+            rgba(255, 247, 214, 0.14) 0%,
+            transparent 52%
+        ),
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(255, 255, 255, 0.78) 0%,
+            transparent 62%
+        ),
+        linear-gradient(180deg, #fcfdff 0%, #fbfdff 100%);
+}
+
+.pc-haze {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            2px 2px at 21% 18%,
+            rgba(191, 224, 255, 0.1),
+            transparent 60%
+        ),
+        radial-gradient(
+            2px 2px at 36% 22%,
+            rgba(191, 224, 255, 0.08),
+            transparent 60%
+        ),
+        radial-gradient(
+            2px 2px at 82% 26%,
+            rgba(255, 232, 163, 0.08),
+            transparent 60%
+        );
+    opacity: 0.14;
+}
+
+.pc-ember {
+    position: fixed;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 9999px;
+    filter: blur(42px);
+    opacity: 0.04;
+    pointer-events: none;
+    background: radial-gradient(
+        circle,
+        rgba(191, 224, 255, 0.14) 0%,
+        rgba(191, 224, 255, 0) 68%
+    );
+    animation: ember-drift 14s ease-in-out infinite;
+}
+
+.pc-ember-a {
+    top: 10%;
+    left: 8%;
+}
+
+.pc-ember-b {
+    top: 30%;
+    left: 46%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 232, 163, 0.12) 0%,
+        rgba(255, 232, 163, 0) 68%
+    );
+    animation-delay: 2.4s;
+}
+
+.pc-ember-c {
+    top: 16%;
+    right: 7%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 232, 163, 0.1) 0%,
+        rgba(255, 232, 163, 0) 68%
+    );
+    animation-delay: 4.2s;
+}
+
+@keyframes ember-drift {
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.22;
+    }
+    50% {
+        transform: translateY(-8px) scale(1.08);
+        opacity: 0.34;
+    }
+}
+
+.pc-footer-night {
+    background: var(--pc-primary);
+}
+
+.pc-footer-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.65);
+    animation: footer-dot-float 4.8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.pc-footer-dot-a {
+    left: 14%;
+    top: 62%;
+}
+
+.pc-footer-dot-b {
+    left: 18%;
+    top: 70%;
+    animation-delay: 0.8s;
+}
+
+.pc-footer-dot-c {
+    left: 26%;
+    top: 66%;
+    animation-delay: 1.2s;
+}
+
+.pc-footer-dot-d {
+    right: 20%;
+    top: 34%;
+    animation-delay: 0.5s;
+}
+
+.pc-footer-dot-e {
+    right: 14%;
+    top: 58%;
+    animation-delay: 1.5s;
+}
+
+@keyframes footer-dot-float {
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.75;
+    }
+    50% {
+        transform: translateY(-3px) scale(1.18);
+        opacity: 1;
+    }
 }
