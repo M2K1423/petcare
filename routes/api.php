@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Owner\AppointmentController;
 use App\Http\Controllers\Api\Owner\PetController;
 use App\Http\Controllers\Api\Owner\SpeciesController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
@@ -25,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::middleware('role:owner')->group(function (): void {
         Route::get('/owner/species', [SpeciesController::class, 'index'])->name('api.owner.species.index');
         Route::apiResource('/owner/pets', PetController::class)->names('api.owner.pets');
+        Route::get('/owner/appointments', [AppointmentController::class, 'index'])->name('api.owner.appointments.index');
+        Route::post('/owner/appointments', [AppointmentController::class, 'store'])->name('api.owner.appointments.store');
+        Route::delete('/owner/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('api.owner.appointments.destroy');
     });
 
     Route::middleware('role:vet')->get('/vet/dashboard', function (Request $request) {

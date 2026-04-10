@@ -1,6 +1,7 @@
 <x-layout.app
     title="Edit Pet | {{ config('app.name', 'PetCare') }}"
     :vite="['resources/css/app.css', 'resources/js/pages/owner-pet-edit.ts']"
+    :showSidebar="true"
 >
     <header class="mb-6 rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur">
         <div class="flex flex-wrap items-end justify-between gap-4">
