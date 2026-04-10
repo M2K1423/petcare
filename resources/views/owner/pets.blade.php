@@ -1,19 +1,9 @@
 <x-layout.app
     title="Owner Pets | {{ config('app.name', 'PetCare') }}"
     :vite="['resources/css/app.css', 'resources/js/pages/owner-pets.ts']"
+    :showSidebar="true"
 >
-    <header class="mb-6 rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur">
-        <div class="flex flex-wrap items-end justify-between gap-4">
-            <div>
-                <p class="text-xs uppercase tracking-[0.22em] text-[#4A4A4A]">Owner Workspace</p>
-                <h1 class="mt-2 text-2xl font-extrabold tracking-tight text-[#333333] md:text-3xl">Pet Management</h1>
-                <p class="mt-1 text-sm text-[#4A4A4A]">Create, view, update, and delete your own pets.</p>
-            </div>
-            <span class="rounded-full border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#4A4A4A]">CRUD Ready</span>
-        </div>
-        <p id="owner-pets-status" class="mt-3 text-sm text-[#4A4A4A]">Loading...</p>
-    </header>
-
+    <div class="flex flex-col gap-5">
     <section class="grid gap-6 lg:grid-cols-5">
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur lg:col-span-2">
             <h2 class="text-lg font-bold text-[#333333]">Add a pet</h2>
@@ -81,4 +71,5 @@
             <div id="owner-pets-list" class="mt-4 space-y-3"></div>
         </article>
     </section>
+    </div>
 </x-layout.app>

@@ -2,7 +2,8 @@
     'title' => config('app.name', 'PetCare'),
     'vite' => ['resources/css/app.css'],
     'showHeader' => true,
-    'showFooter' => true,
+    'showFooter' => false,
+    'showSidebar' => false,
 ])
 
 <!DOCTYPE html>
@@ -23,12 +24,15 @@
         <x-layout.header />
     @endif
 
-    <main class="relative z-10 mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8 md:py-8">
-        {{ $slot }}
+    <main class="relative z-10 w-full flex-1 px-4 py-6 md:px-8 md:py-8 {{ $showSidebar ? 'max-w-none' : 'mx-auto max-w-6xl' }}">
+        @if ($showSidebar)
+            <x-layout.sidebar />
+            <div class="min-w-0 flex-1 lg:pl-72">
+                {{ $slot }}
+            </div>
+        @else
+            {{ $slot }}
+        @endif
     </main>
-
-    @if ($showFooter)
-        <x-layout.footer />
-    @endif
 </body>
 </html>

@@ -1,4 +1,4 @@
-<header class="relative z-10 border-b border-[#DDE1E6] bg-gradient-to-r from-[#FFF7D6] via-[#FFFFFF] to-[#BFE0FF] shadow-[0_4px_16px_rgba(0,0,0,0.05)]">
+<header class="sticky top-0 z-50 border-b border-[#DDE1E6] bg-gradient-to-r from-[#BFE0FF] via-[#FFFFFF] to-[#FFF7D6] shadow-[0_4px_16px_rgba(0,0,0,0.05)] lg:ml-72 lg:w-[calc(100%-18rem)]">
     <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-4 px-4 py-4 md:px-8">
         <a href="{{ route('sanctum.auth') }}" class="group inline-flex items-center gap-3">
             <span class="grid h-9 w-9 place-content-center rounded-full border border-[#C1C4C9] bg-[#FFFFFF] text-xs font-bold text-[#999999]">PAW</span>
@@ -9,9 +9,9 @@
         </a>
 
         <nav class="hidden items-center gap-5 text-xs font-semibold uppercase tracking-[0.16em] md:flex">
-            <a href="{{ route('sanctum.auth') }}" class="text-[#333333] transition hover:text-[#2A6496]">Dashboard</a>
+            <a href="{{ route('owner.overview') }}" class="text-[#333333] transition hover:text-[#2A6496]">Dashboard</a>
             <a href="{{ route('owner.pets') }}" class="text-[#333333] transition hover:text-[#2A6496]">Pets</a>
-            <a href="#" class="text-[#333333] transition hover:text-[#2A6496]">Appointments</a>
+            <a href="{{ route('owner.appointments') }}" class="text-[#333333] transition hover:text-[#2A6496]">Appointments</a>
             <a href="#" class="text-[#333333] transition hover:text-[#2A6496]">Vets</a>
         </nav>
 
