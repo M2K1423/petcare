@@ -14,6 +14,7 @@ Route::post('/auth/login', [SanctumAuthController::class, 'login'])->name('api.a
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [SanctumAuthController::class, 'logout'])->name('api.auth.logout');
     Route::get('/auth/me', [SanctumAuthController::class, 'me'])->name('api.auth.me');
+    Route::put('/auth/profile', [SanctumAuthController::class, 'updateProfile'])->name('api.auth.profile.update');
 
     Route::middleware('role:owner')->get('/owner/dashboard', function (Request $request) {
         return response()->json([

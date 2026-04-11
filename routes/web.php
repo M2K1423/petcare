@@ -11,6 +11,7 @@ Route::redirect('/login', '/sanctum-auth')->name('login');
 Route::view('/sanctum-auth', 'auth.sanctum')->name('sanctum.auth');
 Route::view('/sanctum-auth/register', 'auth.sanctum-register')->name('sanctum.auth.register');
 Route::view('/owner/overview', 'owner.overview')->name('owner.overview');
+Route::view('/owner/profile', 'owner.profile')->name('owner.profile');
 Route::view('/owner/pets', 'owner.pets')->name('owner.pets');
 Route::view('/owner/appointments', 'owner.appointments')->name('owner.appointments');
 Route::get('/owner/pets/{pet}/edit', function (int $pet) {
