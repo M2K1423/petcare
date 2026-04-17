@@ -48,4 +48,14 @@ class SanctumAuthController extends Controller
     {
         return response()->json($this->authService->me($request->user()));
     }
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$request->user()?->id],
+        ]);
+
+        return response()->json($this->authService->updateProfile($request->user(), $validated));
+    }
 }

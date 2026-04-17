@@ -61,6 +61,33 @@ class SanctumAuthService
         ];
     }
 
+    /**
+     * @param  array{name:string,email:string}  $payload
+     */
+    public function updateProfile(?User $user, array $payload): array
+    {
+        if (! $user) {
+            throw ValidationException::withMessages([
+                'user' => ['Unauthenticated.'],
+            ]);
+        }
+
+        $user->forceFill([
+            'name' => $payload['name'],
+            'email' => $payload['email'],
+        ])->save();
+
+        return [
+            'message' => 'Profile updated successfully.',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role?->slug,
+            ],
+        ];
+    }
+
     public function dashboardUrlForRole(?string $role): ?string
     {
         return match ($role) {

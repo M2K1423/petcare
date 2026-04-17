@@ -42,13 +42,20 @@ function setStatus(message: string, kind: 'neutral' | 'success' | 'error' = 'neu
     statusEl.textContent = message;
 }
 
+function toDateOnly(value: string): string {
+    if (!value) return value;
+
+    const [datePart] = value.split('T');
+    return datePart || value;
+}
+
 function formatPetMeta(pet: Pet): string {
     const chunks: string[] = [];
 
     if (pet.species?.name) chunks.push(`Species: ${pet.species.name}`);
     chunks.push(`Gender: ${pet.gender}`);
     if (pet.weight) chunks.push(`Weight: ${pet.weight} kg`);
-    if (pet.birth_date) chunks.push(`Birth date: ${pet.birth_date}`);
+    if (pet.birth_date) chunks.push(`Birth date: ${toDateOnly(pet.birth_date)}`);
 
     return chunks.join(' | ');
 }
@@ -115,6 +122,7 @@ function renderPets(pets: Pet[]): void {
                         </div>
                         <div class="flex gap-2">
                             <a href="/owner/pets/${pet.id}/edit" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Edit</a>
+                            <a href="/owner/pets/${pet.id}/health-records" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Health records</a>
                             <button data-action="delete" data-id="${pet.id}" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Delete</button>
                         </div>
                     </div>

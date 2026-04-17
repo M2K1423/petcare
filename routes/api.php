@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Owner\AppointmentController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\Owner\PetHealthRecordController;
 use App\Http\Controllers\Api\Owner\PetController;
 use App\Http\Controllers\Api\Owner\SpeciesController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
@@ -14,6 +16,10 @@ Route::post('/auth/login', [SanctumAuthController::class, 'login'])->name('api.a
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [SanctumAuthController::class, 'logout'])->name('api.auth.logout');
     Route::get('/auth/me', [SanctumAuthController::class, 'me'])->name('api.auth.me');
+    Route::put('/auth/profile', [SanctumAuthController::class, 'updateProfile'])->name('api.auth.profile.update');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('api.notifications.index');
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('api.notifications.read');
 
     Route::middleware('role:owner')->get('/owner/dashboard', function (Request $request) {
         return response()->json([
@@ -26,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::middleware('role:owner')->group(function (): void {
         Route::get('/owner/species', [SpeciesController::class, 'index'])->name('api.owner.species.index');
         Route::apiResource('/owner/pets', PetController::class)->names('api.owner.pets');
+        Route::get('/owner/pets/{pet}/health-records', [PetHealthRecordController::class, 'show'])->name('api.owner.pets.health-records.show');
         Route::get('/owner/appointments', [AppointmentController::class, 'index'])->name('api.owner.appointments.index');
         Route::post('/owner/appointments', [AppointmentController::class, 'store'])->name('api.owner.appointments.store');
         Route::delete('/owner/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('api.owner.appointments.destroy');
