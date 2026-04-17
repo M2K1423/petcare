@@ -46,8 +46,22 @@ Route::middleware(['auth', 'role:vet'])->group(function (): void {
     })->name('vet.dashboard');
 });
 
+// Receptionist Frontend Routes
+Route::redirect('/receptionist/appoiintments', '/receptionist/appointments');
+Route::redirect('/receptioniist/appointments', '/receptionist/appointments');
+Route::redirect('/receptioniist/appoiintments', '/receptionist/appointments');
+Route::view('/receptionist/dashboard', 'receptionist.dashboard')->name('receptionist.dashboard');
+Route::view('/receptionist/walk-ins', 'receptionist.walkins')->name('receptionist.walkins');
+Route::view('/receptionist/appointments', 'receptionist.appointments')->name('receptionist.appointments');
+Route::get('/receptionist/appointments/{appointment}', function (int $appointment) {
+    return view('receptionist.appointment-detail', [
+        'appointmentId' => $appointment,
+    ]);
+})->whereNumber('appointment')->name('receptionist.appointments.show');
+Route::view('/receptionist/billing', 'receptionist.billing')->name('receptionist.billing');
+
 Route::middleware(['auth', 'role:receptionist'])->group(function (): void {
-    Route::get('/receptionist/dashboard', function (Request $request) {
+    Route::get('/receptionist/data', function (Request $request) {
         return response()->json([
             'dashboard' => 'Receptionist dashboard',
             'user' => $request->user()?->only(['id', 'name', 'email']),

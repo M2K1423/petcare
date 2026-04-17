@@ -21,8 +21,17 @@ export function initLoginPage(): void {
             setStatus(data.message ?? 'Login successful.', 'success');
             loginForm.reset();
 
-            if (data.user?.role === 'owner') {
-                window.location.href = '/owner/pets';
+            const role = data.user?.role;
+            if (role === 'owner') {
+                window.location.href = '/owner/overview';
+            } else if (role === 'receptionist') {
+                window.location.href = '/receptionist/dashboard';
+            } else if (role === 'admin') {
+                window.location.href = '/admin/dashboard';
+            } else if (role === 'vet') {
+                window.location.href = '/vet/dashboard';
+            } else {
+                window.location.href = '/';
             }
         } catch (error) {
             setStatus((error as Error).message, 'error');
