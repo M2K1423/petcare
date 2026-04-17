@@ -5,6 +5,10 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Owner\PetHealthRecordController;
 use App\Http\Controllers\Api\Owner\PetController;
 use App\Http\Controllers\Api\Owner\SpeciesController;
+use App\Http\Controllers\Api\Receptionist\AppointmentController as ReceptionistAppointmentController;
+use App\Http\Controllers\Api\Receptionist\CustomerController;
+use App\Http\Controllers\Api\Receptionist\DoctorController;
+use App\Http\Controllers\Api\Receptionist\PaymentController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -46,13 +50,38 @@ Route::middleware('auth:sanctum')->group(function (): void {
         ]);
     })->name('api.vet.dashboard');
 
-    Route::middleware('role:receptionist')->get('/receptionist/dashboard', function (Request $request) {
-        return response()->json([
-            'dashboard' => 'Receptionist dashboard',
-            'user' => $request->user()?->only(['id', 'name', 'email']),
-            'role' => Role::RECEPTIONIST,
-        ]);
-    })->name('api.receptionist.dashboard');
+    Route::middleware('role:receptionist')->group(function (): void {
+        Route::get('/receptionist/species', [SpeciesController::class, 'index'])->name('api.receptionist.species.index');
+
+        Route::get('/receptionist/dashboard', function (Request $request) {
+            return response()->json([
+                'dashboard' => 'Receptionist dashboard',
+                'user' => $request->user()?->only(['id', 'name', 'email']),
+                'role' => Role::RECEPTIONIST,
+            ]);
+        })->name('api.receptionist.dashboard');
+
+        // Customer & Pet Walk-in
+        Route::get('/receptionist/customers/search', [CustomerController::class, 'search'])->name('api.receptionist.customers.search');
+        Route::post('/receptionist/customers/walk-in', [CustomerController::class, 'storeWalkIn'])->name('api.receptionist.customers.walk_in');
+
+        // Appointments Management (Check-in, list, store)
+        Route::get('/receptionist/appointments', [ReceptionistAppointmentController::class, 'index'])->name('api.receptionist.appointments.index');
+        Route::get('/receptionist/appointments/{id}', [ReceptionistAppointmentController::class, 'show'])->name('api.receptionist.appointments.show');
+        Route::post('/receptionist/appointments', [ReceptionistAppointmentController::class, 'store'])->name('api.receptionist.appointments.store');
+        Route::patch('/receptionist/appointments/{id}/check-in', [ReceptionistAppointmentController::class, 'checkIn'])->name('api.receptionist.appointments.check_in');
+
+        // Queue (Bảng điện tử phòng chờ & Ưu tiên)
+        Route::get('/receptionist/queue', [ReceptionistAppointmentController::class, 'queue'])->name('api.receptionist.queue.index');
+        Route::patch('/receptionist/appointments/{id}/emergency', [ReceptionistAppointmentController::class, 'markEmergency'])->name('api.receptionist.appointments.emergency');
+
+        // Doctors (Điều phối)
+        Route::get('/receptionist/doctors/available', [DoctorController::class, 'available'])->name('api.receptionist.doctors.available');
+
+        // Payments / Billing
+        Route::get('/receptionist/payments/unpaid', [PaymentController::class, 'unpaid'])->name('api.receptionist.payments.unpaid');
+        Route::post('/receptionist/payments', [PaymentController::class, 'store'])->name('api.receptionist.payments.store');
+    });
 
     Route::middleware('role:admin')->get('/admin/dashboard', function (Request $request) {
         return response()->json([
