@@ -46,4 +46,14 @@ class Pet extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function medicalRecords(): HasMany
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
+
+    public function vaccinations(): HasMany
+    {
+        return $this->hasMany(Vaccination::class);
+    }
 }

@@ -20,6 +20,12 @@ Route::get('/owner/pets/{pet}/edit', function (int $pet) {
     ]);
 })->whereNumber('pet')->name('owner.pets.edit');
 
+Route::get('/owner/pets/{pet}/health-records', function (int $pet) {
+    return view('owner.pet-health-records', [
+        'petId' => $pet,
+    ]);
+})->whereNumber('pet')->name('owner.pets.health-records');
+
 Route::middleware(['auth', 'role:owner'])->group(function (): void {
     Route::get('/owner/dashboard', function (Request $request) {
         return response()->json([

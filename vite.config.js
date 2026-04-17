@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/js/pages/owner-profile.ts',
                 'resources/js/pages/owner-pets.ts',
                 'resources/js/pages/owner-pet-edit.ts',
+                'resources/js/pages/owner-pet-health-records.ts',
                 'resources/js/pages/owner-appointments.ts',
             ],
             refresh: true,
