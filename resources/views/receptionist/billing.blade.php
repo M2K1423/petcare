@@ -1,6 +1,7 @@
 <x-layout.app
     title="Billing & Payments | {{ config('app.name', 'PetCare') }}"
-    :vite="['resources/css/app.css', 'resources/js/pages/receptionist-billing.ts']"
+    :vite="['resources/css/app.css', 'resources/js/app.js']"
+    page="receptionist-billing"
     :showSidebar="true"
 >
     <div class="mb-6">

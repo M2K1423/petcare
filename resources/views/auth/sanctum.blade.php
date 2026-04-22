@@ -1,6 +1,7 @@
 <x-layout.app
     title="Sanctum Auth | {{ config('app.name', 'PetCare') }}"
-    :vite="['resources/css/app.css', 'resources/js/pages/sanctum-auth.ts']"
+    :vite="['resources/css/app.css', 'resources/js/app.js']"
+    page="auth-sanctum"
     :showHeader="false"
     :showFooter="false"
 >

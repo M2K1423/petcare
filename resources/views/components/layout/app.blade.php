@@ -1,6 +1,7 @@
 @props([
     'title' => config('app.name', 'PetCare'),
     'vite' => ['resources/css/app.css'],
+    'page' => null,
     'showHeader' => true,
     'showFooter' => false,
     'showSidebar' => false,
@@ -14,7 +15,7 @@
     <title>{{ $title }}</title>
     @vite($vite)
 </head>
-<body class="pc-day relative flex min-h-screen flex-col overflow-x-hidden text-slate-900">
+<body data-page="{{ $page }}" class="pc-day relative flex min-h-screen flex-col overflow-x-hidden text-slate-900">
     <div class="pc-haze" aria-hidden="true"></div>
     <div class="pc-ember pc-ember-a" aria-hidden="true"></div>
     <div class="pc-ember pc-ember-b" aria-hidden="true"></div>
