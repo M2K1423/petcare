@@ -30,6 +30,7 @@
             <div class="mt-4 flex flex-wrap gap-3">
                 <a href="{{ route('owner.pets') }}" class="inline-flex items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780]">Add or Edit Pet</a>
                 <a href="{{ route('owner.appointments') }}" class="inline-flex items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-4 py-2 text-sm font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">Book Appointment</a>
+                <a href="{{ route('owner.shop') }}" class="inline-flex items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-4 py-2 text-sm font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">Buy Medicine</a>
             </div>
         </article>
 

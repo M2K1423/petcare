@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RoleSeeder::class);
         $this->call(SpeciesSeeder::class);
+        $this->call(MedicineSeeder::class);
         $this->call(ReceptionistDemoSeeder::class);
 
         $roles = Role::query()->pluck('id', 'slug');

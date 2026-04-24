@@ -9,6 +9,7 @@ class Payment extends Model
 {
     protected $fillable = [
         'appointment_id',
+        'medicine_order_id',
         'owner_id',
         'service_id',
         'amount',
@@ -34,6 +35,11 @@ class Payment extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function medicineOrder(): BelongsTo
+    {
+        return $this->belongsTo(MedicineOrder::class);
     }
 
     public function service(): BelongsTo

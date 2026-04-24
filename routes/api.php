@@ -5,11 +5,16 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Owner\PetHealthRecordController;
 use App\Http\Controllers\Api\Owner\PetController;
 use App\Http\Controllers\Api\Owner\SpeciesController;
+use App\Http\Controllers\Api\Owner\MedicineController;
+use App\Http\Controllers\Api\Owner\MedicineOrderController as OwnerMedicineOrderController;
+use App\Http\Controllers\Api\Vet\AppointmentController as VetAppointmentController;
 use App\Http\Controllers\Api\Receptionist\AppointmentController as ReceptionistAppointmentController;
 use App\Http\Controllers\Api\Receptionist\CustomerController;
 use App\Http\Controllers\Api\Receptionist\DoctorController;
+use App\Http\Controllers\Api\Receptionist\MedicineOrderController as ReceptionistMedicineOrderController;
 use App\Http\Controllers\Api\Receptionist\PaymentController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
+use App\Http\Controllers\Api\Admin\MedicineController as AdminMedicineController;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,15 +45,24 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/owner/appointments', [AppointmentController::class, 'index'])->name('api.owner.appointments.index');
         Route::post('/owner/appointments', [AppointmentController::class, 'store'])->name('api.owner.appointments.store');
         Route::delete('/owner/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('api.owner.appointments.destroy');
+        Route::get('/owner/medicines', [MedicineController::class, 'index'])->name('api.owner.medicines.index');
+        Route::get('/owner/medicine-orders', [OwnerMedicineOrderController::class, 'index'])->name('api.owner.medicine-orders.index');
+        Route::post('/owner/medicine-orders', [OwnerMedicineOrderController::class, 'store'])->name('api.owner.medicine-orders.store');
     });
 
-    Route::middleware('role:vet')->get('/vet/dashboard', function (Request $request) {
-        return response()->json([
-            'dashboard' => 'Vet dashboard',
-            'user' => $request->user()?->only(['id', 'name', 'email']),
-            'role' => Role::VET,
-        ]);
-    })->name('api.vet.dashboard');
+    Route::middleware('role:vet')->group(function (): void {
+        Route::get('/vet/dashboard', function (Request $request) {
+            return response()->json([
+                'dashboard' => 'Vet dashboard',
+                'user' => $request->user()?->only(['id', 'name', 'email']),
+                'role' => Role::VET,
+            ]);
+        })->name('api.vet.dashboard');
+
+        Route::get('/vet/appointments', [VetAppointmentController::class, 'index'])->name('api.vet.appointments.index');
+        Route::get('/vet/appointments/{appointment}', [VetAppointmentController::class, 'show'])->name('api.vet.appointments.show');
+        Route::put('/vet/appointments/{appointment}/medical-record', [VetAppointmentController::class, 'saveMedicalRecord'])->name('api.vet.appointments.medical-record.save');
+    });
 
     Route::middleware('role:receptionist')->group(function (): void {
         Route::get('/receptionist/species', [SpeciesController::class, 'index'])->name('api.receptionist.species.index');
@@ -81,15 +95,25 @@ Route::middleware('auth:sanctum')->group(function (): void {
         // Payments / Billing
         Route::get('/receptionist/payments/unpaid', [PaymentController::class, 'unpaid'])->name('api.receptionist.payments.unpaid');
         Route::post('/receptionist/payments', [PaymentController::class, 'store'])->name('api.receptionist.payments.store');
+        Route::get('/receptionist/medicine-orders', [ReceptionistMedicineOrderController::class, 'index'])->name('api.receptionist.medicine-orders.index');
+        Route::patch('/receptionist/medicine-orders/{order}/confirm', [ReceptionistMedicineOrderController::class, 'confirm'])->name('api.receptionist.medicine-orders.confirm');
+        Route::patch('/receptionist/medicine-orders/{order}/collect-payment', [ReceptionistMedicineOrderController::class, 'collect'])->name('api.receptionist.medicine-orders.collect-payment');
     });
 
-    Route::middleware('role:admin')->get('/admin/dashboard', function (Request $request) {
-        return response()->json([
-            'dashboard' => 'Admin dashboard',
-            'user' => $request->user()?->only(['id', 'name', 'email']),
-            'role' => Role::ADMIN,
-        ]);
-    })->name('api.admin.dashboard');
+    Route::middleware('role:admin')->group(function (): void {
+        Route::get('/admin/dashboard', function (Request $request) {
+            return response()->json([
+                'dashboard' => 'Admin dashboard',
+                'user' => $request->user()?->only(['id', 'name', 'email']),
+                'role' => Role::ADMIN,
+            ]);
+        })->name('api.admin.dashboard');
+
+        Route::get('/admin/medicines', [AdminMedicineController::class, 'index'])->name('api.admin.medicines.index');
+        Route::post('/admin/medicines', [AdminMedicineController::class, 'store'])->name('api.admin.medicines.store');
+        Route::put('/admin/medicines/{medicine}', [AdminMedicineController::class, 'update'])->name('api.admin.medicines.update');
+        Route::delete('/admin/medicines/{medicine}', [AdminMedicineController::class, 'destroy'])->name('api.admin.medicines.destroy');
+    });
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -100,4 +124,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         'role' => $request->user()?->role?->slug,
     ]);
 })->name('api.user');
-

@@ -34,6 +34,16 @@ class MedicalRecord extends Model
         return $this->belongsTo(Pet::class);
     }
 
+    public function appointment(): BelongsTo
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(Doctor::class);
+    }
+
     public function vaccinations(): HasMany
     {
         return $this->hasMany(Vaccination::class);

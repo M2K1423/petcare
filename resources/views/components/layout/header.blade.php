@@ -55,7 +55,7 @@
                 </summary>
 
                 <div class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-                    <a href="{{ route('owner.profile') }}" class="block px-4 py-2.5 text-sm text-[#333333] transition hover:bg-[#F1F3F5]">Profile</a>
+                    <a href="{{ route('owner.profile') }}" data-role-profile-link="true" class="block px-4 py-2.5 text-sm text-[#333333] transition hover:bg-[#F1F3F5]">Profile</a>
                     <button type="button" data-action="logout" class="block w-full px-4 py-2.5 text-left text-sm text-[#B42318] transition hover:bg-[#FDECEC]">Logout</button>
                 </div>
             </details>
@@ -66,6 +66,7 @@
 <script>
     (function () {
         const logoutButtons = document.querySelectorAll('[data-action="logout"]');
+        const roleProfileLinks = document.querySelectorAll('[data-role-profile-link="true"]');
 
         logoutButtons.forEach((button) => {
             button.addEventListener('click', async function () {
@@ -115,6 +116,36 @@
                 }
             } catch (error) {
                 console.error("Error fetching notifications:", error);
+            }
+        }
+
+        async function bindProfileLinkByRole() {
+            if (!token || roleProfileLinks.length === 0) return;
+
+            try {
+                const response = await fetch('/api/user', {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                if (!response.ok) return;
+
+                const user = await response.json();
+                const href = user.role === 'admin'
+                    ? '/admin/medicines'
+                    : user.role === 'vet'
+                        ? '/vet/appointments'
+                    : user.role === 'receptionist'
+                        ? '/receptionist/dashboard'
+                        : '/owner/profile';
+
+                roleProfileLinks.forEach((link) => {
+                    link.setAttribute('href', href);
+                });
+            } catch (error) {
+                console.error('Failed to bind profile link by role', error);
             }
         }
 
@@ -177,6 +208,8 @@
             // Initial fetch for badge
             fetchNotifications();
         }
+
+        bindProfileLinkByRole();
 
     })();
 </script>

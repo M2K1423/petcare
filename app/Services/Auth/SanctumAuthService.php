@@ -91,8 +91,8 @@ class SanctumAuthService
     public function dashboardUrlForRole(?string $role): ?string
     {
         return match ($role) {
-            Role::ADMIN => '/api/admin/dashboard',
-            Role::VET => '/api/vet/dashboard',
+            Role::ADMIN => '/admin/medicines',
+            Role::VET => '/vet/appointments',
             Role::RECEPTIONIST => '/api/receptionist/dashboard',
             Role::OWNER => '/api/owner/dashboard',
             default => null,

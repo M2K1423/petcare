@@ -29,7 +29,7 @@ function initLoginPage(): void {
             } else if (role === 'receptionist') {
                 window.location.href = '/receptionist/dashboard';
             } else if (role === 'admin') {
-                window.location.href = '/admin/dashboard';
+                window.location.href = '/admin/medicines';
             } else if (role === 'vet') {
                 window.location.href = '/vet/dashboard';
             } else {
