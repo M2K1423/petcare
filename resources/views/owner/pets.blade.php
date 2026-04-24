@@ -1,6 +1,7 @@
 <x-layout.app
     title="Owner Pets | {{ config('app.name', 'PetCare') }}"
-    :vite="['resources/css/app.css', 'resources/js/pages/owner-pets.ts']"
+    :vite="['resources/css/app.css', 'resources/js/app.js']"
+    page="owner-pets"
     :showSidebar="true"
 >
     <div class="flex flex-col gap-5">

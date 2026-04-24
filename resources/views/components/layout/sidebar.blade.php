@@ -55,6 +55,18 @@
                 <span>Lich hen kham</span>
             </a>
 
+            <a href="{{ route('owner.shop') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.shop') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M6 6h15l-1.5 9h-12z"></path>
+                        <path d="M6 6 5 3H3"></path>
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="18" cy="20" r="1"></circle>
+                    </svg>
+                </span>
+                <span>Mua thuoc</span>
+            </a>
+
             <a href="#" class="flex items-center gap-3 px-3 py-2 text-[#B8C7DE] transition hover:bg-[#1A304E] hover:text-[#F5FAFF]">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
@@ -99,6 +111,39 @@
                 <span>Thanh toán viện phí</span>
             </a>
         </div>
+
+        <div id="nav-vet" class="hidden">
+            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Vet</div>
+
+            <a href="{{ route('vet.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.appointments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M8 2v4"></path>
+                        <path d="M16 2v4"></path>
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                        <path d="M8 14h8"></path>
+                    </svg>
+                </span>
+                <span>Lich kham cua toi</span>
+            </a>
+        </div>
+
+        <div id="nav-admin" class="hidden">
+            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Admin</div>
+
+            <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.medicines') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M9 12h6"></path>
+                        <path d="M10 16h4"></path>
+                        <path d="M8 3h8l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                        <path d="M14 3v4h4"></path>
+                    </svg>
+                </span>
+                <span>Quan ly thuoc</span>
+            </a>
+        </div>
     </nav>
 </aside>
 
@@ -117,8 +162,12 @@
                 if (user && user.role) {
                     if (user.role === 'owner') {
                         document.getElementById('nav-owner')?.classList.remove('hidden');
+                    } else if (user.role === 'vet') {
+                        document.getElementById('nav-vet')?.classList.remove('hidden');
                     } else if (user.role === 'receptionist') {
                         document.getElementById('nav-receptionist')?.classList.remove('hidden');
+                    } else if (user.role === 'admin') {
+                        document.getElementById('nav-admin')?.classList.remove('hidden');
                     }
                 }
             } catch (e) {

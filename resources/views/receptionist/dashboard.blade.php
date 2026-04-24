@@ -1,6 +1,7 @@
 <x-layout.app
     title="Receptionist Dashboard | {{ config('app.name', 'PetCare') }}"
-    :vite="['resources/css/app.css', 'resources/js/pages/receptionist-dashboard.ts']"
+    :vite="['resources/css/app.css', 'resources/js/app.js']"
+    page="receptionist-dashboard"
     :showSidebar="true"
 >
     <!-- Page Header -->

@@ -1,6 +1,7 @@
 <x-layout.app
     title="Owner Appointments | {{ config('app.name', 'PetCare') }}"
-    :vite="['resources/css/app.css', 'resources/js/pages/owner-appointments.ts']"
+    :vite="['resources/css/app.css', 'resources/js/app.js']"
+    page="owner-appointments"
     :showSidebar="true"
 >
     <section class="grid gap-6 lg:grid-cols-5">

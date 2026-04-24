@@ -1,9 +1,7 @@
-export type StatusType = 'neutral' | 'success' | 'error';
-
 export function createStatusUpdater(elementId = 'sanctum-status') {
     const statusEl = document.getElementById(elementId);
 
-    return function setStatus(message: string, type: StatusType = 'neutral'): void {
+    return function setStatus(message, type = 'neutral') {
         if (!statusEl) return;
 
         const classes = {

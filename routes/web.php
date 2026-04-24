@@ -14,6 +14,13 @@ Route::view('/owner/overview', 'owner.overview')->name('owner.overview');
 Route::view('/owner/profile', 'owner.profile')->name('owner.profile');
 Route::view('/owner/pets', 'owner.pets')->name('owner.pets');
 Route::view('/owner/appointments', 'owner.appointments')->name('owner.appointments');
+Route::view('/owner/shop', 'owner.shop')->name('owner.shop');
+Route::view('/vet/appointments', 'vet.appointments')->name('vet.appointments');
+Route::get('/vet/appointments/{appointment}', function (int $appointment) {
+    return view('vet.appointment-detail', [
+        'appointmentId' => $appointment,
+    ]);
+})->whereNumber('appointment')->name('vet.appointments.show');
 Route::get('/owner/pets/{pet}/edit', function (int $pet) {
     return view('owner.pet-edit', [
         'petId' => $pet,
@@ -37,13 +44,7 @@ Route::middleware(['auth', 'role:owner'])->group(function (): void {
 });
 
 Route::middleware(['auth', 'role:vet'])->group(function (): void {
-    Route::get('/vet/dashboard', function (Request $request) {
-        return response()->json([
-            'dashboard' => 'Vet dashboard',
-            'user' => $request->user()?->only(['id', 'name', 'email']),
-            'role' => $request->user()?->role?->slug,
-        ]);
-    })->name('vet.dashboard');
+    Route::redirect('/vet/dashboard', '/vet/appointments')->name('vet.dashboard');
 });
 
 // Receptionist Frontend Routes
@@ -59,6 +60,7 @@ Route::get('/receptionist/appointments/{appointment}', function (int $appointmen
     ]);
 })->whereNumber('appointment')->name('receptionist.appointments.show');
 Route::view('/receptionist/billing', 'receptionist.billing')->name('receptionist.billing');
+Route::view('/admin/medicines', 'admin.medicines')->name('admin.medicines');
 
 Route::middleware(['auth', 'role:receptionist'])->group(function (): void {
     Route::get('/receptionist/data', function (Request $request) {
@@ -71,11 +73,5 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (): void {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function (): void {
-    Route::get('/admin/dashboard', function (Request $request) {
-        return response()->json([
-            'dashboard' => 'Admin dashboard',
-            'user' => $request->user()?->only(['id', 'name', 'email']),
-            'role' => $request->user()?->role?->slug,
-        ]);
-    })->name('admin.dashboard');
+    Route::redirect('/admin/dashboard', '/admin/medicines')->name('admin.dashboard');
 });
