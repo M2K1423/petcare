@@ -93,12 +93,23 @@
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
+                        <label for="medicine-category" class="text-sm font-semibold text-[#333333]">Category</label>
+                        <input id="medicine-category" name="category" type="text" placeholder="Digestive Care, Skin Care..." class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
+                    </div>
+                    <div>
                         <label for="medicine-sku" class="text-sm font-semibold text-[#333333]">SKU</label>
                         <input id="medicine-sku" name="sku" type="text" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
                     </div>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
                     <div>
                         <label for="medicine-unit" class="text-sm font-semibold text-[#333333]">Unit</label>
                         <input id="medicine-unit" name="unit" type="text" placeholder="box, bottle..." class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
+                    </div>
+                    <div>
+                        <label for="medicine-image-url" class="text-sm font-semibold text-[#333333]">Image URL</label>
+                        <input id="medicine-image-url" name="image_url" type="text" placeholder="https://..." class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
                     </div>
                 </div>
 

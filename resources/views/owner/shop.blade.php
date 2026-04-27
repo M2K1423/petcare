@@ -26,6 +26,21 @@
                 </select>
             </div>
 
+            <div class="mt-6 grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+                <div>
+                    <label for="shop-medicine-search" class="text-sm font-semibold text-[#333333]">Search products</label>
+                    <input id="shop-medicine-search" type="text" placeholder="Search by name, category, description..." class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
+                </div>
+                <div>
+                    <label for="shop-category-filter" class="text-sm font-semibold text-[#333333]">Category</label>
+                    <select id="shop-category-filter" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
+                        <option value="all">All categories</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="shop-filter-result" class="mt-4 text-sm text-[#4A4A4A]">Showing all products.</div>
+
             <div id="shop-medicine-list" class="mt-6 grid gap-4 md:grid-cols-2">
                 <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 text-sm text-[#666666]">Loading medicines...</div>
             </div>

@@ -115,6 +115,73 @@
         <div id="nav-vet" class="hidden">
             <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Vet</div>
 
+            <a href="{{ route('vet.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M3 13h8V3H3z"></path>
+                        <path d="M13 21h8v-8h-8z"></path>
+                        <path d="M13 3h8v6h-8z"></path>
+                        <path d="M3 21h8v-4H3z"></path>
+                    </svg>
+                </span>
+                <span>Dashboard bac si</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.schedule') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.schedule') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">1</span>
+                <span>Quan ly lich kham</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.intake') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.intake') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">2</span>
+                <span>Kham benh</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.diagnosis') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.diagnosis') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">3</span>
+                <span>Chan doan</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.records') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.records') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">4</span>
+                <span>Lap benh an</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.orders') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.orders') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">5</span>
+                <span>Chi dinh dich vu</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.prescriptions') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.prescriptions') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">6</span>
+                <span>Ke don thuoc</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.procedures') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.procedures') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">7</span>
+                <span>Dieu tri thu thuat</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.vaccinations') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.vaccinations') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">8</span>
+                <span>Quan ly tiem phong</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.inpatient') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.inpatient') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">9</span>
+                <span>Theo doi noi tru</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.follow-up') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.follow-up') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">10</span>
+                <span>Tai kham</span>
+            </a>
+
+            <a href="{{ route('vet.workflow.sign-off') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.sign-off') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">11</span>
+                <span>Ky xac nhan</span>
+            </a>
+
             <a href="{{ route('vet.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.appointments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
@@ -126,6 +193,11 @@
                     </svg>
                 </span>
                 <span>Lich kham cua toi</span>
+            </a>
+
+            <a href="{{ route('vet.schedule-week') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.schedule-week') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">12</span>
+                <span>Lich theo tuan</span>
             </a>
         </div>
 

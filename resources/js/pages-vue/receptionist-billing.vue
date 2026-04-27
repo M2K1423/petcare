@@ -30,12 +30,27 @@ interface MedicineOrder {
         amount: number;
         payment_method?: string | null;
         transaction_code?: string | null;
+        gateway_transaction_no?: string | null;
         paid_at?: string | null;
     } | null;
 }
 
 function formatCurrency(value: number): string {
     return `${Number(value || 0).toLocaleString('vi-VN')} VND`;
+}
+
+function showPaymentNotice(): void {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('paymentStatus');
+    const message = params.get('paymentMessage');
+
+    if (!status || !message) return;
+
+    alert(message);
+    params.delete('paymentStatus');
+    params.delete('paymentMessage');
+    const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.replaceState({}, '', nextUrl);
 }
 
 async function loadUnpaidBills() {
@@ -55,17 +70,17 @@ async function loadUnpaidBills() {
             <div class="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <div>
                     <h3 class="font-bold text-gray-900">Record #${bill.id} - ${bill.appointment?.pet?.name || 'Unknown Pet'}</h3>
-                    <p class="text-xs text-gray-500">Owner: ${bill.appointment?.owner?.name} (${bill.appointment?.owner?.phone || 'N/A'})</p>
-                    <p class="text-xs text-gray-500 mt-1">Diagnosis: ${bill.diagnosis || 'N/A'}</p>
+                    <p class="mt-1 text-xs text-gray-500">Owner: ${bill.appointment?.owner?.name} (${bill.appointment?.owner?.phone || 'N/A'})</p>
+                    <p class="mt-1 text-xs text-gray-500">Diagnosis: ${bill.diagnosis || 'N/A'}</p>
                 </div>
-                <div class="flex flex-col gap-2 items-end">
+                <div class="flex flex-col items-end gap-2">
                     <span class="text-lg font-bold text-red-600">${formatCurrency(Number(bill.total_cost || 0))}</span>
                     <button onclick="openPaymentModal(${bill.id}, ${bill.total_cost})" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">Process Payment</button>
                 </div>
             </div>
         `).join('');
     } catch (e) {
-        container.innerHTML = '<div class="p-4 text-center text-sm text-red-500 bg-red-50 rounded-xl">Failed to load unpaid bills.</div>';
+        container.innerHTML = '<div class="rounded-xl bg-red-50 p-4 text-center text-sm text-red-500">Failed to load unpaid bills.</div>';
     }
 }
 
@@ -78,7 +93,7 @@ async function loadMedicineOrders() {
         const orders = response.data;
 
         if (orders.length === 0) {
-            container.innerHTML = '<div class="p-4 text-center text-sm text-gray-500 bg-gray-50 rounded-xl">No medicine orders found.</div>';
+            container.innerHTML = '<div class="rounded-xl bg-gray-50 p-4 text-center text-sm text-gray-500">No medicine orders found.</div>';
             return;
         }
 
@@ -89,6 +104,11 @@ async function loadMedicineOrders() {
 
             const canConfirm = order.status === 'pending';
             const canCollect = order.status === 'confirmed' && order.payment?.status !== 'paid';
+            const paidLabel = order.payment?.gateway_transaction_no
+                ? `Paid - VNPAY ${order.payment.gateway_transaction_no}`
+                : order.payment?.transaction_code
+                    ? `Paid - ${order.payment.transaction_code}`
+                    : 'Paid';
 
             return `
                 <article class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -106,21 +126,22 @@ async function loadMedicineOrders() {
                     <div class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">${items || '<p>No items.</p>'}</div>
                     <div class="mt-4 flex flex-wrap gap-3">
                         ${canConfirm ? `<button onclick="confirmMedicineOrder(${order.id})" class="rounded-lg bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white hover:bg-[#235780]">Confirm Order & Create Payment</button>` : ''}
-                        ${canCollect ? `<button onclick="collectMedicinePayment(${order.id})" class="rounded-lg bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Collect Money</button>` : ''}
-                        ${order.payment?.status === 'paid' ? `<span class="inline-flex items-center rounded-lg bg-[#ECFDF3] px-4 py-2 text-sm font-semibold text-[#027A48]">Paid${order.payment?.transaction_code ? ` - ${order.payment.transaction_code}` : ''}</span>` : ''}
+                        ${canCollect ? `<button onclick="collectMedicinePayment(${order.id}, 'cash')" class="rounded-lg bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Collect Cash</button>` : ''}
+                        ${canCollect ? `<button onclick="collectMedicinePayment(${order.id}, 'vnpay')" class="rounded-lg bg-[#0055A6] px-4 py-2 text-sm font-semibold text-white hover:bg-[#00427F]">Pay with VNPay</button>` : ''}
+                        ${order.payment?.status === 'paid' ? `<span class="inline-flex items-center rounded-lg bg-[#ECFDF3] px-4 py-2 text-sm font-semibold text-[#027A48]">${paidLabel}</span>` : ''}
                     </div>
                 </article>
             `;
         }).join('');
     } catch (error) {
-        container.innerHTML = '<div class="p-4 text-center text-sm text-red-500 bg-red-50 rounded-xl">Failed to load medicine orders.</div>';
+        container.innerHTML = '<div class="rounded-xl bg-red-50 p-4 text-center text-sm text-red-500">Failed to load medicine orders.</div>';
     }
 }
 
-(window as any).openPaymentModal = function(id: number, amount: number) {
+(window as any).openPaymentModal = function (id: number, amount: number) {
     const modal = document.getElementById('payment-modal');
-    const idInput = document.getElementById('appointment_id') as HTMLInputElement;
-    const amountInput = document.getElementById('amount') as HTMLInputElement;
+    const idInput = document.getElementById('appointment_id') as HTMLInputElement | null;
+    const amountInput = document.getElementById('amount') as HTMLInputElement | null;
 
     if (modal && idInput && amountInput) {
         idInput.value = id.toString();
@@ -129,7 +150,7 @@ async function loadMedicineOrders() {
     }
 };
 
-(window as any).confirmMedicineOrder = async function(orderId: number) {
+(window as any).confirmMedicineOrder = async function (orderId: number) {
     try {
         await callApi(`/api/receptionist/medicine-orders/${orderId}/confirm`, 'PATCH', {
             payment_method: 'cash',
@@ -141,11 +162,17 @@ async function loadMedicineOrders() {
     }
 };
 
-(window as any).collectMedicinePayment = async function(orderId: number) {
+(window as any).collectMedicinePayment = async function (orderId: number, method: string = 'cash') {
     try {
-        await callApi(`/api/receptionist/medicine-orders/${orderId}/collect-payment`, 'PATCH', {
-            payment_method: 'cash',
+        const response = await callApi<any>(`/api/receptionist/medicine-orders/${orderId}/collect-payment`, 'PATCH', {
+            payment_method: method,
         });
+
+        if (response?.payment_url) {
+            window.location.href = response.payment_url;
+            return;
+        }
+
         alert('Payment collected successfully.');
         await loadMedicineOrders();
     } catch (error: any) {
@@ -167,25 +194,31 @@ async function processPayment(form: HTMLFormElement) {
     if (!payload.appointment_id || !payload.amount) return;
 
     try {
-        await callApi<any>('/api/receptionist/payments', 'POST', {
+        const response = await callApi<any>('/api/receptionist/payments', 'POST', {
             appointment_id: Number(payload.appointment_id),
             amount: Number(payload.amount),
             payment_method: payload.payment_method || 'cash',
         } as any);
 
+        if (response?.payment_url) {
+            window.location.href = response.payment_url;
+            return;
+        }
+
         alert('Payment processed successfully!');
         hideModal();
-        loadUnpaidBills();
+        await loadUnpaidBills();
     } catch (e: any) {
         alert(e.message || 'Failed to process payment.');
     }
 }
 
 onMounted(() => {
-    loadUnpaidBills();
-    loadMedicineOrders();
+    showPaymentNotice();
+    void loadUnpaidBills();
+    void loadMedicineOrders();
 
-    const form = document.getElementById('payment-form') as HTMLFormElement;
+    const form = document.getElementById('payment-form') as HTMLFormElement | null;
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();

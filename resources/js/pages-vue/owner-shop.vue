@@ -7,11 +7,13 @@ type Pet = { id: number; name: string };
 type Medicine = {
     id: number;
     name: string;
+    category?: string | null;
     unit?: string | null;
     stock_quantity: number;
     price: number | string;
     description?: string | null;
     expiration_date?: string | null;
+    image_url?: string | null;
 };
 
 type Order = {
@@ -48,11 +50,16 @@ const selectedItemsEl = document.getElementById('shop-selected-items');
 const cartTotalEl = document.getElementById('shop-cart-total');
 const submitButtonEl = document.getElementById('shop-submit-button') as HTMLButtonElement | null;
 const notesEl = document.getElementById('shop-order-notes') as HTMLTextAreaElement | null;
+const searchInputEl = document.getElementById('shop-medicine-search') as HTMLInputElement | null;
+const categoryFilterEl = document.getElementById('shop-category-filter') as HTMLSelectElement | null;
+const filterResultEl = document.getElementById('shop-filter-result');
 const statusEl = document.getElementById('shop-status');
 const historyEl = document.getElementById('owner-order-history');
 const pendingCountEl = document.getElementById('owner-orders-pending');
 const confirmedCountEl = document.getElementById('owner-orders-confirmed');
 const paidCountEl = document.getElementById('owner-orders-paid');
+
+let medicinesCache: Medicine[] = [];
 
 function formatCurrency(value: number | string): string {
     return `${Number(value || 0).toLocaleString('vi-VN')} VND`;
@@ -92,6 +99,25 @@ function getMedicineWarning(medicine: Medicine): string {
     if (diffDays < 0) return 'Expired';
     if (diffDays <= 30) return 'Expiring soon';
     return '';
+}
+
+function getFallbackImage(medicine: Medicine): string {
+    const label = encodeURIComponent(medicine.name);
+    return `https://placehold.co/320x220/F5FAFF/2A6496?text=${label}`;
+}
+
+function renderCategoryOptions(medicines: Medicine[]): void {
+    if (!categoryFilterEl) return;
+
+    const categories = Array.from(
+        new Set(
+            medicines
+                .map((medicine) => medicine.category?.trim())
+                .filter((category): category is string => Boolean(category)),
+        ),
+    ).sort((left, right) => left.localeCompare(right));
+
+    categoryFilterEl.innerHTML = `<option value="all">All categories</option>${categories.map((category) => `<option value="${category}">${category}</option>`).join('')}`;
 }
 
 function renderCart(): void {
@@ -134,14 +160,20 @@ function renderMedicines(medicines: Medicine[]): void {
 
     medicineListEl.innerHTML = medicines.map((medicine) => `
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#F9FBFD] p-5">
-            <div class="flex items-start justify-between gap-3">
-                <div>
-                    <h3 class="text-base font-bold text-[#333333]">${medicine.name}</h3>
+            <div class="flex items-start gap-4">
+                <img src="${medicine.image_url || getFallbackImage(medicine)}" alt="${medicine.name}" class="h-24 w-24 shrink-0 rounded-2xl border border-[#DDE1E6] object-cover bg-white">
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            ${medicine.category ? `<p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5078A0]">${medicine.category}</p>` : ''}
+                            <h3 class="text-base font-bold text-[#333333]">${medicine.name}</h3>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            <span class="rounded-full bg-[#E8F3FF] px-3 py-1 text-xs font-semibold text-[#2A6496]">${medicine.stock_quantity} in stock</span>
+                            ${getMedicineWarning(medicine) ? `<span class="rounded-full bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold text-[#C2410C]">${getMedicineWarning(medicine)}</span>` : ''}
+                        </div>
+                    </div>
                     <p class="mt-1 text-sm text-[#4A4A4A]">${medicine.description ?? 'Medicine available at the clinic.'}</p>
-                </div>
-                <div class="flex flex-col items-end gap-2">
-                    <span class="rounded-full bg-[#E8F3FF] px-3 py-1 text-xs font-semibold text-[#2A6496]">${medicine.stock_quantity} in stock</span>
-                    ${getMedicineWarning(medicine) ? `<span class="rounded-full bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold text-[#C2410C]">${getMedicineWarning(medicine)}</span>` : ''}
                 </div>
             </div>
             <div class="mt-4 flex items-center justify-between gap-3">
@@ -170,6 +202,36 @@ function renderMedicines(medicines: Medicine[]): void {
             renderCart();
         });
     });
+}
+
+function applyMedicineFilters(): void {
+    const searchTerm = searchInputEl?.value.trim().toLowerCase() || '';
+    const selectedCategory = categoryFilterEl?.value || 'all';
+
+    const filtered = medicinesCache.filter((medicine) => {
+        const haystack = [
+            medicine.name,
+            medicine.category ?? '',
+            medicine.description ?? '',
+            medicine.unit ?? '',
+        ].join(' ').toLowerCase();
+
+        if (searchTerm && !haystack.includes(searchTerm)) {
+            return false;
+        }
+
+        if (selectedCategory !== 'all' && (medicine.category ?? '') !== selectedCategory) {
+            return false;
+        }
+
+        return true;
+    });
+
+    renderMedicines(filtered);
+
+    if (filterResultEl) {
+        filterResultEl.textContent = `Showing ${filtered.length} of ${medicinesCache.length} products.`;
+    }
 }
 
 function renderHistory(orders: Order[]): void {
@@ -240,7 +302,9 @@ async function loadPage(): Promise<void> {
     ]);
 
     renderPets(petsResponse.data);
-    renderMedicines(medicinesResponse.data);
+    medicinesCache = medicinesResponse.data;
+    renderCategoryOptions(medicinesCache);
+    applyMedicineFilters();
     renderHistory(ordersResponse.data);
     renderCart();
 }
@@ -292,6 +356,9 @@ onMounted(() => {
     submitButtonEl?.addEventListener('click', () => {
         void submitOrder();
     });
+
+    searchInputEl?.addEventListener('input', applyMedicineFilters);
+    categoryFilterEl?.addEventListener('change', applyMedicineFilters);
 });
 </script>
 

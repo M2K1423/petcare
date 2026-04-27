@@ -14,7 +14,9 @@ const pageLoaders = {
 	'owner-appointments': () => import('./pages-vue/owner-appointments.vue'),
 	'owner-shop': () => import('./pages-vue/owner-shop.vue'),
 	'vet-appointments': () => import('./pages-vue/vet-appointments.vue'),
+	'vet-appointments-week': () => import('./pages-vue/vet-appointments-week.vue'),
 	'vet-appointment-detail': () => import('./pages-vue/vet-appointment-detail.vue'),
+	'vet-workflow': () => import('./pages-vue/vet-workflow.vue'),
 
 	'receptionist-dashboard': () => import('./pages-vue/receptionist-dashboard.vue'),
 	'receptionist-appointments': () => import('./pages-vue/receptionist-appointments.vue'),

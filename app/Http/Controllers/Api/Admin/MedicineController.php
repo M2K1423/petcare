@@ -68,6 +68,7 @@ class MedicineController extends Controller
     {
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:100'],
             'sku' => [
                 'nullable',
                 'string',
@@ -79,6 +80,7 @@ class MedicineController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['nullable', 'date'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'image_url' => ['nullable', 'string', 'max:2048'],
         ]);
     }
 }

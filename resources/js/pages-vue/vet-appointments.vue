@@ -6,6 +6,7 @@ type Appointment = {
     id: number;
     appointment_at: string;
     status: string;
+    workflow_status?: string;
     queue_number?: number | null;
     reason?: string | null;
     pet?: { name?: string; species?: { name?: string } } | null;
@@ -20,6 +21,14 @@ const listEl = document.getElementById('vet-appointments-list');
 const todayCountEl = document.getElementById('vet-today-count');
 const confirmedCountEl = document.getElementById('vet-confirmed-count');
 const completedCountEl = document.getElementById('vet-completed-count');
+
+function toLocalDateString(value: Date): string {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
 
 function formatDateTime(input: string): string {
     const date = new Date(input);
@@ -37,15 +46,34 @@ function formatStatus(status: string): string {
     return status ? status.toUpperCase() : 'N/A';
 }
 
+function formatWorkflowStatus(status?: string): string {
+    if (!status) return 'Cho kham';
+
+    const map: Record<string, string> = {
+        awaiting_exam: 'Cho kham',
+        examining: 'Dang kham',
+        awaiting_lab: 'Cho xet nghiem',
+        treating: 'Dang dieu tri',
+        completed: 'Hoan thanh',
+        follow_up: 'Tai kham',
+    };
+
+    return map[status] ?? status;
+}
+
 function statusTone(status: string): string {
     if (status === 'completed') return 'bg-[#ECFDF3] text-[#027A48]';
-    if (status === 'confirmed') return 'bg-[#FFFBEB] text-[#B45309]';
+    if (status === 'follow_up') return 'bg-[#EFF6FF] text-[#1D4ED8]';
+    if (status === 'treating') return 'bg-[#EDE9FE] text-[#5B21B6]';
+    if (status === 'awaiting_lab') return 'bg-[#FFF7ED] text-[#C2410C]';
+    if (status === 'examining') return 'bg-[#FEF3C7] text-[#92400E]';
+    if (status === 'awaiting_exam' || status === 'confirmed') return 'bg-[#FFFBEB] text-[#B45309]';
     if (status === 'cancelled') return 'bg-[#FEF2F2] text-[#B91C1C]';
     return 'bg-[#EFF6FF] text-[#1D4ED8]';
 }
 
 function updateStats(appointments: Appointment[]): void {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = toLocalDateString(new Date());
     if (todayCountEl) {
         todayCountEl.textContent = String(
             appointments.filter((item) => item.appointment_at?.slice(0, 10) === today).length,
@@ -53,7 +81,7 @@ function updateStats(appointments: Appointment[]): void {
     }
     if (confirmedCountEl) {
         confirmedCountEl.textContent = String(
-            appointments.filter((item) => item.status === 'confirmed').length,
+            appointments.filter((item) => (item.workflow_status ?? 'awaiting_exam') === 'awaiting_exam').length,
         );
     }
     if (completedCountEl) {
@@ -80,7 +108,7 @@ function renderAppointments(appointments: Appointment[]): void {
                     <p class="mt-1 text-xs text-[#4A4A4A]">Time: ${formatDateTime(appointment.appointment_at)}</p>
                 </div>
                 <div class="flex flex-col items-end gap-2">
-                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusTone(appointment.status)}">${formatStatus(appointment.status)}</span>
+                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusTone(appointment.workflow_status ?? appointment.status)}">${formatWorkflowStatus(appointment.workflow_status)}</span>
                     <span class="text-xs text-[#64748B]">${appointment.medical_record ? 'Medical record saved' : 'Waiting for record'}</span>
                 </div>
             </div>
@@ -90,18 +118,35 @@ function renderAppointments(appointments: Appointment[]): void {
                 <div class="rounded-2xl border border-[#DDE1E6] bg-white px-4 py-3"><span class="font-semibold text-[#333333]">Reason:</span> ${appointment.reason ?? 'N/A'}</div>
             </div>
             <div class="mt-4">
+                ${(appointment.workflow_status ?? 'awaiting_exam') === 'awaiting_exam' ? `<button data-accept-id="${appointment.id}" class="mr-2 inline-flex items-center rounded-xl border border-[#0F8A5F] bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0C734F]">Nhan ca kham</button>` : ''}
                 <a href="/vet/appointments/${appointment.id}" class="inline-flex items-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#235780]">
                     Open Examination
                 </a>
             </div>
         </article>
     `).join('');
+
+    listEl.querySelectorAll<HTMLButtonElement>('button[data-accept-id]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const id = button.getAttribute('data-accept-id');
+            if (!id) return;
+
+            button.disabled = true;
+
+            try {
+                await callApi(`/api/vet/appointments/${id}/accept`, 'PATCH');
+                await loadAppointments();
+            } catch {
+                button.disabled = false;
+            }
+        });
+    });
 }
 
 async function loadAppointments(): Promise<void> {
     const params = new URLSearchParams();
     if (dateFilterEl?.value) params.set('date', dateFilterEl.value);
-    if (statusFilterEl?.value) params.set('status', statusFilterEl.value);
+    if (statusFilterEl?.value) params.set('workflow_status', statusFilterEl.value);
 
     const url = params.size > 0 ? `/api/vet/appointments?${params.toString()}` : '/api/vet/appointments';
     const response = await callApi<{ data: Appointment[] }>(url, 'GET');
@@ -110,11 +155,6 @@ async function loadAppointments(): Promise<void> {
 }
 
 onMounted(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    if (dateFilterEl && !dateFilterEl.value) {
-        dateFilterEl.value = today;
-    }
-
     loadAppointments().catch(() => {
         if (listEl) {
             listEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-[#B91C1C]">Failed to load appointments.</div>';

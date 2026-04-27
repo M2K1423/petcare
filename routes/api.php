@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Receptionist\CustomerController;
 use App\Http\Controllers\Api\Receptionist\DoctorController;
 use App\Http\Controllers\Api\Receptionist\MedicineOrderController as ReceptionistMedicineOrderController;
 use App\Http\Controllers\Api\Receptionist\PaymentController;
+use App\Http\Controllers\VnpayController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
 use App\Http\Controllers\Api\Admin\MedicineController as AdminMedicineController;
 use App\Models\Role;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [SanctumAuthController::class, 'register'])->name('api.auth.register');
 Route::post('/auth/login', [SanctumAuthController::class, 'login'])->name('api.auth.login');
+Route::get('/payments/vnpay/ipn', [VnpayController::class, 'ipn'])->name('api.payments.vnpay.ipn');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [SanctumAuthController::class, 'logout'])->name('api.auth.logout');
@@ -59,8 +61,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
             ]);
         })->name('api.vet.dashboard');
 
+        Route::get('/vet/dashboard-summary', [VetAppointmentController::class, 'dashboardSummary'])->name('api.vet.dashboard-summary');
         Route::get('/vet/appointments', [VetAppointmentController::class, 'index'])->name('api.vet.appointments.index');
         Route::get('/vet/appointments/{appointment}', [VetAppointmentController::class, 'show'])->name('api.vet.appointments.show');
+        Route::patch('/vet/appointments/{appointment}/accept', [VetAppointmentController::class, 'acceptCase'])->name('api.vet.appointments.accept');
+        Route::patch('/vet/appointments/{appointment}/workflow', [VetAppointmentController::class, 'updateWorkflowStatus'])->name('api.vet.appointments.workflow.update');
         Route::put('/vet/appointments/{appointment}/medical-record', [VetAppointmentController::class, 'saveMedicalRecord'])->name('api.vet.appointments.medical-record.save');
     });
 

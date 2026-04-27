@@ -14,9 +14,13 @@ class Payment extends Model
         'service_id',
         'amount',
         'payment_method',
+        'gateway',
         'status',
         'paid_at',
         'transaction_code',
+        'gateway_transaction_no',
+        'gateway_response_code',
+        'gateway_payload',
         'notes',
     ];
 
@@ -24,6 +28,7 @@ class Payment extends Model
     {
         return [
             'paid_at' => 'datetime',
+            'gateway_payload' => 'array',
         ];
     }
 
