@@ -92,7 +92,7 @@ class SanctumAuthService
     {
         return match ($role) {
             Role::ADMIN => '/admin/medicines',
-            Role::VET => '/vet/appointments',
+            Role::VET => '/vet/dashboard',
             Role::RECEPTIONIST => '/api/receptionist/dashboard',
             Role::OWNER => '/api/owner/dashboard',
             default => null,

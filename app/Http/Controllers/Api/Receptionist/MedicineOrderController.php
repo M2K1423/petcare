@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Receptionist;
 
 use App\Http\Controllers\Controller;
 use App\Models\MedicineOrder;
+use App\Services\VnpayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,6 +14,11 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MedicineOrderController extends Controller
 {
+    public function __construct(
+        private readonly VnpayService $vnpay,
+    ) {
+    }
+
     public function index(): JsonResponse
     {
         $orders = MedicineOrder::query()
@@ -20,7 +26,7 @@ class MedicineOrderController extends Controller
                 'owner:id,name,phone,email',
                 'pet:id,name',
                 'items.medicine:id,name,unit,stock_quantity',
-                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,notes',
+                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
             ])
             ->latest()
             ->get();
@@ -69,6 +75,7 @@ class MedicineOrderController extends Controller
                     'owner_id' => $order->owner_id,
                     'amount' => $order->total_amount,
                     'payment_method' => $validated['payment_method'] ?? 'cash',
+                    'gateway' => ($validated['payment_method'] ?? 'cash') === 'vnpay' ? 'vnpay' : null,
                     'status' => 'pending',
                     'notes' => 'Pending payment for confirmed medicine order.',
                 ],
@@ -78,7 +85,7 @@ class MedicineOrderController extends Controller
                 'owner:id,name,phone,email',
                 'pet:id,name',
                 'items.medicine:id,name,unit,stock_quantity',
-                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,notes',
+                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
             ]);
         });
 
@@ -116,8 +123,31 @@ class MedicineOrderController extends Controller
                     'owner:id,name,phone,email',
                     'pet:id,name',
                     'items.medicine:id,name,unit,stock_quantity',
-                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,notes',
+                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
                 ]),
+            ]);
+        }
+
+        if ($validated['payment_method'] === 'vnpay') {
+            $payment->update([
+                'payment_method' => 'vnpay',
+                'gateway' => 'vnpay',
+                'status' => 'pending',
+                'paid_at' => null,
+                'notes' => $validated['notes'] ?? 'Cho thanh toan qua VNPay.',
+            ]);
+
+            $paymentUrl = $this->vnpay->createPaymentUrl($payment->fresh(), $request);
+
+            return response()->json([
+                'message' => 'VNPay payment created successfully.',
+                'data' => $order->fresh([
+                    'owner:id,name,phone,email',
+                    'pet:id,name',
+                    'items.medicine:id,name,unit,stock_quantity',
+                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+                ]),
+                'payment_url' => $paymentUrl,
             ]);
         }
 
@@ -144,7 +174,7 @@ class MedicineOrderController extends Controller
                 'owner:id,name,phone,email',
                 'pet:id,name',
                 'items.medicine:id,name,unit,stock_quantity',
-                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,notes',
+                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
             ]),
         ]);
     }

@@ -18,10 +18,12 @@
                 <label for="vet-status-filter" class="text-sm font-semibold text-[#333333]">Status</label>
                 <select id="vet-status-filter" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
                     <option value="">All statuses</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="completed">Completed</option>
-                    <option value="pending">Pending</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="awaiting_exam">Cho kham</option>
+                    <option value="examining">Dang kham</option>
+                    <option value="awaiting_lab">Cho xet nghiem</option>
+                    <option value="treating">Dang dieu tri</option>
+                    <option value="completed">Hoan thanh</option>
+                    <option value="follow_up">Tai kham</option>
                 </select>
             </div>
         </div>

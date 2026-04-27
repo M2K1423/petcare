@@ -5,21 +5,22 @@ namespace App\Http\Controllers\Api\Receptionist;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Payment;
+use App\Services\VnpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
-    /**
-     * Lấy các khoản chưa thanh toán (từ lịch hẹn đã completed nhưng thiếu payment)
-     */
+    public function __construct(
+        private readonly VnpayService $vnpay,
+    ) {
+    }
+
     public function unpaid(Request $request)
     {
-        // Lấy ra các Appointment đã khám xong (status='completed') nhưng chưa có Payment status = 'paid'
         $unpaidAppointments = Appointment::where('status', 'completed')
             ->whereDoesntHave('payment', function ($query) {
-                // Ensure no paid payment exists for the appointment
                 $query->where('status', 'paid');
             })
             ->with(['pet.species', 'owner', 'service', 'doctor.user', 'medicalRecord'])
@@ -45,14 +46,11 @@ class PaymentController extends Controller
         });
 
         return response()->json([
-            'message' => 'Danh sách lịch khám chưa thanh toán.',
-            'data' => $data
+            'message' => 'Danh sach lich kham chua thanh toan.',
+            'data' => $data,
         ]);
     }
 
-    /**
-     * Tạo hóa đơn và thanh toán (Billing / Checkout).
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -65,10 +63,45 @@ class PaymentController extends Controller
         $appointment = Appointment::with('owner')->findOrFail($validated['appointment_id']);
 
         if ($appointment->status !== 'completed') {
-             return response()->json(['message' => 'Lịch khám chưa hoàn thành không thể thanh toán.'], 400);   
+            return response()->json([
+                'message' => 'Lich kham chua hoan thanh khong the thanh toan.',
+            ], 400);
         }
 
-        // Tạo Transaction cho việc thu tiền
+        $existingPaidPayment = Payment::query()
+            ->where('appointment_id', $appointment->id)
+            ->where('status', 'paid')
+            ->first();
+
+        if ($existingPaidPayment) {
+            return response()->json([
+                'message' => 'Appointment has already been paid.',
+                'data' => $existingPaidPayment,
+            ], 422);
+        }
+
+        if ($validated['payment_method'] === 'vnpay') {
+            $payment = Payment::query()->updateOrCreate(
+                ['appointment_id' => $appointment->id],
+                [
+                    'owner_id' => $appointment->owner_id,
+                    'service_id' => $appointment->service_id,
+                    'amount' => $validated['amount'],
+                    'payment_method' => 'vnpay',
+                    'gateway' => 'vnpay',
+                    'status' => 'pending',
+                    'paid_at' => null,
+                    'notes' => $validated['notes'] ?? 'Cho thanh toan qua VNPay.',
+                ],
+            );
+
+            return response()->json([
+                'message' => 'VNPay payment created successfully.',
+                'data' => $payment,
+                'payment_url' => $this->vnpay->createPaymentUrl($payment, $request),
+            ], 201);
+        }
+
         $payment = Payment::create([
             'appointment_id' => $appointment->id,
             'owner_id' => $appointment->owner_id,
@@ -78,12 +111,12 @@ class PaymentController extends Controller
             'status' => 'paid',
             'paid_at' => Carbon::now(),
             'transaction_code' => 'TXN-' . strtoupper(Str::random(10)),
-            'notes' => $validated['notes'] ?? 'Thanh toán trực tiếp tại quầy',
+            'notes' => $validated['notes'] ?? 'Thanh toan truc tiep tai quay',
         ]);
 
         return response()->json([
-            'message' => "Thanh toán hóa đơn cho $appointment->owner->name thành công.",
-            'data' => $payment
+            'message' => "Thanh toan hoa don cho {$appointment->owner->name} thanh cong.",
+            'data' => $payment,
         ], 201);
     }
 }

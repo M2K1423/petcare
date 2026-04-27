@@ -5,12 +5,14 @@ import { callApi } from '../auth/http';
 type Medicine = {
     id: number;
     name: string;
+    category?: string | null;
     sku?: string | null;
     unit?: string | null;
     stock_quantity: number;
     price: number | string;
     expiration_date?: string | null;
     description?: string | null;
+    image_url?: string | null;
 };
 
 const tableEl = document.getElementById('admin-medicine-table');
@@ -31,8 +33,10 @@ const submitButtonEl = document.getElementById('admin-medicine-submit') as HTMLB
 
 const idInput = document.getElementById('medicine-id') as HTMLInputElement | null;
 const nameInput = document.getElementById('medicine-name') as HTMLInputElement | null;
+const categoryInput = document.getElementById('medicine-category') as HTMLInputElement | null;
 const skuInput = document.getElementById('medicine-sku') as HTMLInputElement | null;
 const unitInput = document.getElementById('medicine-unit') as HTMLInputElement | null;
+const imageUrlInput = document.getElementById('medicine-image-url') as HTMLInputElement | null;
 const priceInput = document.getElementById('medicine-price') as HTMLInputElement | null;
 const stockInput = document.getElementById('medicine-stock') as HTMLInputElement | null;
 const expirationInput = document.getElementById('medicine-expiration-date') as HTMLInputElement | null;
@@ -127,8 +131,10 @@ function resetForm(): void {
 function fillForm(medicine: Medicine): void {
     if (idInput) idInput.value = String(medicine.id);
     if (nameInput) nameInput.value = medicine.name ?? '';
+    if (categoryInput) categoryInput.value = medicine.category ?? '';
     if (skuInput) skuInput.value = medicine.sku ?? '';
     if (unitInput) unitInput.value = medicine.unit ?? '';
+    if (imageUrlInput) imageUrlInput.value = medicine.image_url ?? '';
     if (priceInput) priceInput.value = String(Number(medicine.price || 0));
     if (stockInput) stockInput.value = String(medicine.stock_quantity ?? 0);
     if (expirationInput) expirationInput.value = medicine.expiration_date ?? '';
@@ -177,7 +183,7 @@ function renderTable(medicines: Medicine[]): void {
                         <tr>
                             <td class="px-4 py-4 align-top">
                                 <p class="font-semibold text-[#333333]">${medicine.name}</p>
-                                <p class="mt-1 text-xs text-[#64748B]">SKU: ${medicine.sku || 'N/A'}${medicine.unit ? ` | Unit: ${medicine.unit}` : ''}</p>
+                                <p class="mt-1 text-xs text-[#64748B]">${medicine.category ? `Category: ${medicine.category} | ` : ''}SKU: ${medicine.sku || 'N/A'}${medicine.unit ? ` | Unit: ${medicine.unit}` : ''}</p>
                                 <p class="mt-1 text-xs text-[#4A4A4A]">${medicine.description || 'No description.'}</p>
                                 <div class="mt-2 flex flex-wrap gap-2">
                                     <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${stockMeta.tone}">${stockMeta.label}</span>
@@ -237,6 +243,7 @@ function applyFilters(): void {
     const filtered = medicinesCache.filter((medicine) => {
         const haystack = [
             medicine.name,
+            medicine.category ?? '',
             medicine.sku ?? '',
             medicine.unit ?? '',
             medicine.description ?? '',
@@ -298,8 +305,10 @@ async function saveMedicine(): Promise<void> {
 
     const payload = {
         name: nameInput?.value.trim() || '',
+        category: categoryInput?.value.trim() || null,
         sku: skuInput?.value.trim() || null,
         unit: unitInput?.value.trim() || null,
+        image_url: imageUrlInput?.value.trim() || null,
         price: Number(priceInput?.value || 0),
         stock_quantity: Number(stockInput?.value || 0),
         expiration_date: expirationInput?.value || null,
