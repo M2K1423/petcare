@@ -203,17 +203,70 @@
 
         <div id="nav-admin" class="hidden">
             <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Admin</div>
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📊</span>
+                <span>Dashboard</span>
+            </a>
 
-            <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.medicines') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
-                        <path d="M9 12h6"></path>
-                        <path d="M10 16h4"></path>
-                        <path d="M8 3h8l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
-                        <path d="M14 3v4h4"></path>
-                    </svg>
-                </span>
-                <span>Quan ly thuoc</span>
+            <div class="mt-2 border-t border-[#163045] pt-2"></div>
+
+            <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.users*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">👥</span>
+                <span>Quản lý nhân sự</span>
+            </a>
+
+            <a href="{{ route('admin.doctors') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.doctors*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">🏥</span>
+                <span>Bác sĩ</span>
+            </a>
+
+            <a href="{{ route('admin.services') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.services*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">⚕️</span>
+                <span>Dịch vụ</span>
+            </a>
+
+            <a href="{{ route('admin.pets') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.pets*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">🐾</span>
+                <span>Thú cưng</span>
+            </a>
+
+            <a href="{{ route('admin.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.appointments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📅</span>
+                <span>Lịch Hẹn</span>
+            </a>
+
+            <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Kho & Tài chính</div>
+
+            <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.medicines*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">💊</span>
+                <span>Thuốc</span>
+            </a>
+
+            <a href="{{ route('admin.inventory') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.inventory*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📦</span>
+                <span>Quản lý kho</span>
+            </a>
+
+            <a href="{{ route('admin.payments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.payments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">💰</span>
+                <span>Doanh thu</span>
+            </a>
+
+            <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Báo cáo & Hệ thống</div>
+
+            <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.reports*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📈</span>
+                <span>Báo cáo</span>
+            </a>
+
+            <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.settings*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">⚙️</span>
+                <span>Thiết lập hệ thống</span>
+            </a>
+
+            <a href="{{ route('admin.logs') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.logs*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📋</span>
+                <span>Nhật ký vận hành</span>
             </a>
         </div>
     </nav>

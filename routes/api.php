@@ -15,7 +15,18 @@ use App\Http\Controllers\Api\Receptionist\MedicineOrderController as Receptionis
 use App\Http\Controllers\Api\Receptionist\PaymentController;
 use App\Http\Controllers\VnpayController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
+use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\Admin\DoctorController as AdminDoctorController;
+use App\Http\Controllers\Api\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Api\Admin\MedicineController as AdminMedicineController;
+use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Api\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Api\Admin\PetController as AdminPetController;
+use App\Http\Controllers\Api\Admin\InventoryController;
+use App\Http\Controllers\Api\Admin\ReportController;
+use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\SettingController;
+use App\Http\Controllers\Api\Admin\ActivityLogController;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -106,18 +117,96 @@ Route::middleware('auth:sanctum')->group(function (): void {
     });
 
     Route::middleware('role:admin')->group(function (): void {
-        Route::get('/admin/dashboard', function (Request $request) {
-            return response()->json([
-                'dashboard' => 'Admin dashboard',
-                'user' => $request->user()?->only(['id', 'name', 'email']),
-                'role' => Role::ADMIN,
-            ]);
-        })->name('api.admin.dashboard');
+        // Dashboard
+        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('api.admin.dashboard');
+        Route::get('/admin/dashboard/stats', [DashboardController::class, 'stats'])->name('api.admin.dashboard.stats');
 
-        Route::get('/admin/medicines', [AdminMedicineController::class, 'index'])->name('api.admin.medicines.index');
-        Route::post('/admin/medicines', [AdminMedicineController::class, 'store'])->name('api.admin.medicines.store');
-        Route::put('/admin/medicines/{medicine}', [AdminMedicineController::class, 'update'])->name('api.admin.medicines.update');
-        Route::delete('/admin/medicines/{medicine}', [AdminMedicineController::class, 'destroy'])->name('api.admin.medicines.destroy');
+        // User Management
+        Route::apiResource('/admin/users', AdminUserController::class)->names('api.admin.users');
+        Route::post('/admin/users/{user}/lock', [AdminUserController::class, 'lock'])->name('api.admin.users.lock');
+        Route::post('/admin/users/{user}/unlock', [AdminUserController::class, 'unlock'])->name('api.admin.users.unlock');
+        Route::post('/admin/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('api.admin.users.reset-password');
+        Route::post('/admin/users/{user}/assign-role', [AdminUserController::class, 'assignRole'])->name('api.admin.users.assign-role');
+
+        // Doctor Management
+        Route::apiResource('/admin/doctors', AdminDoctorController::class)->names('api.admin.doctors');
+        Route::get('/admin/doctors/specialties/list', [AdminDoctorController::class, 'getSpecialties'])->name('api.admin.doctors.specialties');
+
+        // Service Management
+        Route::apiResource('/admin/services', AdminServiceController::class)->names('api.admin.services');
+        Route::post('/admin/services/{service}/toggle', [AdminServiceController::class, 'toggle'])->name('api.admin.services.toggle');
+        Route::patch('/admin/services/{service}/price', [AdminServiceController::class, 'updatePrice'])->name('api.admin.services.price');
+
+        // Medicine Management
+        Route::apiResource('/admin/medicines', AdminMedicineController::class)->names('api.admin.medicines');
+        Route::patch('/admin/medicines/{medicine}/stock', [AdminMedicineController::class, 'updateStock'])->name('api.admin.medicines.stock');
+        Route::get('/admin/medicines/low-stock/list', [AdminMedicineController::class, 'getLowStockMedicines'])->name('api.admin.medicines.low-stock');
+        Route::get('/admin/medicines/expiring/list', [AdminMedicineController::class, 'getExpiringMedicines'])->name('api.admin.medicines.expiring');
+        Route::get('/admin/medicines/categories/list', [AdminMedicineController::class, 'getCategories'])->name('api.admin.medicines.categories');
+
+        // Inventory Management
+        Route::prefix('/admin/inventory')->name('api.admin.inventory.')->group(function (): void {
+            Route::get('/', [InventoryController::class, 'index'])->name('index');
+            Route::post('/import', [InventoryController::class, 'importStock'])->name('import');
+            Route::post('/export', [InventoryController::class, 'exportStock'])->name('export');
+            Route::get('/value', [InventoryController::class, 'getInventoryValue'])->name('value');
+            Route::get('/low-stock', [InventoryController::class, 'getLowStockAlert'])->name('low-stock');
+            Route::get('/expiration-alert', [InventoryController::class, 'getExpirationAlert'])->name('expiration-alert');
+            Route::get('/report', [InventoryController::class, 'getInventoryReport'])->name('report');
+        });
+
+        // Payment Management
+        Route::apiResource('/admin/payments', AdminPaymentController::class, ['only' => ['index', 'show']])->names('api.admin.payments');
+        Route::post('/admin/payments/{payment}/confirm', [AdminPaymentController::class, 'confirm'])->name('api.admin.payments.confirm');
+        Route::post('/admin/payments/{payment}/refund', [AdminPaymentController::class, 'refund'])->name('api.admin.payments.refund');
+        Route::get('/admin/payments/stats/summary', [AdminPaymentController::class, 'getStats'])->name('api.admin.payments.stats');
+        Route::get('/admin/payments/pending/list', [AdminPaymentController::class, 'getPendingPayments'])->name('api.admin.payments.pending');
+
+        // Appointment Management
+        Route::apiResource('/admin/appointments', AdminAppointmentController::class, ['only' => ['index', 'show']])->names('api.admin.appointments');
+        Route::post('/admin/appointments/{appointment}/assign-doctor', [AdminAppointmentController::class, 'assignDoctor'])->name('api.admin.appointments.assign-doctor');
+        Route::patch('/admin/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('api.admin.appointments.status');
+        Route::patch('/admin/appointments/{appointment}/reschedule', [AdminAppointmentController::class, 'reschedule'])->name('api.admin.appointments.reschedule');
+        Route::post('/admin/appointments/{appointment}/cancel', [AdminAppointmentController::class, 'cancel'])->name('api.admin.appointments.cancel');
+        Route::get('/admin/appointments/today/list', [AdminAppointmentController::class, 'getTodayAppointments'])->name('api.admin.appointments.today');
+        Route::get('/admin/appointments/upcoming/list', [AdminAppointmentController::class, 'getUpcomingAppointments'])->name('api.admin.appointments.upcoming');
+
+        // Pet & Customer Management
+        Route::apiResource('/admin/pets', AdminPetController::class, ['only' => ['index', 'show']])->names('api.admin.pets');
+        Route::get('/admin/pets/{petId}/owner', [AdminPetController::class, 'getOwnerPets'])->name('api.admin.pets.owner');
+        Route::get('/admin/pets/{pet}/appointments', [AdminPetController::class, 'getPetAppointments'])->name('api.admin.pets.appointments');
+        Route::get('/admin/pets/{pet}/health-records', [AdminPetController::class, 'getPetHealthRecords'])->name('api.admin.pets.health-records');
+        Route::get('/admin/pets/stats/summary', [AdminPetController::class, 'getStats'])->name('api.admin.pets.stats');
+
+        // Reports & Analytics
+        Route::prefix('/admin/reports')->name('api.admin.reports.')->group(function (): void {
+            Route::get('/appointments', [ReportController::class, 'appointmentStats'])->name('appointments');
+            Route::get('/revenue', [ReportController::class, 'revenueReport'])->name('revenue');
+            Route::get('/doctor-performance', [ReportController::class, 'doctorPerformance'])->name('doctor-performance');
+            Route::get('/service-popularity', [ReportController::class, 'servicePopularity'])->name('service-popularity');
+            Route::get('/customers', [ReportController::class, 'customerStats'])->name('customers');
+            Route::get('/top-services', [ReportController::class, 'topServices'])->name('top-services');
+        });
+
+        // System Settings
+        Route::prefix('/admin/settings')->name('api.admin.settings.')->group(function (): void {
+            Route::get('/', [SettingController::class, 'index'])->name('index');
+            Route::get('/{key}', [SettingController::class, 'show'])->name('show');
+            Route::put('/{key}', [SettingController::class, 'update'])->name('update');
+            Route::post('/bulk/update', [SettingController::class, 'bulk'])->name('bulk');
+            Route::get('/clinic/settings', [SettingController::class, 'getClinicSettings'])->name('clinic.get');
+            Route::post('/clinic/settings', [SettingController::class, 'updateClinicSettings'])->name('clinic.update');
+        });
+
+        // Activity Logs & Audit Trail
+        Route::prefix('/admin/logs')->name('api.admin.logs.')->group(function (): void {
+            Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+            Route::get('/{activityLog}', [ActivityLogController::class, 'show'])->name('show');
+            Route::get('/user/{userId}', [ActivityLogController::class, 'getUserActivity'])->name('user');
+            Route::get('/entity/{entityType}/{entityId}', [ActivityLogController::class, 'getEntityHistory'])->name('entity');
+            Route::get('/summary/audit', [ActivityLogController::class, 'getAuditSummary'])->name('summary');
+            Route::delete('/clear/old', [ActivityLogController::class, 'clearOldLogs'])->name('clear');
+        });
     });
 });
 

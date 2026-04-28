@@ -132,5 +132,17 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (): void {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function (): void {
-    Route::redirect('/admin/dashboard', '/admin/medicines')->name('admin.dashboard');
+    // Admin frontend pages (each view mounts the appropriate Vue page via `data-page`)
+    Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
+    Route::view('/admin/medicines', 'admin.medicines')->name('admin.medicines');
+    Route::view('/admin/users', 'admin.users')->name('admin.users');
+    Route::view('/admin/doctors', 'admin.doctors')->name('admin.doctors');
+    Route::view('/admin/services', 'admin.services')->name('admin.services');
+    Route::view('/admin/pets', 'admin.pets')->name('admin.pets');
+    Route::view('/admin/appointments', 'admin.appointments')->name('admin.appointments');
+    Route::view('/admin/payments', 'admin.payments')->name('admin.payments');
+    Route::view('/admin/inventory', 'admin.inventory')->name('admin.inventory');
+    Route::view('/admin/reports', 'admin.reports')->name('admin.reports');
+    Route::view('/admin/settings', 'admin.settings')->name('admin.settings');
+    Route::view('/admin/logs', 'admin.logs')->name('admin.logs');
 });

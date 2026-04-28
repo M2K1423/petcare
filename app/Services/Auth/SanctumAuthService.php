@@ -4,6 +4,7 @@ namespace App\Services\Auth;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -23,6 +24,8 @@ class SanctumAuthService
             'role_id' => $ownerRoleId,
         ]);
 
+        Auth::guard('web')->login($user);
+
         return $this->createAuthPayload($user, 'Register successful.');
     }
 
@@ -39,12 +42,15 @@ class SanctumAuthService
             ]);
         }
 
+        Auth::guard('web')->login($user);
+
         return $this->createAuthPayload($user, 'Login successful.');
     }
 
     public function logout(?User $user): void
     {
-        $user?->tokens()->delete();
+        $user?->currentAccessToken()?->delete();
+        Auth::guard('web')->logout();
     }
 
     public function me(?User $user): array
@@ -93,8 +99,8 @@ class SanctumAuthService
         return match ($role) {
             Role::ADMIN => '/admin/medicines',
             Role::VET => '/vet/dashboard',
-            Role::RECEPTIONIST => '/api/receptionist/dashboard',
-            Role::OWNER => '/api/owner/dashboard',
+            Role::RECEPTIONIST => '/receptionist/dashboard',
+            Role::OWNER => '/owner/overview',
             default => null,
         };
     }
