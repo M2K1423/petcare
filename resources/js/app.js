@@ -1,6 +1,7 @@
-import { mountRenderlessPage } from './vue-mount';
+import { createApp } from 'vue';
 
-const pageKey = document.body?.dataset?.page || '';
+const pageNode = document.querySelector('[data-page]:not([data-page=""])');
+const pageKey = pageNode?.dataset?.page || '';
 
 const pageLoaders = {
 	'auth-sanctum': () => import('./pages-vue/sanctum-auth.vue'),
@@ -23,7 +24,21 @@ const pageLoaders = {
 	'receptionist-appointment-detail': () => import('./pages-vue/receptionist-appointment-detail.vue'),
 	'receptionist-billing': () => import('./pages-vue/receptionist-billing.vue'),
 	'receptionist-walkins': () => import('./pages-vue/receptionist-appointments.vue'),
+
+	// Admin Pages
+	'admin-layout': () => import('./pages-vue/admin-layout.vue'),
+	'admin-dashboard': () => import('./pages-vue/admin-dashboard.vue'),
+	'admin-users': () => import('./pages-vue/admin-users.vue'),
+	'admin-doctors': () => import('./pages-vue/admin-doctors.vue'),
+	'admin-services': () => import('./pages-vue/admin-services.vue'),
 	'admin-medicines': () => import('./pages-vue/admin-medicines.vue'),
+	'admin-pets': () => import('./pages-vue/admin-pets.vue'),
+	'admin-appointments': () => import('./pages-vue/admin-appointments.vue'),
+	'admin-payments': () => import('./pages-vue/admin-payments.vue'),
+	'admin-inventory': () => import('./pages-vue/admin-inventory.vue'),
+	'admin-reports': () => import('./pages-vue/admin-reports.vue'),
+	'admin-settings': () => import('./pages-vue/admin-settings.vue'),
+	'admin-logs': () => import('./pages-vue/admin-logs.vue'),
 };
 
 async function boot() {
@@ -32,7 +47,14 @@ async function boot() {
 
 	const module = await load();
 	if (module?.default) {
-		mountRenderlessPage(module.default);
+		const app = createApp(module.default);
+		if (pageNode && pageNode !== document.body) {
+			app.mount(pageNode);
+		} else {
+			const mountEl = document.createElement('div');
+			document.body.appendChild(mountEl);
+			app.mount(mountEl);
+		}
 	}
 }
 

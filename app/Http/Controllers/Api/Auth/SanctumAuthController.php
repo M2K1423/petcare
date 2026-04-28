@@ -22,7 +22,10 @@ class SanctumAuthController extends Controller
             'password' => ['required', 'string', 'min:6'],
         ]);
 
-        return response()->json($this->authService->register($validated), 201);
+        $payload = $this->authService->register($validated);
+        $request->session()->regenerate();
+
+        return response()->json($payload, 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -32,12 +35,17 @@ class SanctumAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        return response()->json($this->authService->login($validated));
+        $payload = $this->authService->login($validated);
+        $request->session()->regenerate();
+
+        return response()->json($payload);
     }
 
     public function logout(Request $request): JsonResponse
     {
         $this->authService->logout($request->user());
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'Logout successful.',
