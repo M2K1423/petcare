@@ -16,6 +16,8 @@ Route::view('/owner/profile', 'owner.profile')->name('owner.profile');
 Route::view('/owner/pets', 'owner.pets')->name('owner.pets');
 Route::view('/owner/appointments', 'owner.appointments')->name('owner.appointments');
 Route::view('/owner/shop', 'owner.shop')->name('owner.shop');
+Route::view('/owner/cart', 'owner.cart')->name('owner.cart');
+Route::view('/owner/orders', 'owner.orders')->name('owner.orders');
 Route::view('/vet/appointments', 'vet.appointments')->name('vet.appointments');
 Route::view('/vet/schedule-week', 'vet.appointments-week')->name('vet.schedule-week');
 Route::view('/vet/dashboard', 'vet.workflow', [
@@ -128,7 +130,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (): void {
             'user' => $request->user()?->only(['id', 'name', 'email']),
             'role' => $request->user()?->role?->slug,
         ]);
-    })->name('receptionist.dashboard');
+    })->name('receptionist.data');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function (): void {

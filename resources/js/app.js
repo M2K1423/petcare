@@ -1,4 +1,6 @@
 import { createApp } from 'vue';
+import './owner-pay';
+import './cart-store';
 
 const pageNode = document.querySelector('[data-page]:not([data-page=""])');
 const pageKey = pageNode?.dataset?.page || '';
@@ -14,6 +16,8 @@ const pageLoaders = {
 	'owner-pet-health-records': () => import('./pages-vue/owner-pet-health-records.vue'),
 	'owner-appointments': () => import('./pages-vue/owner-appointments.vue'),
 	'owner-shop': () => import('./pages-vue/owner-shop.vue'),
+	'owner-orders': () => import('./pages-vue/owner-orders.vue'),
+	'owner-cart': () => import('./pages-vue/owner-cart.vue'),
 	'vet-appointments': () => import('./pages-vue/vet-appointments.vue'),
 	'vet-appointments-week': () => import('./pages-vue/vet-appointments-week.vue'),
 	'vet-appointment-detail': () => import('./pages-vue/vet-appointment-detail.vue'),

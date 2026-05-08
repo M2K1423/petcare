@@ -2,7 +2,7 @@ import { getToken } from './token';
 
 let csrfReady = false;
 
-function getCookieValue(name) {
+function getCookieValue(name: string): string {
     const cookies = document.cookie ? document.cookie.split('; ') : [];
 
     for (const cookie of cookies) {
@@ -15,7 +15,7 @@ function getCookieValue(name) {
     return '';
 }
 
-async function ensureCsrfCookie() {
+async function ensureCsrfCookie(): Promise<void> {
     if (csrfReady) return;
 
     await fetch('/sanctum/csrf-cookie', {
@@ -29,7 +29,7 @@ async function ensureCsrfCookie() {
     csrfReady = true;
 }
 
-export async function callApi(url, method, body) {
+export async function callApi<T = any>(url: string, method: string, body?: unknown): Promise<T> {
     const token = getToken();
     const upperMethod = method.toUpperCase();
 
@@ -51,12 +51,12 @@ export async function callApi(url, method, body) {
         credentials: 'same-origin',
     });
 
-    const payload = await response.json().catch(() => ({}));
+    const payload = await response.json().catch(() => ({} as Record<string, unknown>));
 
     if (!response.ok) {
-        const message = payload.message ?? `Request failed (${response.status})`;
+        const message = (payload as { message?: string }).message ?? `Request failed (${response.status})`;
         throw new Error(message);
     }
 
-    return payload;
+    return payload as T;
 }

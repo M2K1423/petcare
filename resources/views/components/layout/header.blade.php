@@ -45,6 +45,18 @@
                 </div>
             </details>
 
+            <a href="{{ route('owner.cart') }}" id="cart-link" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496]">
+                <span class="sr-only">Cart</span>
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M6 6h15l-1.5 9h-13z"></path>
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="18" cy="20" r="1"></circle>
+                    </svg>
+                    <span id="cart-badge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-4 px-1 rounded-full bg-[#1E7A34] text-[10px] text-white items-center justify-center"></span>
+                </div>
+            </a>
+
             <details class="group relative">
                 <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#C1C4C9] transition hover:border-[#2A6496] hover:text-[#2A6496]">
                     <span class="sr-only">User menu</span>
@@ -210,6 +222,37 @@
         }
 
         bindProfileLinkByRole();
+
+        // Cart badge
+        const cartBadge = document.getElementById('cart-badge');
+
+        function renderCartBadge() {
+            try {
+                const store = (window).cartStore;
+                const count = store ? store.getItems().reduce((s, i) => s + i.quantity, 0) : 0;
+                if (!cartBadge) return;
+                if (count > 0) {
+                    cartBadge.textContent = String(count);
+                    cartBadge.classList.remove('hidden');
+                    cartBadge.classList.add('flex');
+                } else {
+                    cartBadge.classList.add('hidden');
+                    cartBadge.classList.remove('flex');
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        // Initial render
+        renderCartBadge();
+
+        // Update badge when cart changes in this tab or another tab
+        window.addEventListener('petcare-cart-changed', renderCartBadge);
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'petcare_owner_cart_v1') renderCartBadge();
+        });
+
 
     })();
 </script>

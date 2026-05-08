@@ -61,6 +61,13 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/owner/medicines', [MedicineController::class, 'index'])->name('api.owner.medicines.index');
         Route::get('/owner/medicine-orders', [OwnerMedicineOrderController::class, 'index'])->name('api.owner.medicine-orders.index');
         Route::post('/owner/medicine-orders', [OwnerMedicineOrderController::class, 'store'])->name('api.owner.medicine-orders.store');
+        Route::patch('/owner/medicine-orders/{order}/pay', [OwnerMedicineOrderController::class, 'pay'])->name('api.owner.medicine-orders.pay');
+        // Owner cart persistence
+        Route::get('/owner/cart', [\App\Http\Controllers\Api\Owner\CartController::class, 'index'])->name('api.owner.cart.index');
+        Route::post('/owner/cart/items', [\App\Http\Controllers\Api\Owner\CartController::class, 'addItem'])->name('api.owner.cart.add');
+        Route::patch('/owner/cart/items/{medicine}', [\App\Http\Controllers\Api\Owner\CartController::class, 'addItem'])->name('api.owner.cart.update');
+        Route::delete('/owner/cart/items/{medicine}', [\App\Http\Controllers\Api\Owner\CartController::class, 'removeItem'])->name('api.owner.cart.remove');
+        Route::delete('/owner/cart', [\App\Http\Controllers\Api\Owner\CartController::class, 'clear'])->name('api.owner.cart.clear');
     });
 
     Route::middleware('role:vet')->group(function (): void {

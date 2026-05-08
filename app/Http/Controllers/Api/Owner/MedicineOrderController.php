@@ -51,7 +51,7 @@ class MedicineOrderController extends Controller
             ->values();
 
         $medicines = Medicine::query()
-            ->whereIn('id', $medicineIds)
+            ->whereKey($medicineIds)
             ->get()
             ->keyBy('id');
 
@@ -105,5 +105,94 @@ class MedicineOrderController extends Controller
             'message' => 'Order created successfully and is waiting for receptionist confirmation.',
             'data' => $order,
         ], 201);
+    }
+
+    public function pay(Request $request, MedicineOrder $order): JsonResponse
+    {
+        $this->authorize('view', $order);
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:cash,credit_card,bank_transfer,vnpay,momo',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        // Allow owner to initiate payment even when order is still 'pending'.
+        if (! in_array($order->status, ['pending', 'confirmed', 'paid'], true)) {
+            return response()->json([
+                'message' => 'The order is not in a payable state.',
+            ], 422);
+        }
+
+        $payment = $order->payment;
+
+        // If no payment record exists yet (owner paying immediately), create one.
+        if (! $payment) {
+            $payment = $order->payment()->create([
+                'owner_id' => $request->user()->id,
+                'amount' => $order->total_amount,
+                'payment_method' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : $validated['payment_method'],
+                'gateway' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : null,
+                'status' => $validated['payment_method'] === 'vnpay' ? 'pending' : 'created',
+                'notes' => $validated['notes'] ?? 'Owner initiated payment.',
+            ]);
+        }
+
+        if ($payment->status === 'paid') {
+            return response()->json([
+                'message' => 'This order has already been paid.',
+                'data' => $order->load([
+                    'pet:id,name',
+                    'items.medicine:id,name,unit',
+                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+                ]),
+            ]);
+        }
+
+        if ($validated['payment_method'] === 'vnpay') {
+            $payment->update([
+                'payment_method' => 'vnpay',
+                'gateway' => 'vnpay',
+                'status' => 'pending',
+                'paid_at' => null,
+                'notes' => $validated['notes'] ?? 'User initiated VNPay payment.',
+            ]);
+
+            $paymentUrl = app(\App\Services\VnpayService::class)->createPaymentUrl($payment->fresh(), $request);
+
+            return response()->json([
+                'message' => 'VNPay payment created successfully.',
+                'data' => $order->fresh([
+                    'pet:id,name',
+                    'items.medicine:id,name,unit',
+                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+                ]),
+                'payment_url' => $paymentUrl,
+            ]);
+        }
+
+        // non-VNPay immediate capture
+        $paidAt = now();
+
+        $payment->update([
+            'payment_method' => $validated['payment_method'],
+            'status' => 'paid',
+            'paid_at' => $paidAt,
+            'transaction_code' => $payment->transaction_code ?: 'MED-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            'notes' => $validated['notes'] ?? 'Payment completed by owner.',
+        ]);
+
+        $order->update([
+            'status' => 'paid',
+            'paid_at' => $paidAt,
+        ]);
+
+        return response()->json([
+            'message' => 'Payment collected successfully.',
+            'data' => $order->fresh([
+                'pet:id,name',
+                'items.medicine:id,name,unit',
+                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+            ]),
+        ]);
     }
 }

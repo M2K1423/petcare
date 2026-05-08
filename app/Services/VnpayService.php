@@ -55,7 +55,10 @@ class VnpayService
         $query = $this->buildQuery($payload);
         $hash = hash_hmac('sha512', $query, (string) config('vnpay.hash_secret'));
 
-        return rtrim((string) config('vnpay.payment_url'), '?') . '?' . $query . '&vnp_SecureHash=' . $hash;
+        return rtrim((string) config('vnpay.payment_url'), '?')
+            . '?' . $query
+            . '&vnp_SecureHashType=HmacSHA512'
+            . '&vnp_SecureHash=' . $hash;
     }
 
     /**
