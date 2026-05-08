@@ -7,8 +7,10 @@ use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Service;
 use App\Models\Medicine;
+use App\Models\MedicineOrder;
 use App\Models\Payment;
 use App\Policies\PetPolicy;
+use App\Policies\MedicineOrderPolicy;
 use App\Policies\Admin\UserPolicy;
 use App\Policies\Admin\DoctorPolicy;
 use App\Policies\Admin\ServicePolicy;
@@ -40,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Doctor::class, DoctorPolicy::class);
         Gate::policy(Service::class, ServicePolicy::class);
         Gate::policy(Medicine::class, MedicinePolicy::class);
+        Gate::policy(MedicineOrder::class, MedicineOrderPolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
     }
 }

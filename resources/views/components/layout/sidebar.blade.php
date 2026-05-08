@@ -67,6 +67,17 @@
                 <span>Mua thuoc</span>
             </a>
 
+            <a href="{{ route('owner.orders') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.orders') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M3 6h18"></path>
+                        <path d="M3 12h18"></path>
+                        <path d="M3 18h18"></path>
+                    </svg>
+                </span>
+                <span>Lịch Sử Đơn Hàng</span>
+            </a>
+
             <a href="#" class="flex items-center gap-3 px-3 py-2 text-[#B8C7DE] transition hover:bg-[#1A304E] hover:text-[#F5FAFF]">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
@@ -75,7 +86,7 @@
                         <path d="M12 16h.01"></path>
                     </svg>
                 </span>
-                <span>Thong bao</span>
+                <span>Thông báo</span>
             </a>
         </div>
         
