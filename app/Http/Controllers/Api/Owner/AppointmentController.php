@@ -6,12 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOwnerAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\Pet;
+use App\Models\Role;
+use App\Models\User;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    public function __construct(
+        private readonly NotificationService $notifications,
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $appointments = Appointment::query()
@@ -45,6 +53,20 @@ class AppointmentController extends Controller
             'status' => 'pending',
             'reason' => $request->input('reason'),
         ]);
+
+        $receptionists = User::query()
+            ->whereHas('role', fn ($query) => $query->where('slug', Role::RECEPTIONIST))
+            ->get(['id']);
+
+        foreach ($receptionists as $receptionist) {
+            $this->notifications->create([
+                'user_id' => $receptionist->id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_requested',
+                'title' => 'Lịch hẹn mới cần xác nhận',
+                'message' => "{$request->user()->name} vừa đặt lịch cho {$pet->name} vào {$appointmentAt->format('H:i d/m/Y')}.",
+            ]);
+        }
 
         return response()->json([
             'message' => 'Đã tạo lịch hẹn thành công.',

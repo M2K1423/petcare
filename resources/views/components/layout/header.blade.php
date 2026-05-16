@@ -135,7 +135,7 @@
             if (!token || roleProfileLinks.length === 0) return;
 
             try {
-                const response = await fetch('/api/user', {
+                const response = await fetch('/api/auth/me', {
                     headers: {
                         Accept: 'application/json',
                         Authorization: `Bearer ${token}`,
@@ -144,12 +144,13 @@
 
                 if (!response.ok) return;
 
-                const user = await response.json();
-                const href = user.role === 'admin'
+                const data = await response.json();
+                const user = data.user;
+                const href = user?.role === 'admin'
                     ? '/admin/medicines'
-                    : user.role === 'vet'
+                    : user?.role === 'vet'
                         ? '/vet/appointments'
-                    : user.role === 'receptionist'
+                    : user?.role === 'receptionist'
                         ? '/receptionist/dashboard'
                         : '/owner/profile';
 
@@ -220,6 +221,10 @@
             // Initial fetch for badge
             fetchNotifications();
         }
+
+        window.addEventListener('petcare-notification-received', () => {
+            fetchNotifications();
+        });
 
         bindProfileLinkByRole();
 

@@ -15,7 +15,7 @@ type Pet = {
     gender: 'male' | 'female' | 'unknown';
     breed: string | null;
     birth_date: string | null;
-    weight: string | null;
+    weight: string | number | null;
     color: string | null;
     allergies: string | null;
     notes: string | null;
@@ -51,31 +51,15 @@ function toDateOnly(value: string): string {
     return datePart || value;
 }
 
-function formatPetMeta(pet: Pet): string {
-    const chunks: string[] = [];
-
-    if (pet.species?.name) chunks.push(`Species: ${pet.species.name}`);
-    chunks.push(`Gender: ${pet.gender}`);
-    if (pet.weight) chunks.push(`Weight: ${pet.weight} kg`);
-    if (pet.birth_date) chunks.push(`Birth date: ${toDateOnly(pet.birth_date)}`);
-
-    return chunks.join(' | ');
-}
-
-async function ensureOwner(): Promise<void> {
-    const me = await callApi<AuthMeResponse>('/api/auth/me', 'GET');
-
-    if (!me.authenticated || me.user?.role !== 'owner') {
-
 function translateSpeciesName(name: string): string {
     const normalized = name.trim().toLowerCase();
     const mapping: Record<string, string> = {
         bird: 'Chim',
-        cat: 'Mèo',
-        dog: 'Chó',
-        fish: 'Cá',
-        rabbit: 'Thỏ',
-        hamster: 'Chuột hamster',
+        cat: 'Meo',
+        dog: 'Cho',
+        fish: 'Ca',
+        rabbit: 'Tho',
+        hamster: 'Chuot hamster',
     };
 
     return mapping[normalized] || name;
@@ -83,37 +67,29 @@ function translateSpeciesName(name: string): string {
 
 function translateGender(value: Pet['gender']): string {
     const mapping: Record<Pet['gender'], string> = {
-        male: 'Đực',
-        female: 'Cái',
-        unknown: 'Không rõ',
+        male: 'Duc',
+        female: 'Cai',
+        unknown: 'Khong ro',
     };
 
     return mapping[value] || value;
 }
-        throw new Error('Owner account is required to use this page.');
-    }
+
+function formatPetMeta(pet: Pet): string {
+    const chunks: string[] = [];
+
+    if (pet.species?.name) chunks.push(`Loai: ${translateSpeciesName(pet.species.name)}`);
+    chunks.push(`Gioi tinh: ${translateGender(pet.gender)}`);
+    if (pet.weight) chunks.push(`Can nang: ${pet.weight} kg`);
+    if (pet.birth_date) chunks.push(`Ngay sinh: ${toDateOnly(pet.birth_date)}`);
+
+    return chunks.join(' | ');
 }
 
-    if (pet.species?.name) chunks.push(`Loài: ${translateSpeciesName(pet.species.name)}`);
-    chunks.push(`Giới tính: ${translateGender(pet.gender)}`);
-    if (pet.weight) chunks.push(`Cân nặng: ${pet.weight} kg`);
-    if (pet.birth_date) chunks.push(`Ngày sinh: ${toDateOnly(pet.birth_date)}`);
-
-    if (response.data.length === 0) {
-        speciesSelect.innerHTML = '<option value="">No species data</option>';
-        return;
-    }
-
-    speciesSelect.innerHTML = response.data
-        .map((species) => `<option value="${species.id}">${species.name}</option>`)
-        .join('');
-}
-        speciesSelect.innerHTML = '<option value="">Không có dữ liệu loài</option>';
 function normalizeFormPayload(form: HTMLFormElement): Record<string, unknown> {
     const formData = new FormData(form);
     const get = (key: string): string => String(formData.get(key) ?? '').trim();
-
-        .map((species) => `<option value="${species.id}">${translateSpeciesName(species.name)}</option>`)
+    const weightText = get('weight');
 
     return {
         name: get('name'),
@@ -121,11 +97,34 @@ function normalizeFormPayload(form: HTMLFormElement): Record<string, unknown> {
         gender: get('gender') || 'unknown',
         breed: get('breed') || null,
         birth_date: get('birth_date') || null,
-        petListEl.innerHTML = '<p class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-4 text-sm text-[#4A4A4A]">Không tìm thấy thú cưng nào. Hãy tạo thú cưng đầu tiên từ form bên trái.</p>';
+        weight: weightText ? Number(weightText) : null,
         color: get('color') || null,
         allergies: get('allergies') || null,
         notes: get('notes') || null,
     };
+}
+
+async function ensureOwner(): Promise<void> {
+    const me = await callApi<AuthMeResponse>('/api/auth/me', 'GET');
+
+    if (!me.authenticated || me.user?.role !== 'owner') {
+        throw new Error('Owner account is required to use this page.');
+    }
+}
+
+async function loadSpecies(): Promise<void> {
+    if (!speciesSelect) return;
+
+    const response = await callApi<{ data: Species[] }>('/api/owner/species', 'GET');
+
+    if (response.data.length === 0) {
+        speciesSelect.innerHTML = '<option value="">No species data</option>';
+        return;
+    }
+
+    speciesSelect.innerHTML = response.data
+        .map((species) => `<option value="${species.id}">${translateSpeciesName(species.name)}</option>`)
+        .join('');
 }
 
 function renderPets(pets: Pet[]): void {
@@ -133,12 +132,12 @@ function renderPets(pets: Pet[]): void {
 
     if (pets.length === 0) {
         petListEl.innerHTML = '<p class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-4 text-sm text-[#4A4A4A]">No pets found. Create your first pet from the form.</p>';
-                            ${pet.notes ? `<p class="mt-2 text-sm text-[#4A4A4A]">Ghi chú: ${pet.notes}</p>` : ''}
+        return;
     }
 
-                            <a href="/owner/pets/${pet.id}/edit" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Sửa</a>
-                            <a href="/owner/pets/${pet.id}/health-records" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Hồ sơ sức khỏe</a>
-                            <button data-action="delete" data-id="${pet.id}" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Xóa</button>
+    petListEl.innerHTML = pets
+        .map(
+            (pet) => `
                 <div class="rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] p-4 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -149,12 +148,12 @@ function renderPets(pets: Pet[]): void {
                         <div class="flex gap-2">
                             <a href="/owner/pets/${pet.id}/edit" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Edit</a>
                             <a href="/owner/pets/${pet.id}/health-records" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Health records</a>
-            const shouldDelete = window.confirm('Xóa thú cưng này?');
+                            <button data-action="delete" data-id="${pet.id}" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Delete</button>
                         </div>
                     </div>
                 </div>
-            `;
-                setStatus('Đã xóa thú cưng thành công.', 'success');
+            `,
+        )
         .join('');
 
     petListEl.querySelectorAll<HTMLButtonElement>('button[data-action="delete"]').forEach((button) => {
@@ -170,7 +169,7 @@ function renderPets(pets: Pet[]): void {
             } catch (error) {
                 setStatus((error as Error).message, 'error');
             }
-        setStatus('Sẵn sàng.', 'neutral');
+        });
     });
 }
 
@@ -188,7 +187,7 @@ async function bootstrap(): Promise<void> {
         await loadPets();
         setStatus('Ready.', 'neutral');
     } catch (error) {
-            setStatus('Đã tạo thú cưng thành công.', 'success');
+        setStatus((error as Error).message, 'error');
         return;
     }
 

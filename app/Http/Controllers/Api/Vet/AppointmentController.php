@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\MedicalRecord;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -14,6 +15,11 @@ use Illuminate\Support\Str;
 
 class AppointmentController extends Controller
 {
+    public function __construct(
+        private readonly NotificationService $notifications,
+    ) {
+    }
+
     /**
      * @return array<int, string>
      */
@@ -206,6 +212,18 @@ class AppointmentController extends Controller
         }
 
         $appointment->forceFill($payload)->save();
+
+        if (in_array($workflowStatus, [Appointment::WORKFLOW_COMPLETED, Appointment::WORKFLOW_FOLLOW_UP], true)) {
+            $this->notifications->create([
+                'user_id' => $appointment->owner_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_workflow_updated',
+                'title' => $workflowStatus === Appointment::WORKFLOW_COMPLETED ? 'Ca kham da hoan tat' : 'Lich tai kham da duoc cap nhat',
+                'message' => $workflowStatus === Appointment::WORKFLOW_COMPLETED
+                    ? "Bac si da hoan tat ca kham cho {$appointment->pet?->name}."
+                    : "Bac si da cap nhat lich tai kham cho {$appointment->pet?->name}.",
+            ]);
+        }
 
         return response()->json([
             'message' => 'Đã cập nhật trạng thái quy trình thành công.',

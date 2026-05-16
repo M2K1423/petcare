@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AppNotification;
 use App\Models\Vaccination;
+use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -26,7 +27,7 @@ class SendVaccinationReminders extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(NotificationService $notifications)
     {
         $this->info("Bắt đầu quét danh sách tiêm phòng...");
 
@@ -56,7 +57,7 @@ class SendVaccinationReminders extends Command
 
             if (!$exists) {
                 // Tạo Record trên DB table
-                AppNotification::create([
+                $notifications->create([
                     'user_id' => $owner->id,
                     'appointment_id' => null,
                     'type' => 'vaccination_reminder',

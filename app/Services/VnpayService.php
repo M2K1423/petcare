@@ -6,6 +6,7 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -54,11 +55,21 @@ class VnpayService
 
         $query = $this->buildQuery($payload);
         $hash = hash_hmac('sha512', $query, (string) config('vnpay.hash_secret'));
-
-        return rtrim((string) config('vnpay.payment_url'), '?')
+        $paymentUrl = rtrim((string) config('vnpay.payment_url'), '?')
             . '?' . $query
-            . '&vnp_SecureHashType=HmacSHA512'
             . '&vnp_SecureHash=' . $hash;
+
+        Log::info('VNPay payment URL created.', [
+            'payment_id' => $payment->id,
+            'transaction_code' => $payment->transaction_code,
+            'tmn_code' => config('vnpay.tmn_code'),
+            'amount' => $payload['vnp_Amount'],
+            'query' => $query,
+            'secure_hash' => $hash,
+            'payment_url' => $paymentUrl,
+        ]);
+
+        return $paymentUrl;
     }
 
     /**

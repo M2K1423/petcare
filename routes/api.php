@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\Admin\SettingController;
 use App\Http\Controllers\Api\Admin\ActivityLogController;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [SanctumAuthController::class, 'register'])->name('api.auth.register');
@@ -36,6 +37,10 @@ Route::post('/auth/login', [SanctumAuthController::class, 'login'])->name('api.a
 Route::get('/payments/vnpay/ipn', [VnpayController::class, 'ipn'])->name('api.payments.vnpay.ipn');
 
 Route::middleware('auth:sanctum')->group(function (): void {
+    Route::post('/broadcasting/auth', function (Request $request) {
+        return Broadcast::auth($request);
+    })->name('api.broadcasting.auth');
+
     Route::post('/auth/logout', [SanctumAuthController::class, 'logout'])->name('api.auth.logout');
     Route::get('/auth/me', [SanctumAuthController::class, 'me'])->name('api.auth.me');
     Route::put('/auth/profile', [SanctumAuthController::class, 'updateProfile'])->name('api.auth.profile.update');
