@@ -40,7 +40,7 @@ class MedicineOrderController extends Controller
     {
         if ($order->status !== 'pending') {
             return response()->json([
-                'message' => 'Only pending orders can be confirmed.',
+                'message' => 'Chỉ những đơn đang chờ mới có thể xác nhận.',
             ], 422);
         }
 
@@ -54,7 +54,7 @@ class MedicineOrderController extends Controller
 
             foreach ($items as $item) {
                 if (($item->medicine?->stock_quantity ?? 0) < $item->quantity) {
-                    throw new HttpException(422, "Insufficient stock for {$item->medicine?->name}.");
+                    throw new HttpException(422, "Không đủ tồn kho cho {$item->medicine?->name}.");
                 }
             }
 
@@ -77,7 +77,7 @@ class MedicineOrderController extends Controller
                     'payment_method' => $validated['payment_method'] ?? 'cash',
                     'gateway' => ($validated['payment_method'] ?? 'cash') === 'vnpay' ? 'vnpay' : null,
                     'status' => 'pending',
-                    'notes' => 'Pending payment for confirmed medicine order.',
+                    'notes' => 'Chờ thanh toán cho đơn thuốc đã xác nhận.',
                 ],
             );
 
@@ -90,7 +90,7 @@ class MedicineOrderController extends Controller
         });
 
         return response()->json([
-            'message' => 'Order confirmed and pending payment created.',
+            'message' => 'Đã xác nhận đơn và tạo thanh toán chờ.',
             'data' => $order,
         ]);
     }
@@ -104,7 +104,7 @@ class MedicineOrderController extends Controller
 
         if (! in_array($order->status, ['confirmed', 'paid'], true)) {
             return response()->json([
-                'message' => 'The order must be confirmed before collecting payment.',
+                'message' => 'Đơn phải được xác nhận trước khi thu tiền.',
             ], 422);
         }
 
@@ -112,13 +112,13 @@ class MedicineOrderController extends Controller
 
         if (! $payment) {
             return response()->json([
-                'message' => 'No payment record exists for this order.',
+                'message' => 'Không tồn tại bản ghi thanh toán cho đơn này.',
             ], 422);
         }
 
         if ($payment->status === 'paid') {
             return response()->json([
-                'message' => 'This order has already been paid.',
+                'message' => 'Đơn này đã được thanh toán.',
                 'data' => $order->load([
                     'owner:id,name,phone,email',
                     'pet:id,name',
@@ -134,13 +134,13 @@ class MedicineOrderController extends Controller
                 'gateway' => 'vnpay',
                 'status' => 'pending',
                 'paid_at' => null,
-                'notes' => $validated['notes'] ?? 'Cho thanh toan qua VNPay.',
+                'notes' => $validated['notes'] ?? 'Chờ thanh toán qua VNPay.',
             ]);
 
             $paymentUrl = $this->vnpay->createPaymentUrl($payment->fresh(), $request);
 
             return response()->json([
-                'message' => 'VNPay payment created successfully.',
+                'message' => 'Đã tạo thanh toán VNPay thành công.',
                 'data' => $order->fresh([
                     'owner:id,name,phone,email',
                     'pet:id,name',
@@ -159,7 +159,7 @@ class MedicineOrderController extends Controller
                 'status' => 'paid',
                 'paid_at' => $paidAt,
                 'transaction_code' => $payment->transaction_code ?: 'MED-' . strtoupper(Str::random(10)),
-                'notes' => $validated['notes'] ?? 'Medicine order paid at reception.',
+                'notes' => $validated['notes'] ?? 'Đơn thuốc đã được thanh toán tại quầy lễ tân.',
             ]);
 
             $order->update([
@@ -169,7 +169,7 @@ class MedicineOrderController extends Controller
         });
 
         return response()->json([
-            'message' => 'Payment collected successfully.',
+            'message' => 'Đã thu tiền thành công.',
             'data' => $order->fresh([
                 'owner:id,name,phone,email',
                 'pet:id,name',

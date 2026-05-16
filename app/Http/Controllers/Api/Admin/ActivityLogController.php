@@ -11,7 +11,7 @@ class ActivityLogController extends Controller
     public function index(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $query = ActivityLog::with('user');
@@ -57,7 +57,7 @@ class ActivityLogController extends Controller
     public function show(ActivityLog $activityLog)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         return response()->json($activityLog->load('user'));
@@ -66,7 +66,7 @@ class ActivityLogController extends Controller
     public function getUserActivity(Request $request, int $userId)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -81,7 +81,7 @@ class ActivityLogController extends Controller
     public function getEntityHistory(Request $request, string $entityType, int $entityId)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $perPage = $request->input('per_page', 50);
@@ -97,7 +97,7 @@ class ActivityLogController extends Controller
     public function getAuditSummary(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $dateFrom = $request->input('date_from', now()->subMonth());
@@ -137,11 +137,11 @@ class ActivityLogController extends Controller
             0,
             ['cutoff_date' => $cutoffDate, 'days' => $daysToKeep],
             ['deleted_count' => $deletedCount],
-            "Cleared activity logs older than {$daysToKeep} days"
+            "Đã xóa nhật ký hoạt động cũ hơn {$daysToKeep} ngày"
         );
 
         return response()->json([
-            'message' => 'Old logs deleted',
+            'message' => 'Đã xóa nhật ký cũ',
             'deleted_count' => $deletedCount,
             'cutoff_date' => $cutoffDate,
         ]);

@@ -14,11 +14,11 @@ class VnpayService
     public function ensureConfigured(): void
     {
         if (! config('vnpay.enabled')) {
-            throw new RuntimeException('VNPay is not enabled. Please set VNPAY_ENABLED=true.');
+            throw new RuntimeException('VNPay chưa được bật. Vui lòng đặt VNPAY_ENABLED=true.');
         }
 
         if (! config('vnpay.tmn_code') || ! config('vnpay.hash_secret')) {
-            throw new RuntimeException('VNPay is missing VNPAY_TMN_CODE or VNPAY_HASH_SECRET.');
+            throw new RuntimeException('VNPay đang thiếu VNPAY_TMN_CODE hoặc VNPAY_HASH_SECRET.');
         }
     }
 
@@ -121,10 +121,10 @@ class VnpayService
     public function buildOrderInfo(Payment $payment): string
     {
         if ($payment->medicine_order_id) {
-            return "Thanh toan don thuoc {$payment->medicine_order_id}";
+            return "Thanh toán đơn thuốc {$payment->medicine_order_id}";
         }
 
-        return "Thanh toan vien phi lich kham {$payment->appointment_id}";
+        return "Thanh toán viện phí lịch khám {$payment->appointment_id}";
     }
 
     /**

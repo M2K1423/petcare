@@ -98,15 +98,15 @@ function toLocalDate(input: string): string {
 
 function workflowText(value?: string | null): string {
     const map: Record<string, string> = {
-        awaiting_exam: 'Cho kham',
-        examining: 'Dang kham',
-        awaiting_lab: 'Cho xet nghiem',
-        treating: 'Dang dieu tri',
-        completed: 'Hoan thanh',
-        follow_up: 'Tai kham',
+        awaiting_exam: 'Chờ khám',
+        examining: 'Đang khám',
+        awaiting_lab: 'Chờ xét nghiệm',
+        treating: 'Đang điều trị',
+        completed: 'Hoàn thành',
+        follow_up: 'Tái khám',
     };
 
-    if (!value) return 'Cho kham';
+    if (!value) return 'Chờ khám';
     return map[value] ?? value;
 }
 
@@ -130,13 +130,13 @@ function statusBox(title: string, value: number | string, tone: string): string 
 
 function appointmentOptionHtml(): string {
     if (appointments.length === 0) {
-        return '<option value="">No assigned appointment</option>';
+        return '<option value="">Không có lịch hẹn được phân công</option>';
     }
 
     return appointments
         .map((item) => {
             const selected = selectedAppointmentId === item.id ? 'selected' : '';
-            const label = `${item.id} • ${item.pet?.name ?? 'Unknown pet'} • ${workflowText(item.workflow_status)}`;
+            const label = `${item.id} • ${item.pet?.name ?? 'Thú cưng chưa rõ'} • ${workflowText(item.workflow_status)}`;
             return `<option value="${item.id}" ${selected}>${escapeHtml(label)}</option>`;
         })
         .join('');
@@ -150,7 +150,7 @@ function sectionFormShell(title: string, description: string, fieldsHtml: string
                 <p class="mt-1 text-sm text-[#4A4A4A]">${escapeHtml(description)}</p>
 
                 <div class="mt-4">
-                    <label for="vet-module-appointment" class="text-sm font-semibold text-[#333333]">Appointment</label>
+                    <label for="vet-module-appointment" class="text-sm font-semibold text-[#333333]">Lịch hẹn</label>
                     <select id="vet-module-appointment" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none focus:border-[#2A6496]">
                         ${appointmentOptionHtml()}
                     </select>
@@ -159,18 +159,18 @@ function sectionFormShell(title: string, description: string, fieldsHtml: string
                 <form id="vet-module-form" class="mt-4 space-y-4">
                     ${fieldsHtml}
                     <div class="flex flex-wrap items-center gap-2">
-                        <button type="submit" class="rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white hover:bg-[#235780]">Save module</button>
-                        <button id="vet-module-accept" type="button" class="rounded-xl border border-[#0F8A5F] bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Nhan ca</button>
-                        <button id="vet-module-refresh" type="button" class="rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] hover:border-[#2A6496] hover:text-[#2A6496]">Refresh</button>
+                        <button type="submit" class="rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white hover:bg-[#235780]">Lưu mô-đun</button>
+                        <button id="vet-module-accept" type="button" class="rounded-xl border border-[#0F8A5F] bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Nhận ca</button>
+                        <button id="vet-module-refresh" type="button" class="rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] hover:border-[#2A6496] hover:text-[#2A6496]">Làm mới</button>
                     </div>
                 </form>
                 <div id="vet-module-status" class="mt-4 hidden rounded-2xl px-4 py-3 text-sm"></div>
             </article>
 
             <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-5">
-                <h3 class="text-base font-bold text-[#333333]">Case Context</h3>
+                <h3 class="text-base font-bold text-[#333333]">Bối cảnh ca khám</h3>
                 <div id="vet-module-context" class="mt-4 text-sm text-[#4A4A4A]">
-                    Loading...
+                    Đang tải...
                 </div>
             </article>
         </div>
@@ -188,7 +188,7 @@ function setModuleStatus(message: string, tone: 'success' | 'error'): void {
 
 function buildContextHtml(): string {
     if (!selectedDetail?.data) {
-        return '<p class="text-xs text-[#64748B]">Select an appointment to view details.</p>';
+        return '<p class="text-xs text-[#64748B]">Chọn một lịch hẹn để xem chi tiết.</p>';
     }
 
     const appointment = selectedDetail.data;
@@ -196,28 +196,28 @@ function buildContextHtml(): string {
     const previousRecords = selectedDetail.meta?.previous_medical_records ?? [];
 
     const vaccinationHtml = vaccinationHistory.length === 0
-        ? '<p class="text-xs text-[#64748B]">No vaccination history.</p>'
-        : `<ul class="space-y-1">${vaccinationHistory.map((item) => `<li class="text-xs text-[#4A4A4A]">${escapeHtml(item.vaccine_name ?? 'Vaccine')} • ${escapeHtml(item.vaccinated_on ?? 'N/A')} ${item.next_due_on ? `• next: ${escapeHtml(item.next_due_on)}` : ''}</li>`).join('')}</ul>`;
+        ? '<p class="text-xs text-[#64748B]">Không có lịch sử tiêm phòng.</p>'
+        : `<ul class="space-y-1">${vaccinationHistory.map((item) => `<li class="text-xs text-[#4A4A4A]">${escapeHtml(item.vaccine_name ?? 'Vắc xin')} • ${escapeHtml(item.vaccinated_on ?? 'Chưa có')} ${item.next_due_on ? `• mũi tiếp theo: ${escapeHtml(item.next_due_on)}` : ''}</li>`).join('')}</ul>`;
 
     const previousHtml = previousRecords.length === 0
-        ? '<p class="text-xs text-[#64748B]">No previous visits.</p>'
-        : `<ul class="space-y-1">${previousRecords.map((item) => `<li class="text-xs text-[#4A4A4A]">${escapeHtml(item.record_code ?? 'N/A')} • ${escapeHtml(item.record_date ?? 'N/A')} • ${escapeHtml(item.final_diagnosis ?? item.diagnosis ?? 'N/A')}</li>`).join('')}</ul>`;
+        ? '<p class="text-xs text-[#64748B]">Không có lần khám trước.</p>'
+        : `<ul class="space-y-1">${previousRecords.map((item) => `<li class="text-xs text-[#4A4A4A]">${escapeHtml(item.record_code ?? 'Chưa có')} • ${escapeHtml(item.record_date ?? 'Chưa có')} • ${escapeHtml(item.final_diagnosis ?? item.diagnosis ?? 'Chưa có')}</li>`).join('')}</ul>`;
 
     return `
         <div class="space-y-3">
             <div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] px-3 py-3">
-                <p><span class="font-semibold text-[#333333]">Pet:</span> ${escapeHtml(appointment.pet?.name ?? 'N/A')}</p>
-                <p class="mt-1"><span class="font-semibold text-[#333333]">Owner:</span> ${escapeHtml(appointment.owner?.name ?? 'N/A')} ${appointment.owner?.phone ? `• ${escapeHtml(appointment.owner.phone)}` : ''}</p>
-                <p class="mt-1"><span class="font-semibold text-[#333333]">Appointment:</span> ${escapeHtml(toLocalDate(appointment.appointment_at))}</p>
-                <p class="mt-1"><span class="font-semibold text-[#333333]">Workflow:</span> ${escapeHtml(workflowText(appointment.workflow_status))}</p>
-                <p class="mt-1"><span class="font-semibold text-[#333333]">Record code:</span> ${escapeHtml(appointment.medical_record?.record_code ?? 'Not created')}</p>
+                <p><span class="font-semibold text-[#333333]">Thú cưng:</span> ${escapeHtml(appointment.pet?.name ?? 'Chưa có')}</p>
+                <p class="mt-1"><span class="font-semibold text-[#333333]">Chủ nuôi:</span> ${escapeHtml(appointment.owner?.name ?? 'Chưa có')} ${appointment.owner?.phone ? `• ${escapeHtml(appointment.owner.phone)}` : ''}</p>
+                <p class="mt-1"><span class="font-semibold text-[#333333]">Lịch hẹn:</span> ${escapeHtml(toLocalDate(appointment.appointment_at))}</p>
+                <p class="mt-1"><span class="font-semibold text-[#333333]">Quy trình:</span> ${escapeHtml(workflowText(appointment.workflow_status))}</p>
+                <p class="mt-1"><span class="font-semibold text-[#333333]">Mã bệnh án:</span> ${escapeHtml(appointment.medical_record?.record_code ?? 'Chưa tạo')}</p>
             </div>
             <div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] px-3 py-3">
-                <p class="font-semibold text-[#333333]">Vaccination history</p>
+                <p class="font-semibold text-[#333333]">Lịch sử tiêm phòng</p>
                 <div class="mt-2">${vaccinationHtml}</div>
             </div>
             <div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] px-3 py-3">
-                <p class="font-semibold text-[#333333]">Previous visits</p>
+                <p class="font-semibold text-[#333333]">Lần khám trước</p>
                 <div class="mt-2">${previousHtml}</div>
             </div>
         </div>
@@ -249,32 +249,32 @@ function renderDashboard(): void {
     const summaryHtml = summary
         ? `
             <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                ${statusBox('Ca hom nay', summary.today_total, 'border-[#D7E6F5] bg-[#F5FAFF] text-[#2A6496]')}
-                ${statusBox('Cho kham', summary.today_waiting_exam, 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]')}
-                ${statusBox('Dang kham', summary.today_examining, 'border-[#FEF3C7] bg-[#FFFBEB] text-[#92400E]')}
-                ${statusBox('Cho xet nghiem', summary.today_awaiting_lab, 'border-[#FED7AA] bg-[#FFF7ED] text-[#C2410C]')}
-                ${statusBox('Dang dieu tri', summary.today_treating, 'border-[#DDD6FE] bg-[#F5F3FF] text-[#5B21B6]')}
-                ${statusBox('Hoan thanh', summary.today_completed, 'border-[#C7EAD8] bg-[#ECFDF3] text-[#027A48]')}
-                ${statusBox('Lich tai kham', summary.follow_up_upcoming, 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]')}
-                ${statusBox('Noi tru theo doi', summary.inpatient_cases, 'border-[#FBCFE8] bg-[#FDF2F8] text-[#9D174D]')}
+                ${statusBox('Ca hôm nay', summary.today_total, 'border-[#D7E6F5] bg-[#F5FAFF] text-[#2A6496]')}
+                ${statusBox('Chờ khám', summary.today_waiting_exam, 'border-[#FDE68A] bg-[#FFFBEB] text-[#92400E]')}
+                ${statusBox('Đang khám', summary.today_examining, 'border-[#FEF3C7] bg-[#FFFBEB] text-[#92400E]')}
+                ${statusBox('Chờ xét nghiệm', summary.today_awaiting_lab, 'border-[#FED7AA] bg-[#FFF7ED] text-[#C2410C]')}
+                ${statusBox('Đang điều trị', summary.today_treating, 'border-[#DDD6FE] bg-[#F5F3FF] text-[#5B21B6]')}
+                ${statusBox('Hoàn thành', summary.today_completed, 'border-[#C7EAD8] bg-[#ECFDF3] text-[#027A48]')}
+                ${statusBox('Lịch tái khám', summary.follow_up_upcoming, 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8]')}
+                ${statusBox('Nội trú theo dõi', summary.inpatient_cases, 'border-[#FBCFE8] bg-[#FDF2F8] text-[#9D174D]')}
             </div>
         `
-        : '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Loading dashboard summary...</div>';
+        : '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Đang tải tổng quan...</div>';
 
     const listHtml = quickAppointments.length === 0
-        ? '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">No assigned appointments.</div>'
+        ? '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Không có lịch hẹn được phân công.</div>'
         : quickAppointments.map((item) => `
             <article class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4">
                 <div class="flex items-start justify-between gap-2">
                     <div>
-                        <p class="font-bold text-[#333333]">${escapeHtml(item.pet?.name ?? 'Unknown pet')}</p>
+                        <p class="font-bold text-[#333333]">${escapeHtml(item.pet?.name ?? 'Thú cưng chưa rõ')}</p>
                         <p class="mt-1 text-xs text-[#4A4A4A]">${escapeHtml(item.owner?.name ?? 'N/A')} • ${escapeHtml(toLocalDate(item.appointment_at))}</p>
                     </div>
                     <span class="rounded-full px-2 py-1 text-[11px] font-semibold ${workflowTone(item.workflow_status)}">${escapeHtml(workflowText(item.workflow_status))}</span>
                 </div>
                 <div class="mt-3 flex flex-wrap gap-2">
-                    <a href="/vet/appointments/${item.id}" class="rounded-lg border border-[#2A6496] bg-[#2A6496] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#235780]">Open case</a>
-                    <a href="/vet/schedule-week" class="rounded-lg border border-[#C1C4C9] bg-white px-3 py-1.5 text-xs font-semibold text-[#333333] hover:border-[#2A6496] hover:text-[#2A6496]">Week view</a>
+                    <a href="/vet/appointments/${item.id}" class="rounded-lg border border-[#2A6496] bg-[#2A6496] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#235780]">Mở ca</a>
+                    <a href="/vet/schedule-week" class="rounded-lg border border-[#C1C4C9] bg-white px-3 py-1.5 text-xs font-semibold text-[#333333] hover:border-[#2A6496] hover:text-[#2A6496]">Xem tuần</a>
                 </div>
             </article>
         `).join('');
@@ -284,7 +284,7 @@ function renderDashboard(): void {
         <div class="space-y-6">
             ${summaryHtml}
             <section>
-                <h2 class="text-lg font-bold text-[#333333]">Upcoming Cases</h2>
+                <h2 class="text-lg font-bold text-[#333333]">Ca sắp tới</h2>
                 <div class="mt-3 grid gap-3 md:grid-cols-2">${listHtml}</div>
             </section>
         </div>
@@ -303,22 +303,22 @@ function renderSchedule(): void {
         <article class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4">
             <div class="flex items-start justify-between gap-2">
                 <div>
-                    <p class="font-bold text-[#333333]">${escapeHtml(item.pet?.name ?? 'Unknown pet')}</p>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">${escapeHtml(item.owner?.name ?? 'N/A')} • ${escapeHtml(toLocalDate(item.appointment_at))}</p>
+                    <p class="font-bold text-[#333333]">${escapeHtml(item.pet?.name ?? 'Thú cưng chưa rõ')}</p>
+                    <p class="mt-1 text-xs text-[#4A4A4A]">${escapeHtml(item.owner?.name ?? 'Chưa có')} • ${escapeHtml(toLocalDate(item.appointment_at))}</p>
                 </div>
                 <span class="rounded-full px-2 py-1 text-[11px] font-semibold ${workflowTone(item.workflow_status)}">${escapeHtml(workflowText(item.workflow_status))}</span>
             </div>
             <div class="mt-3 flex flex-wrap gap-2">
-                <button data-accept-case="${item.id}" class="rounded-lg border border-[#0F8A5F] bg-[#0F8A5F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0C734F]">Nhan ca</button>
+                <button data-accept-case="${item.id}" class="rounded-lg border border-[#0F8A5F] bg-[#0F8A5F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0C734F]">Nhận ca</button>
                 <select data-workflow-id="${item.id}" class="rounded-lg border border-[#C1C4C9] bg-white px-2 py-1.5 text-xs text-[#333333]">
-                    <option value="awaiting_exam" ${(item.workflow_status ?? 'awaiting_exam') === 'awaiting_exam' ? 'selected' : ''}>Cho kham</option>
-                    <option value="examining" ${item.workflow_status === 'examining' ? 'selected' : ''}>Dang kham</option>
-                    <option value="awaiting_lab" ${item.workflow_status === 'awaiting_lab' ? 'selected' : ''}>Cho xet nghiem</option>
-                    <option value="treating" ${item.workflow_status === 'treating' ? 'selected' : ''}>Dang dieu tri</option>
-                    <option value="completed" ${item.workflow_status === 'completed' ? 'selected' : ''}>Hoan thanh</option>
-                    <option value="follow_up" ${item.workflow_status === 'follow_up' ? 'selected' : ''}>Tai kham</option>
+                    <option value="awaiting_exam" ${(item.workflow_status ?? 'awaiting_exam') === 'awaiting_exam' ? 'selected' : ''}>Chờ khám</option>
+                    <option value="examining" ${item.workflow_status === 'examining' ? 'selected' : ''}>Đang khám</option>
+                    <option value="awaiting_lab" ${item.workflow_status === 'awaiting_lab' ? 'selected' : ''}>Chờ xét nghiệm</option>
+                    <option value="treating" ${item.workflow_status === 'treating' ? 'selected' : ''}>Đang điều trị</option>
+                    <option value="completed" ${item.workflow_status === 'completed' ? 'selected' : ''}>Hoàn thành</option>
+                    <option value="follow_up" ${item.workflow_status === 'follow_up' ? 'selected' : ''}>Tái khám</option>
                 </select>
-                <a href="/vet/appointments/${item.id}" class="rounded-lg border border-[#2A6496] bg-[#2A6496] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#235780]">Open</a>
+                <a href="/vet/appointments/${item.id}" class="rounded-lg border border-[#2A6496] bg-[#2A6496] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#235780]">Mở</a>
             </div>
         </article>
     `;
@@ -327,12 +327,12 @@ function renderSchedule(): void {
     contentEl.innerHTML = `
         <div class="grid gap-6 xl:grid-cols-2">
             <section>
-                <h2 class="text-lg font-bold text-[#333333]">Lich hen hom nay</h2>
-                <div class="mt-3 space-y-3">${todayAppointments.length ? todayAppointments.map(card).join('') : '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Khong co lich hom nay.</div>'}</div>
+                <h2 class="text-lg font-bold text-[#333333]">Lịch hẹn hôm nay</h2>
+                <div class="mt-3 space-y-3">${todayAppointments.length ? todayAppointments.map(card).join('') : '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Không có lịch hẹn hôm nay.</div>'}</div>
             </section>
             <section>
-                <h2 class="text-lg font-bold text-[#333333]">Thu cung cho kham</h2>
-                <div class="mt-3 space-y-3">${waiting.length ? waiting.map(card).join('') : '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Khong co ca cho kham.</div>'}</div>
+                <h2 class="text-lg font-bold text-[#333333]">Thú cưng chờ khám</h2>
+                <div class="mt-3 space-y-3">${waiting.length ? waiting.map(card).join('') : '<div class="rounded-xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Không có ca chờ khám.</div>'}</div>
             </section>
         </div>
     `;
@@ -374,110 +374,110 @@ function renderModuleSection(): void {
 
     const sectionMap: Record<string, { title: string; desc: string; fields: string }> = {
         intake: {
-            title: 'Tiep nhan va kham lam sang',
-            desc: 'Nhap nhiet do, can nang, nhip tim, trieu chung va dau hieu bat thuong.',
+            title: 'Tiếp nhận và khám lâm sàng',
+            desc: 'Nhập nhiệt độ, cân nặng, nhịp tim, triệu chứng và dấu hiệu bất thường.',
             fields: `
                 <div class="grid gap-4 sm:grid-cols-3">
-                    <div><label class="text-sm font-semibold text-[#333333]">Nhiet do (C)</label><input name="temperature_c" value="${medicalRecord.temperature_c ?? ''}" type="number" step="0.1" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
-                    <div><label class="text-sm font-semibold text-[#333333]">Can nang (kg)</label><input name="weight_kg" value="${medicalRecord.weight_kg ?? ''}" type="number" step="0.01" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
-                    <div><label class="text-sm font-semibold text-[#333333]">Nhip tim (bpm)</label><input name="heart_rate_bpm" value="${medicalRecord.heart_rate_bpm ?? ''}" type="number" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Nhiệt độ (C)</label><input name="temperature_c" value="${medicalRecord.temperature_c ?? ''}" type="number" step="0.1" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Cân nặng (kg)</label><input name="weight_kg" value="${medicalRecord.weight_kg ?? ''}" type="number" step="0.01" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Nhịp tim (bpm)</label><input name="heart_rate_bpm" value="${medicalRecord.heart_rate_bpm ?? ''}" type="number" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
                 </div>
-                <div><label class="text-sm font-semibold text-[#333333]">Trieu chung</label><textarea name="symptoms" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.symptoms ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Dau hieu bat thuong</label><textarea name="abnormal_signs" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.abnormal_signs ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Triệu chứng</label><textarea name="symptoms" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.symptoms ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Dấu hiệu bất thường</label><textarea name="abnormal_signs" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.abnormal_signs ?? '')}</textarea></div>
                 <input type="hidden" name="workflow_status" value="examining">
             `,
         },
         diagnosis: {
-            title: 'Chan doan',
-            desc: 'Nhap chan doan so bo, chan doan cuoi, benh ly va phan muc do benh.',
+            title: 'Chẩn đoán',
+            desc: 'Nhập chẩn đoán sơ bộ, chẩn đoán cuối, bệnh lý và phân mức độ bệnh.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan so bo</label><textarea name="preliminary_diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.preliminary_diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan cuoi</label><textarea name="final_diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.final_diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan chinh</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán sơ bộ</label><textarea name="preliminary_diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.preliminary_diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán cuối</label><textarea name="final_diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.final_diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán chính</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="text-sm font-semibold text-[#333333]">Benh ly</label><input name="pathology" value="${escapeHtml(medicalRecord.pathology ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
-                    <div><label class="text-sm font-semibold text-[#333333]">Muc do</label><select name="severity_level" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="">Select</option><option value="mild" ${medicalRecord.severity_level === 'mild' ? 'selected' : ''}>Nhe</option><option value="moderate" ${medicalRecord.severity_level === 'moderate' ? 'selected' : ''}>Trung binh</option><option value="severe" ${medicalRecord.severity_level === 'severe' ? 'selected' : ''}>Nang</option><option value="critical" ${medicalRecord.severity_level === 'critical' ? 'selected' : ''}>Nguy kich</option></select></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Bệnh lý</label><input name="pathology" value="${escapeHtml(medicalRecord.pathology ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Mức độ</label><select name="severity_level" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="">Chọn mức độ</option><option value="mild" ${medicalRecord.severity_level === 'mild' ? 'selected' : ''}>Nhẹ</option><option value="moderate" ${medicalRecord.severity_level === 'moderate' ? 'selected' : ''}>Trung bình</option><option value="severe" ${medicalRecord.severity_level === 'severe' ? 'selected' : ''}>Nặng</option><option value="critical" ${medicalRecord.severity_level === 'critical' ? 'selected' : ''}>Nguy kịch</option></select></div>
                 </div>
                 <input type="hidden" name="workflow_status" value="examining">
             `,
         },
         records: {
-            title: 'Lap benh an',
-            desc: 'Tao cap nhat benh an, phac do dieu tri, ghi chu theo doi, tien trien benh.',
+            title: 'Lập bệnh án',
+            desc: 'Tạo cập nhật bệnh án, phác đồ điều trị, ghi chú theo dõi, tiến triển bệnh.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Phac do dieu tri</label><textarea name="treatment_protocol" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.treatment_protocol ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Tien trien benh</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Ghi chu</label><textarea name="notes" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.notes ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Phác đồ điều trị</label><textarea name="treatment_protocol" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.treatment_protocol ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Tiến triển bệnh</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Ghi chú</label><textarea name="notes" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.notes ?? '')}</textarea></div>
             `,
         },
         orders: {
-            title: 'Chi dinh dich vu / xet nghiem',
-            desc: 'Nhap danh sach chi dinh theo JSON. Vi du: [{"name":"Xet nghiem mau","status":"ordered","result":null}]',
+            title: 'Chỉ định dịch vụ / xét nghiệm',
+            desc: 'Nhập danh sách chỉ định theo JSON. Ví dụ: [{"name":"Xét nghiệm máu","status":"ordered","result":null}]',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Service orders (JSON Array)</label><textarea name="service_orders" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.service_orders ?? [], null, 2))}</textarea></div>
-                <select name="workflow_status" class="w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="awaiting_lab" ${(selectedDetail?.data.workflow_status ?? '') === 'awaiting_lab' ? 'selected' : ''}>Cho xet nghiem</option><option value="examining">Dang kham</option><option value="treating">Dang dieu tri</option></select>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chỉ định dịch vụ (JSON)</label><textarea name="service_orders" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.service_orders ?? [], null, 2))}</textarea></div>
+                <select name="workflow_status" class="w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="awaiting_lab" ${(selectedDetail?.data.workflow_status ?? '') === 'awaiting_lab' ? 'selected' : ''}>Chờ xét nghiệm</option><option value="examining">Đang khám</option><option value="treating">Đang điều trị</option></select>
             `,
         },
         prescriptions: {
-            title: 'Ke don thuoc',
-            desc: 'Nhap don thuoc tong quat va danh sach chi tiet JSON.',
+            title: 'Kê đơn thuốc',
+            desc: 'Nhập đơn thuốc tổng quát và danh sách chi tiết JSON.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Don thuoc tom tat</label><textarea name="prescription" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.treatment ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Prescriptions (JSON Array)</label><textarea name="prescriptions" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.prescriptions ?? [], null, 2))}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Đơn thuốc tóm tắt</label><textarea name="prescription" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.treatment ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Đơn thuốc chi tiết (JSON)</label><textarea name="prescriptions" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.prescriptions ?? [], null, 2))}</textarea></div>
                 <input type="hidden" name="workflow_status" value="treating">
             `,
         },
         procedures: {
-            title: 'Dieu tri / thu thuat',
-            desc: 'Ghi nhan thu thuat va can thiep dieu tri theo JSON.',
+            title: 'Điều trị / thủ thuật',
+            desc: 'Ghi nhận thủ thuật và can thiệp điều trị theo JSON.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Procedures (JSON Array)</label><textarea name="procedures" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.procedures ?? [], null, 2))}</textarea></div>
-                <select name="workflow_status" class="w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="treating" ${(selectedDetail?.data.workflow_status ?? '') === 'treating' ? 'selected' : ''}>Dang dieu tri</option><option value="completed">Hoan thanh</option></select>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Thủ thuật (JSON)</label><textarea name="procedures" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.procedures ?? [], null, 2))}</textarea></div>
+                <select name="workflow_status" class="w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="treating" ${(selectedDetail?.data.workflow_status ?? '') === 'treating' ? 'selected' : ''}>Đang điều trị</option><option value="completed">Hoàn thành</option></select>
             `,
         },
         vaccinations: {
-            title: 'Quan ly tiem phong',
-            desc: 'Theo doi lich su tiem va lap ke hoach mui tiep theo qua follow-up plan.',
+            title: 'Quản lý tiêm phòng',
+            desc: 'Theo dõi lịch sử tiêm và lập kế hoạch mũi tiếp theo qua kế hoạch tái khám.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Ke hoach tiem phong va mui sau</label><textarea name="follow_up_plan" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.follow_up_plan ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Ngay tai kham / nhac mui</label><input name="follow_up_at" type="date" value="${escapeHtml(selectedDetail?.data.follow_up_at?.slice(0, 10) ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Kế hoạch tiêm phòng và mũi sau</label><textarea name="follow_up_plan" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.follow_up_plan ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Ngày tái khám / nhắc mũi</label><input name="follow_up_at" type="date" value="${escapeHtml(selectedDetail?.data.follow_up_at?.slice(0, 10) ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
                 <input type="hidden" name="workflow_status" value="follow_up">
             `,
         },
         inpatient: {
-            title: 'Theo doi noi tru',
-            desc: 'Nhap log theo doi va dieu chinh phac do cho ca noi tru.',
+            title: 'Theo dõi nội trú',
+            desc: 'Nhập log theo dõi và điều chỉnh phác đồ cho ca nội trú.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Tien trien benh</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Progress logs (JSON Array)</label><textarea name="progress_logs" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.progress_logs ?? [], null, 2))}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Tiến triển bệnh</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Nhật ký theo dõi (JSON)</label><textarea name="progress_logs" rows="7" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.progress_logs ?? [], null, 2))}</textarea></div>
                 <input type="hidden" name="workflow_status" value="treating">
             `,
         },
         follow_up: {
-            title: 'Tai kham',
-            desc: 'Len lich tai kham va cap nhat danh gia hoi phuc.',
+            title: 'Tái khám',
+            desc: 'Lên lịch tái khám và cập nhật đánh giá hồi phục.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Danh gia hoi phuc</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Ke hoach tai kham</label><textarea name="follow_up_plan" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.follow_up_plan ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Ngay tai kham</label><input name="follow_up_at" type="date" value="${escapeHtml(selectedDetail?.data.follow_up_at?.slice(0, 10) ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Đánh giá hồi phục</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Kế hoạch tái khám</label><textarea name="follow_up_plan" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.follow_up_plan ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Ngày tái khám</label><input name="follow_up_at" type="date" value="${escapeHtml(selectedDetail?.data.follow_up_at?.slice(0, 10) ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
                 <input type="hidden" name="workflow_status" value="follow_up">
             `,
         },
         sign_off: {
-            title: 'Ky xac nhan chuyen mon',
-            desc: 'Duyet benh an va ket luan dieu tri.',
+            title: 'Ký xác nhận chuyên môn',
+            desc: 'Duyệt bệnh án và kết luận điều trị.',
             fields: `
-                <div><label class="text-sm font-semibold text-[#333333]">Chan doan ket luan</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.final_diagnosis ?? medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div><label class="text-sm font-semibold text-[#333333]">Ket luan dieu tri</label><textarea name="notes" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.notes ?? '')}</textarea></div>
-                <div class="flex items-center gap-2"><input name="sign_off" value="1" type="checkbox" ${medicalRecord.signed_off_at ? 'checked' : ''} class="h-4 w-4 rounded border-[#C1C4C9]"><label class="text-sm font-semibold text-[#333333]">Ky duyet ho so</label></div>
-                <select name="workflow_status" class="w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="completed">Hoan thanh</option><option value="follow_up" ${(selectedDetail?.data.workflow_status ?? '') === 'follow_up' ? 'selected' : ''}>Tai kham</option></select>
+                <div><label class="text-sm font-semibold text-[#333333]">Chẩn đoán kết luận</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.final_diagnosis ?? medicalRecord.diagnosis ?? '')}</textarea></div>
+                <div><label class="text-sm font-semibold text-[#333333]">Kết luận điều trị</label><textarea name="notes" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.notes ?? '')}</textarea></div>
+                <div class="flex items-center gap-2"><input name="sign_off" value="1" type="checkbox" ${medicalRecord.signed_off_at ? 'checked' : ''} class="h-4 w-4 rounded border-[#C1C4C9]"><label class="text-sm font-semibold text-[#333333]">Ký duyệt hồ sơ</label></div>
+                <select name="workflow_status" class="w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"><option value="completed">Hoàn thành</option><option value="follow_up" ${(selectedDetail?.data.workflow_status ?? '') === 'follow_up' ? 'selected' : ''}>Tái khám</option></select>
             `,
         },
     };
@@ -515,9 +515,9 @@ function renderModuleSection(): void {
             await loadBaseData();
             await loadSelectedDetail();
             renderBySection();
-            setModuleStatus('Da nhan ca kham.', 'success');
+            setModuleStatus('Đã nhận ca khám.', 'success');
         } catch (error) {
-            setModuleStatus((error as Error).message || 'Khong the nhan ca.', 'error');
+            setModuleStatus((error as Error).message || 'Không thể nhận ca khám.', 'error');
             acceptButton.disabled = false;
         }
     });
@@ -531,7 +531,7 @@ function renderModuleSection(): void {
     formEl?.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!selectedAppointmentId) {
-            setModuleStatus('Please select an appointment first.', 'error');
+            setModuleStatus('Vui lòng chọn một lịch hẹn trước.', 'error');
             return;
         }
 
@@ -539,7 +539,7 @@ function renderModuleSection(): void {
         const diagnosis = String(formData.get('diagnosis') ?? '').trim();
 
         if (!diagnosis) {
-            setModuleStatus('Diagnosis is required.', 'error');
+            setModuleStatus('Cần nhập chẩn đoán.', 'error');
             return;
         }
 
@@ -586,9 +586,9 @@ function renderModuleSection(): void {
             await loadBaseData();
             await loadSelectedDetail();
             renderBySection();
-            setModuleStatus('Saved successfully.', 'success');
+            setModuleStatus('Đã lưu thành công.', 'success');
         } catch (error) {
-            setModuleStatus((error as Error).message || 'Save failed.', 'error');
+            setModuleStatus((error as Error).message || 'Không thể lưu.', 'error');
         }
     });
 }
@@ -633,7 +633,7 @@ function renderBySection(): void {
 onMounted(() => {
     if (!contentEl) return;
 
-    contentEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 text-sm text-[#4A4A4A]">Loading module...</div>';
+    contentEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 text-sm text-[#4A4A4A]">Đang tải mô-đun...</div>';
 
     void (async () => {
         try {
@@ -641,7 +641,7 @@ onMounted(() => {
             await loadSelectedDetail();
             renderBySection();
         } catch (error) {
-            contentEl.innerHTML = `<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-sm text-[#B91C1C]">${escapeHtml((error as Error).message || 'Failed to load module.')}</div>`;
+            contentEl.innerHTML = `<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-sm text-[#B91C1C]">${escapeHtml((error as Error).message || 'Không thể tải mô-đun.')}</div>`;
         }
     })();
 });

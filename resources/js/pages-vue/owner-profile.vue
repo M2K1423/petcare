@@ -50,11 +50,11 @@ async function loadProfile(): Promise<AuthUser> {
     const response = await callApi<AuthMeResponse>('/api/auth/me', 'GET');
 
     if (!response.authenticated || !response.user) {
-        throw new Error('Your session has expired. Please login again.');
+        throw new Error('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
     }
 
     if (response.user.role !== 'owner') {
-        throw new Error('Owner account is required to use this page.');
+        throw new Error('Cần tài khoản chủ nuôi để dùng trang này.');
     }
 
     renderUser(response.user);
@@ -66,7 +66,7 @@ async function bootstrap(): Promise<void> {
 
     try {
         await loadProfile();
-        setStatus('Your profile is ready to edit.');
+        setStatus('Hồ sơ của bạn đã sẵn sàng để chỉnh sửa.');
     } catch (error) {
         setStatus((error as Error).message, 'error');
         return;
@@ -87,7 +87,7 @@ async function bootstrap(): Promise<void> {
                 renderUser(response.user);
             }
 
-            setStatus(response.message ?? 'Profile updated successfully.', 'success');
+            setStatus(response.message ?? 'Đã cập nhật hồ sơ thành công.', 'success');
         } catch (error) {
             setStatus((error as Error).message, 'error');
         }

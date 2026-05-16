@@ -63,13 +63,13 @@ class MedicineOrderController extends Controller
 
             if (! $medicine) {
                 return response()->json([
-                    'message' => 'Medicine not found.',
+                    'message' => 'Không tìm thấy thuốc.',
                 ], 422);
             }
 
             if ($medicine->stock_quantity < $item['quantity']) {
                 return response()->json([
-                    'message' => "Insufficient stock for {$medicine->name}.",
+                    'message' => "Không đủ tồn kho cho {$medicine->name}.",
                 ], 422);
             }
 
@@ -102,7 +102,7 @@ class MedicineOrderController extends Controller
         });
 
         return response()->json([
-            'message' => 'Order created successfully and is waiting for receptionist confirmation.',
+            'message' => 'Đã tạo đơn và đang chờ lễ tân xác nhận.',
             'data' => $order,
         ], 201);
     }
@@ -119,7 +119,7 @@ class MedicineOrderController extends Controller
         // Allow owner to initiate payment even when order is still 'pending'.
         if (! in_array($order->status, ['pending', 'confirmed', 'paid'], true)) {
             return response()->json([
-                'message' => 'The order is not in a payable state.',
+                'message' => 'Đơn chưa ở trạng thái có thể thanh toán.',
             ], 422);
         }
 
@@ -133,13 +133,13 @@ class MedicineOrderController extends Controller
                 'payment_method' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : $validated['payment_method'],
                 'gateway' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : null,
                 'status' => $validated['payment_method'] === 'vnpay' ? 'pending' : 'created',
-                'notes' => $validated['notes'] ?? 'Owner initiated payment.',
+                'notes' => $validated['notes'] ?? 'Chủ nuôi khởi tạo thanh toán.',
             ]);
         }
 
         if ($payment->status === 'paid') {
             return response()->json([
-                'message' => 'This order has already been paid.',
+                'message' => 'Đơn này đã được thanh toán.',
                 'data' => $order->load([
                     'pet:id,name',
                     'items.medicine:id,name,unit',
@@ -154,13 +154,13 @@ class MedicineOrderController extends Controller
                 'gateway' => 'vnpay',
                 'status' => 'pending',
                 'paid_at' => null,
-                'notes' => $validated['notes'] ?? 'User initiated VNPay payment.',
+                'notes' => $validated['notes'] ?? 'Người dùng khởi tạo thanh toán VNPay.',
             ]);
 
             $paymentUrl = app(\App\Services\VnpayService::class)->createPaymentUrl($payment->fresh(), $request);
 
             return response()->json([
-                'message' => 'VNPay payment created successfully.',
+                'message' => 'Đã tạo thanh toán VNPay thành công.',
                 'data' => $order->fresh([
                     'pet:id,name',
                     'items.medicine:id,name,unit',
@@ -187,7 +187,7 @@ class MedicineOrderController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Payment collected successfully.',
+            'message' => 'Đã thu tiền thành công.',
             'data' => $order->fresh([
                 'pet:id,name',
                 'items.medicine:id,name,unit',

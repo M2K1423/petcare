@@ -21,7 +21,7 @@ class SendAppointmentReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Send reminder notifications to pet owners 24 hours before their appointments';
+    protected $description = 'Gửi nhắc nhở cho chủ nuôi 24 giờ trước lịch hẹn';
 
     /**
      * Execute the console command.

@@ -48,7 +48,7 @@ class SanctumAuthController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json([
-            'message' => 'Logout successful.',
+            'message' => 'Đăng xuất thành công.',
         ]);
     }
 

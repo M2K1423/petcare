@@ -22,63 +22,63 @@ Route::view('/vet/appointments', 'vet.appointments')->name('vet.appointments');
 Route::view('/vet/schedule-week', 'vet.appointments-week')->name('vet.schedule-week');
 Route::view('/vet/dashboard', 'vet.workflow', [
     'sectionKey' => 'dashboard',
-    'sectionTitle' => 'Dashboard Bac si',
-    'sectionDescription' => 'Tong quan ca kham, tai kham, benh an dang theo doi va thong bao khan.',
+    'sectionTitle' => 'Dashboard bác sĩ',
+    'sectionDescription' => 'Tổng quan ca khám, tái khám, bệnh án đang theo dõi và thông báo khẩn.',
 ])->name('vet.dashboard');
 Route::view('/vet/workflow/schedule', 'vet.workflow', [
     'sectionKey' => 'schedule',
-    'sectionTitle' => 'Quan ly lich kham',
-    'sectionDescription' => 'Xem lich hom nay, thu cung cho kham, nhan ca va quan ly trang thai ca kham.',
+    'sectionTitle' => 'Quản lý lịch khám',
+    'sectionDescription' => 'Xem lịch hôm nay, thú cưng chờ khám, nhận ca và quản lý trạng thái ca khám.',
 ])->name('vet.workflow.schedule');
 Route::view('/vet/workflow/intake', 'vet.workflow', [
     'sectionKey' => 'intake',
-    'sectionTitle' => 'Kham benh - Tiep nhan ca',
-    'sectionDescription' => 'Xem thong tin chu nuoi, pet profile, lich su tiem phong, tien su benh va tiep nhan ca.',
+    'sectionTitle' => 'Khám bệnh - Tiếp nhận ca',
+    'sectionDescription' => 'Xem thông tin chủ nuôi, hồ sơ thú cưng, lịch sử tiêm phòng, tiền sử bệnh và tiếp nhận ca.',
 ])->name('vet.workflow.intake');
 Route::view('/vet/workflow/diagnosis', 'vet.workflow', [
     'sectionKey' => 'diagnosis',
-    'sectionTitle' => 'Chan doan',
-    'sectionDescription' => 'Nhap chan doan so bo, chan doan cuoi, benh ly va muc do benh.',
+    'sectionTitle' => 'Chẩn đoán',
+    'sectionDescription' => 'Nhập chẩn đoán sơ bộ, chẩn đoán cuối, bệnh lý và mức độ bệnh.',
 ])->name('vet.workflow.diagnosis');
 Route::view('/vet/workflow/records', 'vet.workflow', [
     'sectionKey' => 'records',
-    'sectionTitle' => 'Lap benh an',
-    'sectionDescription' => 'Tao cap nhat benh an, phac do, ghi chu theo doi va tien trien benh.',
+    'sectionTitle' => 'Lập bệnh án',
+    'sectionDescription' => 'Tạo cập nhật bệnh án, phác đồ, ghi chú theo dõi và tiến triển bệnh.',
 ])->name('vet.workflow.records');
 Route::view('/vet/workflow/orders', 'vet.workflow', [
     'sectionKey' => 'orders',
-    'sectionTitle' => 'Chi dinh dich vu xet nghiem',
-    'sectionDescription' => 'Chi dinh xet nghiem, can lam sang, nhan ket qua va ket luan.',
+    'sectionTitle' => 'Chỉ định dịch vụ xét nghiệm',
+    'sectionDescription' => 'Chỉ định xét nghiệm, cận lâm sàng, nhận kết quả và kết luận.',
 ])->name('vet.workflow.orders');
 Route::view('/vet/workflow/prescriptions', 'vet.workflow', [
     'sectionKey' => 'prescriptions',
-    'sectionTitle' => 'Ke don thuoc',
-    'sectionDescription' => 'Chon thuoc, lieu dung, so ngay dung va huong dan su dung.',
+    'sectionTitle' => 'Kê đơn thuốc',
+    'sectionDescription' => 'Chọn thuốc, liều dùng, số ngày dùng và hướng dẫn sử dụng.',
 ])->name('vet.workflow.prescriptions');
 Route::view('/vet/workflow/procedures', 'vet.workflow', [
     'sectionKey' => 'procedures',
-    'sectionTitle' => 'Dieu tri thu thuat',
-    'sectionDescription' => 'Ghi nhan tiem thuoc, truyen dich, tieu phau, phau thuat va xu ly cap cuu.',
+    'sectionTitle' => 'Điều trị thủ thuật',
+    'sectionDescription' => 'Ghi nhận tiêm thuốc, truyền dịch, tiểu phẫu, phẫu thuật và xử lý cấp cứu.',
 ])->name('vet.workflow.procedures');
 Route::view('/vet/workflow/vaccinations', 'vet.workflow', [
     'sectionKey' => 'vaccinations',
-    'sectionTitle' => 'Quan ly tiem phong',
-    'sectionDescription' => 'Theo doi mui tiem, lich hen mui sau va phan ung sau tiem.',
+    'sectionTitle' => 'Quản lý tiêm phòng',
+    'sectionDescription' => 'Theo dõi mũi tiêm, lịch hẹn mũi sau và phản ứng sau tiêm.',
 ])->name('vet.workflow.vaccinations');
 Route::view('/vet/workflow/inpatient', 'vet.workflow', [
     'sectionKey' => 'inpatient',
-    'sectionTitle' => 'Theo doi noi tru',
-    'sectionDescription' => 'Cap nhat tien trien, dau hieu sinh ton va dieu chinh phac do cho ca noi tru.',
+    'sectionTitle' => 'Theo dõi nội trú',
+    'sectionDescription' => 'Cập nhật tiến triển, dấu hiệu sinh tồn và điều chỉnh phác đồ cho ca nội trú.',
 ])->name('vet.workflow.inpatient');
 Route::view('/vet/workflow/follow-up', 'vet.workflow', [
     'sectionKey' => 'follow_up',
-    'sectionTitle' => 'Tai kham',
-    'sectionDescription' => 'Hen tai kham, danh gia hoi phuc va dieu chinh dieu tri.',
+    'sectionTitle' => 'Tái khám',
+    'sectionDescription' => 'Hẹn tái khám, đánh giá hồi phục và điều chỉnh điều trị.',
 ])->name('vet.workflow.follow-up');
 Route::view('/vet/workflow/sign-off', 'vet.workflow', [
     'sectionKey' => 'sign_off',
-    'sectionTitle' => 'Ky xac nhan chuyen mon',
-    'sectionDescription' => 'Duyet benh an, ket luan dieu tri, phieu phau thuat va chi dinh thuoc.',
+    'sectionTitle' => 'Ký xác nhận chuyên môn',
+    'sectionDescription' => 'Duyệt bệnh án, kết luận điều trị, phiếu phẫu thuật và chỉ định thuốc.',
 ])->name('vet.workflow.sign-off');
 Route::get('/vet/appointments/{appointment}', function (int $appointment) {
     return view('vet.appointment-detail', [

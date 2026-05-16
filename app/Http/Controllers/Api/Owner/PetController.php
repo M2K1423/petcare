@@ -37,7 +37,7 @@ class PetController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Pet created successfully.',
+            'message' => 'Đã tạo thú cưng thành công.',
             'data' => $pet->load('species:id,name'),
         ], 201);
     }
@@ -59,7 +59,7 @@ class PetController extends Controller
         $pet->save();
 
         return response()->json([
-            'message' => 'Pet updated successfully.',
+            'message' => 'Đã cập nhật thú cưng thành công.',
             'data' => $pet->load('species:id,name'),
         ]);
     }
@@ -68,10 +68,10 @@ class PetController extends Controller
     {
         $this->authorize('delete', $pet);
 
-        $pet->delete();
+        $pet->delete([]);
 
         return response()->json([
-            'message' => 'Pet deleted successfully.',
+            'message' => 'Đã xóa thú cưng thành công.',
         ]);
     }
 }

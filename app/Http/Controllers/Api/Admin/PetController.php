@@ -13,7 +13,7 @@ class PetController extends Controller
     public function index(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $query = Pet::with('owner', 'species');
@@ -44,7 +44,7 @@ class PetController extends Controller
     public function show(Pet $pet)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         return response()->json($pet->load(['owner', 'species', 'appointments', 'medicalRecords', 'vaccinations']));
@@ -53,7 +53,7 @@ class PetController extends Controller
     public function getOwnerPets(Request $request, int $ownerId)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $pets = Pet::where('owner_id', $ownerId)
@@ -66,7 +66,7 @@ class PetController extends Controller
     public function getPetAppointments(Pet $pet)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $appointments = Appointment::where('pet_id', $pet->id)
@@ -80,7 +80,7 @@ class PetController extends Controller
     public function getPetHealthRecords(Pet $pet)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $records = $pet->medicalRecords()
@@ -94,7 +94,7 @@ class PetController extends Controller
     public function getStats()
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $stats = [

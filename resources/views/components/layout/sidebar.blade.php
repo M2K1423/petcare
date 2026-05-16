@@ -1,14 +1,14 @@
 <aside class="fixed inset-y-0 left-0 z-30 hidden h-screen w-72 overflow-y-auto border-r border-[#1E2C43] bg-gradient-to-b from-[#0F1E35] to-[#142845] px-4 py-6 text-[#C8D4E8] shadow-[0_20px_40px_rgba(0,0,0,0.28)] lg:block">
     <div class="border border-[#2A3D5E] bg-[#122742]/70 px-3 py-2">
-        <p class="text-[11px] uppercase tracking-[0.18em] text-[#7FA6D9]">Quan ly</p>
-        <p class="mt-1 text-sm font-semibold text-[#EAF2FF]">PetCare Console</p>
+        <p class="text-[11px] uppercase tracking-[0.18em] text-[#7FA6D9]">Quản lý</p>
+        <p class="mt-1 text-sm font-semibold text-[#EAF2FF]">Bảng điều khiển PetCare</p>
     </div>
 
     <nav class="mt-4 space-y-1 text-sm" id="sidebar-nav-container">
         
         <!-- DÀNH CHO CHỦ THÚ CƯNG -->
-        <div id="nav-owner" class="hidden">
-            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">📝 Dành cho Chủ thú cưng</div>
+        <div id="nav-owner" class="{{ request()->routeIs('owner.*') ? '' : 'hidden' }}">
+            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">📝 Dành cho chủ thú cưng</div>
             <a href="{{ route('owner.overview') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.overview') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
@@ -17,7 +17,7 @@
                         <path d="M3 18h18"></path>
                     </svg>
                 </span>
-                <span>Tong quan</span>
+                <span>Tổng quan</span>
             </a>
 
             <a href="{{ route('owner.profile') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.profile') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -27,7 +27,7 @@
                         <path d="M4 20c1.8-3.2 4.5-5 8-5s6.2 1.8 8 5"></path>
                     </svg>
                 </span>
-                <span>Profile</span>
+                <span>Hồ sơ</span>
             </a>
 
             <a href="{{ route('owner.pets') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.pets*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -40,7 +40,7 @@
                         <path d="M5 17h14"></path>
                     </svg>
                 </span>
-                <span>Quan ly thu cung</span>
+                <span>Quản lý thú cưng</span>
             </a>
 
             <a href="{{ route('owner.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.appointments') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -52,7 +52,7 @@
                         <path d="M3 10h18"></path>
                     </svg>
                 </span>
-                <span>Lich hen kham</span>
+                <span>Lịch hẹn khám</span>
             </a>
 
             <a href="{{ route('owner.shop') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.shop') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -64,7 +64,7 @@
                         <circle cx="18" cy="20" r="1"></circle>
                     </svg>
                 </span>
-                <span>Mua thuoc</span>
+                <span>Mua thuốc</span>
             </a>
 
             <a href="{{ route('owner.orders') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.orders') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -91,8 +91,8 @@
         </div>
         
         <!-- DÀNH CHO LỄ TÂN -->
-        <div id="nav-receptionist" class="hidden">
-            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">🏥 Dành cho Lễ tân</div>
+        <div id="nav-receptionist" class="{{ request()->routeIs('receptionist.*') ? '' : 'hidden' }}">
+            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">🏥 Dành cho lễ tân</div>
             
             <a href="{{ route('receptionist.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('receptionist.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
@@ -105,14 +105,14 @@
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <i class="fas fa-user-plus"></i>
                 </span>
-                <span>Register Walk-in</span>
+                <span>Đăng ký khách vãng lai</span>
             </a>
 
             <a href="{{ route('receptionist.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('receptionist.appointments') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <i class="fas fa-calendar-check"></i>
                 </span>
-                <span>Today's Appointments</span>
+                <span>Lịch hẹn hôm nay</span>
             </a>
 
             <a href="{{ route('receptionist.billing') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('receptionist.billing') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -123,8 +123,8 @@
             </a>
         </div>
 
-        <div id="nav-vet" class="hidden">
-            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Vet</div>
+        <div id="nav-vet" class="{{ request()->routeIs('vet.*') ? '' : 'hidden' }}">
+            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Bác sĩ</div>
 
             <a href="{{ route('vet.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
@@ -135,62 +135,135 @@
                         <path d="M3 21h8v-4H3z"></path>
                     </svg>
                 </span>
-                <span>Dashboard bac si</span>
+                <span>Bảng điều khiển bác sĩ</span>
             </a>
 
             <a href="{{ route('vet.workflow.schedule') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.schedule') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">1</span>
-                <span>Quan ly lich kham</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M8 2v4"></path>
+                        <path d="M16 2v4"></path>
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                    </svg>
+                </span>
+                <span>Quản lý lịch khám</span>
             </a>
 
             <a href="{{ route('vet.workflow.intake') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.intake') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">2</span>
-                <span>Kham benh</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M6 18h12"></path>
+                        <path d="M12 2v16"></path>
+                        <path d="M8 8a4 4 0 0 1 8 0v2a4 4 0 0 1-8 0z"></path>
+                    </svg>
+                </span>
+                <span>Khám bệnh</span>
             </a>
 
             <a href="{{ route('vet.workflow.diagnosis') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.diagnosis') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">3</span>
-                <span>Chan doan</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M2 12h4"></path>
+                        <path d="M18 12h4"></path>
+                        <path d="M12 2v4"></path>
+                        <path d="M12 18v4"></path>
+                    </svg>
+                </span>
+                <span>Chẩn đoán</span>
             </a>
 
             <a href="{{ route('vet.workflow.records') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.records') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">4</span>
-                <span>Lap benh an</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M7 3h10l4 4v14H7z"></path>
+                        <path d="M14 3v5h5"></path>
+                        <path d="M9 13h6"></path>
+                        <path d="M9 17h6"></path>
+                    </svg>
+                </span>
+                <span>Lập bệnh án</span>
             </a>
 
             <a href="{{ route('vet.workflow.orders') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.orders') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">5</span>
-                <span>Chi dinh dich vu</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M4 6h16"></path>
+                        <path d="M7 6v12"></path>
+                        <path d="M17 6v12"></path>
+                        <path d="M7 12h10"></path>
+                    </svg>
+                </span>
+                <span>Chỉ định dịch vụ</span>
             </a>
 
             <a href="{{ route('vet.workflow.prescriptions') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.prescriptions') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">6</span>
-                <span>Ke don thuoc</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M10 2v6"></path>
+                        <path d="M14 2v6"></path>
+                        <path d="M8 8h8"></path>
+                        <path d="M7 8l-1 14h12l-1-14"></path>
+                    </svg>
+                </span>
+                <span>Kê đơn thuốc</span>
             </a>
 
             <a href="{{ route('vet.workflow.procedures') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.procedures') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">7</span>
-                <span>Dieu tri thu thuat</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M4 20l6-6"></path>
+                        <path d="M14 4l6 6"></path>
+                        <path d="M7 17l10-10"></path>
+                        <path d="M14 14l3 3"></path>
+                    </svg>
+                </span>
+                <span>Điều trị thủ thuật</span>
             </a>
 
             <a href="{{ route('vet.workflow.vaccinations') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.vaccinations') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">8</span>
-                <span>Quan ly tiem phong</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M3 7h18"></path>
+                        <path d="M7 7v14h10V7"></path>
+                        <path d="M9 11h6"></path>
+                        <path d="M9 15h6"></path>
+                    </svg>
+                </span>
+                <span>Quản lý tiêm phòng</span>
             </a>
 
             <a href="{{ route('vet.workflow.inpatient') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.inpatient') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">9</span>
-                <span>Theo doi noi tru</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M3 12h18"></path>
+                        <path d="M5 12V8a2 2 0 0 1 2-2h4"></path>
+                        <path d="M19 12v6"></path>
+                        <path d="M5 18h14"></path>
+                    </svg>
+                </span>
+                <span>Theo dõi nội trú</span>
             </a>
 
             <a href="{{ route('vet.workflow.follow-up') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.follow-up') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">10</span>
-                <span>Tai kham</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M21 12a9 9 0 1 1-3-6.7"></path>
+                        <path d="M21 3v6h-6"></path>
+                    </svg>
+                </span>
+                <span>Tái khám</span>
             </a>
 
             <a href="{{ route('vet.workflow.sign-off') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.sign-off') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">11</span>
-                <span>Ky xac nhan</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M20 6 9 17l-5-5"></path>
+                        <path d="M4 20h16"></path>
+                    </svg>
+                </span>
+                <span>Ký xác nhận</span>
             </a>
 
             <a href="{{ route('vet.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.appointments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
@@ -203,17 +276,27 @@
                         <path d="M8 14h8"></path>
                     </svg>
                 </span>
-                <span>Lich kham cua toi</span>
+                <span>Lịch khám của tôi</span>
             </a>
 
             <a href="{{ route('vet.schedule-week') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.schedule-week') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">12</span>
-                <span>Lich theo tuan</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M8 2v4"></path>
+                        <path d="M16 2v4"></path>
+                        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                        <path d="M8 14h.01"></path>
+                        <path d="M12 14h.01"></path>
+                        <path d="M16 14h.01"></path>
+                    </svg>
+                </span>
+                <span>Lịch theo tuần</span>
             </a>
         </div>
 
-        <div id="nav-admin" class="hidden">
-            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Admin</div>
+        <div id="nav-admin" class="{{ request()->routeIs('admin.*') ? '' : 'hidden' }}">
+            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Quản trị</div>
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📊</span>
                 <span>Dashboard</span>
@@ -246,7 +329,7 @@
                 <span>Lịch Hẹn</span>
             </a>
 
-            <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Kho & Tài chính</div>
+            <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Kho & tài chính</div>
 
             <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.medicines*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">💊</span>
@@ -263,7 +346,7 @@
                 <span>Doanh thu</span>
             </a>
 
-            <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Báo cáo & Hệ thống</div>
+            <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Báo cáo & hệ thống</div>
 
             <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.reports*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📈</span>

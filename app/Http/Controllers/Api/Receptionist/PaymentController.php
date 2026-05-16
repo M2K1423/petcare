@@ -64,7 +64,7 @@ class PaymentController extends Controller
 
         if ($appointment->status !== 'completed') {
             return response()->json([
-                'message' => 'Lich kham chua hoan thanh khong the thanh toan.',
+                'message' => 'Lịch khám chưa hoàn thành nên không thể thanh toán.',
             ], 400);
         }
 
@@ -75,7 +75,7 @@ class PaymentController extends Controller
 
         if ($existingPaidPayment) {
             return response()->json([
-                'message' => 'Appointment has already been paid.',
+                'message' => 'Lịch hẹn này đã được thanh toán.',
                 'data' => $existingPaidPayment,
             ], 422);
         }
@@ -91,12 +91,12 @@ class PaymentController extends Controller
                     'gateway' => 'vnpay',
                     'status' => 'pending',
                     'paid_at' => null,
-                    'notes' => $validated['notes'] ?? 'Cho thanh toan qua VNPay.',
+                    'notes' => $validated['notes'] ?? 'Chờ thanh toán qua VNPay.',
                 ],
             );
 
             return response()->json([
-                'message' => 'VNPay payment created successfully.',
+                'message' => 'Đã tạo thanh toán VNPay thành công.',
                 'data' => $payment,
                 'payment_url' => $this->vnpay->createPaymentUrl($payment, $request),
             ], 201);
@@ -111,11 +111,11 @@ class PaymentController extends Controller
             'status' => 'paid',
             'paid_at' => Carbon::now(),
             'transaction_code' => 'TXN-' . strtoupper(Str::random(10)),
-            'notes' => $validated['notes'] ?? 'Thanh toan truc tiep tai quay',
+            'notes' => $validated['notes'] ?? 'Thanh toán trực tiếp tại quầy.',
         ]);
 
         return response()->json([
-            'message' => "Thanh toan hoa don cho {$appointment->owner->name} thanh cong.",
+            'message' => "Đã thanh toán hóa đơn cho {$appointment->owner->name} thành công.",
             'data' => $payment,
         ], 201);
     }

@@ -16,13 +16,13 @@ class EnsureUserHasRole
         $user = $request->user();
 
         if (! $user) {
-            abort(401, 'Unauthorized.');
+            abort(401, 'Không có quyền truy cập.');
         }
 
         $roleSlug = $user->role?->slug;
 
         if (! $roleSlug || ! in_array($roleSlug, $roles, true)) {
-            abort(403, 'You do not have permission to access this area.');
+            abort(403, 'Bạn không có quyền truy cập khu vực này.');
         }
 
         return $next($request);

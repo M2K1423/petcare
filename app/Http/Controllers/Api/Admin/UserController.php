@@ -65,7 +65,7 @@ class UserController extends Controller
             $user->id,
             [],
             $user->only(['name', 'email', 'phone', 'role_id']),
-            "Created user: {$user->name}"
+            "Đã tạo người dùng: {$user->name}"
         );
 
         return response()->json($user->load('role'), Response::HTTP_CREATED);
@@ -99,7 +99,7 @@ class UserController extends Controller
             $user->id,
             $oldValues,
             $newValues,
-            "Updated user: {$user->name}"
+            "Đã cập nhật người dùng: {$user->name}"
         );
 
         return response()->json($user->load('role'));
@@ -121,10 +121,10 @@ class UserController extends Controller
             $userId,
             $user->only(['name', 'email', 'role_id']),
             [],
-            "Deleted user: {$userName}"
+            "Đã xóa người dùng: {$userName}"
         );
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->json(['message' => 'Đã xóa người dùng thành công']);
     }
 
     public function lock(User $user)
@@ -142,10 +142,10 @@ class UserController extends Controller
             $user->id,
             ['is_locked' => false],
             ['is_locked' => true, 'locked_at' => $user->locked_at],
-            "Locked user: {$user->name}"
+            "Đã khóa người dùng: {$user->name}"
         );
 
-        return response()->json(['message' => 'User locked successfully', 'user' => $user]);
+        return response()->json(['message' => 'Đã khóa người dùng thành công', 'user' => $user]);
     }
 
     public function unlock(User $user)
@@ -163,10 +163,10 @@ class UserController extends Controller
             $user->id,
             ['is_locked' => true],
             ['is_locked' => false],
-            "Unlocked user: {$user->name}"
+            "Đã mở khóa người dùng: {$user->name}"
         );
 
-        return response()->json(['message' => 'User unlocked successfully', 'user' => $user]);
+        return response()->json(['message' => 'Đã mở khóa người dùng thành công', 'user' => $user]);
     }
 
     public function resetPassword(Request $request, User $user)
@@ -187,10 +187,10 @@ class UserController extends Controller
             $user->id,
             [],
             ['password_reset' => true],
-            "Reset password for user: {$user->name}"
+            "Đã đặt lại mật khẩu cho người dùng: {$user->name}"
         );
 
-        return response()->json(['message' => 'Password reset successfully']);
+        return response()->json(['message' => 'Đã đặt lại mật khẩu thành công']);
     }
 
     public function assignRole(Request $request, User $user)
@@ -215,9 +215,9 @@ class UserController extends Controller
             $user->id,
             ['role_id' => $oldRole, 'role_name' => $oldRoleName],
             ['role_id' => $user->role_id, 'role_name' => $newRoleName],
-            "Assigned role to user {$user->name}: {$oldRoleName} → {$newRoleName}"
+            "Đã gán vai trò cho người dùng {$user->name}: {$oldRoleName} → {$newRoleName}"
         );
 
-        return response()->json(['message' => 'Role assigned successfully', 'user' => $user->load('role')]);
+        return response()->json(['message' => 'Đã gán vai trò thành công', 'user' => $user->load('role')]);
     }
 }

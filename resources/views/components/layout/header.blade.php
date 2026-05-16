@@ -4,7 +4,7 @@
             <span class="grid h-9 w-9 place-content-center rounded-full border border-[#C1C4C9] bg-[#FFFFFF] text-xs font-bold text-[#999999]">PAW</span>
             <span>
                 <span class="block text-sm font-semibold tracking-[0.22em] text-[#333333]">PETWELL</span>
-                <span class="block text-[11px] uppercase tracking-[0.18em] text-[#666666]">Clinic Portal</span>
+                <span class="block text-[11px] uppercase tracking-[0.18em] text-[#666666]">Cổng phòng khám</span>
             </span>
         </a>
 
@@ -18,14 +18,14 @@
                 </span>
                 <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder="Tìm kiếm..."
                     class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] py-2 pl-9 pr-3 text-sm text-[#333333] placeholder:text-[#999999] outline-none transition focus:border-[#2A6496]"
                 />
             </label>
 
             <details class="group relative" id="notification-dropdown">
                 <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496] cursor-pointer">
-                    <span class="sr-only">Notifications</span>
+                    <span class="sr-only">Thông báo</span>
                     <div class="relative">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
                             <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"></path>
@@ -37,16 +37,16 @@
 
                 <div class="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
                     <div class="border-b border-[#DDE1E6] px-4 py-3 bg-[#F8F9FA]">
-                        <h3 class="text-sm font-semibold text-[#333333]">Notifications</h3>
+                        <h3 class="text-sm font-semibold text-[#333333]">Thông báo</h3>
                     </div>
                     <div id="notification-list" class="max-h-[300px] overflow-y-auto">
-                        <div class="px-4 py-8 text-center text-sm text-[#999999]">Loading...</div>
+                        <div class="px-4 py-8 text-center text-sm text-[#999999]">Đang tải...</div>
                     </div>
                 </div>
             </details>
 
             <a href="{{ route('owner.cart') }}" id="cart-link" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496]">
-                <span class="sr-only">Cart</span>
+                <span class="sr-only">Giỏ hàng</span>
                 <div class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
                         <path d="M6 6h15l-1.5 9h-13z"></path>
@@ -59,7 +59,7 @@
 
             <details class="group relative">
                 <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#C1C4C9] transition hover:border-[#2A6496] hover:text-[#2A6496]">
-                    <span class="sr-only">User menu</span>
+                    <span class="sr-only">Menu người dùng</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
                         <circle cx="12" cy="8" r="4"></circle>
                         <path d="M4 20c1.8-3.2 4.5-5 8-5s6.2 1.8 8 5"></path>
@@ -67,8 +67,8 @@
                 </summary>
 
                 <div class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
-                    <a href="{{ route('owner.profile') }}" data-role-profile-link="true" class="block px-4 py-2.5 text-sm text-[#333333] transition hover:bg-[#F1F3F5]">Profile</a>
-                    <button type="button" data-action="logout" class="block w-full px-4 py-2.5 text-left text-sm text-[#B42318] transition hover:bg-[#FDECEC]">Logout</button>
+                    <a href="{{ route('owner.profile') }}" data-role-profile-link="true" class="block px-4 py-2.5 text-sm text-[#333333] transition hover:bg-[#F1F3F5]">Hồ sơ</a>
+                    <button type="button" data-action="logout" class="block w-full px-4 py-2.5 text-left text-sm text-[#B42318] transition hover:bg-[#FDECEC]">Đăng xuất</button>
                 </div>
             </details>
         </div>

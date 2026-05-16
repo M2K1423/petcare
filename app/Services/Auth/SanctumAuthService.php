@@ -26,7 +26,7 @@ class SanctumAuthService
 
         Auth::guard('web')->login($user);
 
-        return $this->createAuthPayload($user, 'Register successful.');
+        return $this->createAuthPayload($user, 'Đăng ký thành công.');
     }
 
     /**
@@ -38,18 +38,23 @@ class SanctumAuthService
 
         if (! $user || ! Hash::check($payload['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Invalid email or password.'],
+                'email' => ['Email hoặc mật khẩu không đúng.'],
             ]);
         }
 
         Auth::guard('web')->login($user);
 
-        return $this->createAuthPayload($user, 'Login successful.');
+        return $this->createAuthPayload($user, 'Đăng nhập thành công.');
     }
 
     public function logout(?User $user): void
     {
-        $user?->currentAccessToken()?->delete();
+        $token = $user?->currentAccessToken();
+
+        if ($token) {
+            \Laravel\Sanctum\PersonalAccessToken::query()->where('id', $token->id)->delete();
+        }
+
         Auth::guard('web')->logout();
     }
 
@@ -74,7 +79,7 @@ class SanctumAuthService
     {
         if (! $user) {
             throw ValidationException::withMessages([
-                'user' => ['Unauthenticated.'],
+                'user' => ['Chưa xác thực.'],
             ]);
         }
 
@@ -84,7 +89,7 @@ class SanctumAuthService
         ])->save();
 
         return [
-            'message' => 'Profile updated successfully.',
+            'message' => 'Đã cập nhật hồ sơ thành công.',
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,

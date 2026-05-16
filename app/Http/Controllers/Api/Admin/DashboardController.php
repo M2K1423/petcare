@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public function index()
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $dashboard = [
@@ -90,8 +90,8 @@ class DashboardController extends Controller
         if ($lowStockCount > 0) {
             $alerts[] = [
                 'type' => 'warning',
-                'title' => 'Low Stock Alert',
-                'message' => "{$lowStockCount} medicines have low stock",
+                'title' => 'Cảnh báo tồn kho thấp',
+                'message' => "{$lowStockCount} thuốc đang có tồn kho thấp",
                 'action' => '/admin/medicines/low-stock',
             ];
         }
@@ -101,8 +101,8 @@ class DashboardController extends Controller
         if ($expiringCount > 0) {
             $alerts[] = [
                 'type' => 'danger',
-                'title' => 'Expiring Medicines',
-                'message' => "{$expiringCount} medicines are expiring within 30 days",
+                'title' => 'Thuốc sắp hết hạn',
+                'message' => "{$expiringCount} thuốc sẽ hết hạn trong vòng 30 ngày",
                 'action' => '/admin/medicines/expiring',
             ];
         }
@@ -112,8 +112,8 @@ class DashboardController extends Controller
         if ($pendingPayments > 0) {
             $alerts[] = [
                 'type' => 'info',
-                'title' => 'Pending Payments',
-                'message' => "{$pendingPayments} payments awaiting confirmation",
+                'title' => 'Thanh toán chờ xử lý',
+                'message' => "{$pendingPayments} khoản thanh toán đang chờ xác nhận",
                 'action' => '/admin/payments?status=pending',
             ];
         }
@@ -123,8 +123,8 @@ class DashboardController extends Controller
         if ($lockedUsers > 0) {
             $alerts[] = [
                 'type' => 'info',
-                'title' => 'Locked Users',
-                'message' => "{$lockedUsers} user accounts are locked",
+                'title' => 'Người dùng bị khóa',
+                'message' => "{$lockedUsers} tài khoản người dùng đang bị khóa",
                 'action' => '/admin/users?locked=true',
             ];
         }
@@ -154,7 +154,7 @@ class DashboardController extends Controller
     public function stats(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $period = $request->input('period', 'month'); // week, month, year

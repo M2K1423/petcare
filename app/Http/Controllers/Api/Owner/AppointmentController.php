@@ -30,7 +30,7 @@ class AppointmentController extends Controller
         $pet = Pet::query()->findOrFail((int) $request->input('pet_id'));
 
         if ((int) $pet->owner_id !== (int) $request->user()->id) {
-            abort(403, 'You can only create appointments for your own pets.');
+            abort(403, 'Bạn chỉ có thể tạo lịch hẹn cho thú cưng của mình.');
         }
 
         $appointmentAt = $this->buildAppointmentAt(
@@ -47,7 +47,7 @@ class AppointmentController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Appointment created successfully.',
+            'message' => 'Đã tạo lịch hẹn thành công.',
             'data' => $appointment->load(['pet:id,name,species_id', 'pet.species:id,name']),
         ], 201);
     }
@@ -55,12 +55,12 @@ class AppointmentController extends Controller
     public function destroy(Request $request, Appointment $appointment): JsonResponse
     {
         if ((int) $appointment->owner_id !== (int) $request->user()->id) {
-            abort(403, 'You can only cancel your own appointments.');
+            abort(403, 'Bạn chỉ có thể hủy lịch hẹn của mình.');
         }
 
         if ($appointment->status === 'cancelled') {
             return response()->json([
-                'message' => 'Appointment is already cancelled.',
+                'message' => 'Lịch hẹn đã bị hủy trước đó.',
                 'data' => $appointment,
             ]);
         }
@@ -69,7 +69,7 @@ class AppointmentController extends Controller
         $appointment->save();
 
         return response()->json([
-            'message' => 'Appointment cancelled successfully.',
+            'message' => 'Đã hủy lịch hẹn thành công.',
             'data' => $appointment,
         ]);
     }
