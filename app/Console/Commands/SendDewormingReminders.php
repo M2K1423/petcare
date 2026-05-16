@@ -21,7 +21,7 @@ class SendDewormingReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Send deworming reminders for pets with deworming due in 3 days';
+    protected $description = 'Gửi nhắc tẩy giun cho thú cưng đến hạn sau 3 ngày';
 
     /**
      * Execute the console command.
@@ -60,13 +60,13 @@ class SendDewormingReminders extends Command
                 'user_id' => $owner->id,
                 'appointment_id' => null,
                 'type' => 'deworming_reminder',
-                'title' => 'Nhac lich tay giun',
-                'message' => "Da den han tay giun cho {$record->pet->name} vao ngay {$record->next_due_on->format('d/m/Y')}. Vui long dat lich som.",
+                'title' => 'Nhắc lịch tẩy giun',
+                'message' => "Đã đến hạn tẩy giun cho {$record->pet->name} vào ngày {$record->next_due_on->format('d/m/Y')}. Vui lòng đặt lịch sớm.",
             ]);
 
             $count++;
         }
 
-        $this->info("Created {$count} deworming reminders.");
+        $this->info("Đã tạo {$count} nhắc nhở tẩy giun.");
     }
 }

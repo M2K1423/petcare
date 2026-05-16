@@ -13,7 +13,7 @@ class SettingController extends Controller
     public function index()
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $settings = SystemSetting::all();
@@ -23,12 +23,12 @@ class SettingController extends Controller
     public function show(string $key)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $setting = SystemSetting::where('key', $key)->first();
         if (!$setting) {
-            return response()->json(['message' => 'Setting not found'], 404);
+            return response()->json(['message' => 'Không tìm thấy cài đặt'], 404);
         }
 
         return response()->json($setting);
@@ -37,7 +37,7 @@ class SettingController extends Controller
     public function update(Request $request, string $key)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $validated = $request->validate([
@@ -63,16 +63,16 @@ class SettingController extends Controller
             SystemSetting::where('key', $key)->first()->id,
             ['key' => $key, 'value' => $oldValue],
             ['key' => $key, 'value' => $validated['value']],
-            "Updated setting: {$key}"
+            "Đã cập nhật cài đặt: {$key}"
         );
 
-        return response()->json(['message' => 'Setting updated', 'setting' => SystemSetting::where('key', $key)->first()]);
+        return response()->json(['message' => 'Đã cập nhật cài đặt', 'setting' => SystemSetting::where('key', $key)->first()]);
     }
 
     public function bulk(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $validated = $request->validate([
@@ -98,11 +98,11 @@ class SettingController extends Controller
                 $oldSetting?->id ?? 0,
                 ['key' => $setting['key'], 'value' => $oldSetting?->value],
                 ['key' => $setting['key'], 'value' => $setting['value']],
-                "Updated settings (bulk): {$setting['key']}"
+                "Đã cập nhật cài đặt (hàng loạt): {$setting['key']}"
             );
         }
 
-        return response()->json(['message' => 'Settings updated', 'count' => count($validated['settings'])]);
+        return response()->json(['message' => 'Đã cập nhật cài đặt', 'count' => count($validated['settings'])]);
     }
 
     // Common clinic settings
@@ -130,7 +130,7 @@ class SettingController extends Controller
     public function updateClinicSettings(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $validated = $request->validate([
@@ -162,9 +162,9 @@ class SettingController extends Controller
             0,
             [],
             $validated,
-            'Updated clinic settings'
+            'Đã cập nhật cài đặt phòng khám'
         );
 
-        return response()->json(['message' => 'Clinic settings updated', 'settings' => $this->getClinicSettings()->getData(true)]);
+        return response()->json(['message' => 'Đã cập nhật cài đặt phòng khám', 'settings' => $this->getClinicSettings()->getData(true)]);
     }
 }

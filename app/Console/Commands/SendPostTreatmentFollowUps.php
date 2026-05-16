@@ -21,7 +21,7 @@ class SendPostTreatmentFollowUps extends Command
      *
      * @var string
      */
-    protected $description = 'Send follow-up notifications 3 days after completed appointments';
+    protected $description = 'Gửi nhắc tái khám 3 ngày sau lịch hẹn hoàn thành';
 
     /**
      * Execute the console command.
@@ -56,13 +56,13 @@ class SendPostTreatmentFollowUps extends Command
                 'user_id' => $owner->id,
                 'appointment_id' => $appointment->id,
                 'type' => 'aftercare_followup',
-                'title' => 'Theo doi sau dieu tri',
-                'message' => "Phong kham nho ban cap nhat tinh trang cua {$appointment->pet->name} sau 3 ngay dieu tri. Neu co dau hieu bat thuong, vui long dat lich tai kham.",
+                'title' => 'Theo dõi sau điều trị',
+                'message' => "Phòng khám nhắc bạn cập nhật tình trạng của {$appointment->pet->name} sau 3 ngày điều trị. Nếu có dấu hiệu bất thường, vui lòng đặt lịch tái khám.",
             ]);
 
             $count++;
         }
 
-        $this->info("Created {$count} post-treatment follow-up notifications.");
+        $this->info("Đã tạo {$count} thông báo theo dõi sau điều trị.");
     }
 }

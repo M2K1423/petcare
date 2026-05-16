@@ -28,7 +28,7 @@ class MedicineController extends Controller
         $medicine = Medicine::query()->create($validated);
 
         return response()->json([
-            'message' => 'Medicine created successfully.',
+            'message' => 'Đã tạo thuốc thành công.',
             'data' => $medicine,
         ], 201);
     }
@@ -41,7 +41,7 @@ class MedicineController extends Controller
         $medicine->save();
 
         return response()->json([
-            'message' => 'Medicine updated successfully.',
+            'message' => 'Đã cập nhật thuốc thành công.',
             'data' => $medicine,
         ]);
     }
@@ -50,14 +50,14 @@ class MedicineController extends Controller
     {
         if ($medicine->orderItems()->exists()) {
             return response()->json([
-                'message' => 'This medicine is already used in orders and cannot be deleted.',
+                'message' => 'Thuốc này đã được dùng trong đơn hàng nên không thể xóa.',
             ], 422);
         }
 
         $medicine->delete();
 
         return response()->json([
-            'message' => 'Medicine deleted successfully.',
+            'message' => 'Đã xóa thuốc thành công.',
         ]);
     }
 

@@ -13,7 +13,7 @@ class InventoryController extends Controller
     public function index(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $query = Medicine::query();
@@ -39,7 +39,7 @@ class InventoryController extends Controller
     public function importStock(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $validated = $request->validate([
@@ -66,7 +66,7 @@ class InventoryController extends Controller
         );
 
         return response()->json([
-            'message' => 'Stock imported successfully',
+            'message' => 'Đã nhập kho thành công',
             'medicine' => $medicine,
             'quantity_added' => $validated['quantity'],
             'new_quantity' => $medicine->stock_quantity,
@@ -76,7 +76,7 @@ class InventoryController extends Controller
     public function exportStock(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $validated = $request->validate([
@@ -90,7 +90,7 @@ class InventoryController extends Controller
 
         if ($medicine->stock_quantity < $validated['quantity']) {
             return response()->json([
-                'message' => 'Insufficient stock',
+                'message' => 'Không đủ tồn kho',
                 'available' => $medicine->stock_quantity,
                 'requested' => $validated['quantity'],
             ], 422);
@@ -111,7 +111,7 @@ class InventoryController extends Controller
         );
 
         return response()->json([
-            'message' => 'Stock exported successfully',
+            'message' => 'Đã xuất kho thành công',
             'medicine' => $medicine,
             'quantity_exported' => $validated['quantity'],
             'export_type' => $validated['export_type'],
@@ -122,7 +122,7 @@ class InventoryController extends Controller
     public function getInventoryValue()
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $medicines = Medicine::get();
@@ -147,7 +147,7 @@ class InventoryController extends Controller
     public function getLowStockAlert()
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $threshold = request()->input('threshold', 10);
@@ -165,7 +165,7 @@ class InventoryController extends Controller
     public function getExpirationAlert()
     {
         if (!auth()->user()?->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Không có quyền truy cập'], 403);
         }
 
         $daysThreshold = request()->input('days', 30);

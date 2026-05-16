@@ -48,7 +48,7 @@ class VaccinationReminderNotification extends Notification implements ShouldQueu
             ->line("Đây là lời nhắc từ PetCare. Thú cưng {$petName} của bạn sắp đến ngày cần tiêm nhắc lại mũi {$vaccineName}.")
             ->line("Ngày tiêm dự kiến: {$dueDate}")
             ->action('Đặt lịch ngay', url(env('APP_FRONTEND_URL', 'http://localhost') . '/owner/appointments'))
-            ->line('Vui lòng sắp xếp thời gian để thú cưng dượcc bảo vệ tốt nhất!');
+                ->line('Vui lòng sắp xếp thời gian để thú cưng được bảo vệ tốt nhất!');
     }
 
     /**

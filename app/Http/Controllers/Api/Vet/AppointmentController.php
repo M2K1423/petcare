@@ -119,7 +119,7 @@ class AppointmentController extends Controller
     public function show(Request $request, Appointment $appointment): JsonResponse
     {
         $doctor = $this->resolveDoctor($request);
-        abort_if($appointment->doctor_id !== $doctor->id, 403, 'You cannot access this appointment.');
+        abort_if($appointment->doctor_id !== $doctor->id, 403, 'Bạn không có quyền truy cập lịch hẹn này.');
 
         $appointment->load([
             'pet.species',
@@ -149,11 +149,11 @@ class AppointmentController extends Controller
     public function acceptCase(Request $request, Appointment $appointment): JsonResponse
     {
         $doctor = $this->resolveDoctor($request);
-        abort_if($appointment->doctor_id !== $doctor->id, 403, 'You cannot accept this appointment.');
+        abort_if($appointment->doctor_id !== $doctor->id, 403, 'Bạn không có quyền nhận ca khám này.');
 
         if ($appointment->status === 'cancelled') {
             return response()->json([
-                'message' => 'Cancelled appointments cannot be accepted.',
+                'message' => 'Không thể nhận ca khám đã bị hủy.',
             ], 422);
         }
 
@@ -165,7 +165,7 @@ class AppointmentController extends Controller
         ])->save();
 
         return response()->json([
-            'message' => 'Case accepted successfully.',
+            'message' => 'Đã nhận ca khám thành công.',
             'data' => $appointment->fresh(['pet.species', 'owner', 'service', 'medicalRecord']),
         ]);
     }
@@ -173,7 +173,7 @@ class AppointmentController extends Controller
     public function updateWorkflowStatus(Request $request, Appointment $appointment): JsonResponse
     {
         $doctor = $this->resolveDoctor($request);
-        abort_if($appointment->doctor_id !== $doctor->id, 403, 'You cannot update this appointment.');
+        abort_if($appointment->doctor_id !== $doctor->id, 403, 'Bạn không có quyền cập nhật lịch hẹn này.');
 
         $validated = $request->validate([
             'workflow_status' => ['required', 'string', 'in:' . implode(',', $this->workflowStatuses())],
@@ -208,7 +208,7 @@ class AppointmentController extends Controller
         $appointment->forceFill($payload)->save();
 
         return response()->json([
-            'message' => 'Workflow status updated successfully.',
+            'message' => 'Đã cập nhật trạng thái quy trình thành công.',
             'data' => $appointment->fresh(['pet.species', 'owner', 'service', 'medicalRecord']),
         ]);
     }
@@ -216,7 +216,7 @@ class AppointmentController extends Controller
     public function saveMedicalRecord(Request $request, Appointment $appointment): JsonResponse
     {
         $doctor = $this->resolveDoctor($request);
-        abort_if($appointment->doctor_id !== $doctor->id, 403, 'You cannot update this appointment.');
+        abort_if($appointment->doctor_id !== $doctor->id, 403, 'Bạn không có quyền cập nhật lịch hẹn này.');
 
         $validated = $request->validate([
             'temperature_c' => 'nullable|numeric|min:30|max:45',
@@ -262,7 +262,7 @@ class AppointmentController extends Controller
 
         if ($appointment->status === 'cancelled') {
             return response()->json([
-                'message' => 'Cancelled appointments cannot be examined.',
+                'message' => 'Không thể khám lịch hẹn đã bị hủy.',
             ], 422);
         }
 
@@ -337,7 +337,7 @@ class AppointmentController extends Controller
         });
 
         return response()->json([
-            'message' => 'Medical record saved successfully.',
+            'message' => 'Đã lưu bệnh án thành công.',
             'data' => $appointment,
         ]);
     }
@@ -349,7 +349,7 @@ class AppointmentController extends Controller
             ->first();
 
         if (! $doctor) {
-            abort(422, 'Your vet account is not linked to a doctor profile yet. Please ask admin/receptionist to map your account in doctor management.');
+            abort(422, 'Tài khoản bác sĩ của bạn chưa được liên kết với hồ sơ bác sĩ. Vui lòng nhờ quản trị viên hoặc lễ tân ánh xạ tài khoản trong phần quản lý bác sĩ.');
         }
 
         return $doctor;

@@ -44,11 +44,25 @@ function setStatus(message: string, kind: 'neutral' | 'success' | 'error' = 'neu
     statusEl.textContent = message;
 }
 
+function translateSpeciesName(name: string): string {
+    const normalized = name.trim().toLowerCase();
+    const mapping: Record<string, string> = {
+        bird: 'Chim',
+        cat: 'Mèo',
+        dog: 'Chó',
+        fish: 'Cá',
+        rabbit: 'Thỏ',
+        hamster: 'Chuột hamster',
+    };
+
+    return mapping[normalized] || name;
+}
+
 function getPetId(): number {
     const petId = Number(rootEl?.dataset.petId ?? '');
 
     if (!Number.isInteger(petId) || petId <= 0) {
-        throw new Error('Invalid pet id.');
+        throw new Error('Mã thú cưng không hợp lệ.');
     }
 
     return petId;
@@ -83,7 +97,7 @@ async function ensureOwner(): Promise<void> {
     const me = await callApi<AuthMeResponse>('/api/auth/me', 'GET');
 
     if (!me.authenticated || me.user?.role !== 'owner') {
-        throw new Error('Owner account is required to edit pets.');
+        throw new Error('Cần tài khoản chủ nuôi để chỉnh sửa thú cưng.');
     }
 }
 
@@ -93,12 +107,12 @@ async function loadSpecies(): Promise<void> {
     const response = await callApi<{ data: Species[] }>('/api/owner/species', 'GET');
 
     if (response.data.length === 0) {
-        speciesSelect.innerHTML = '<option value="">No species data</option>';
+        speciesSelect.innerHTML = '<option value="">Không có dữ liệu loài</option>';
         return;
     }
 
     speciesSelect.innerHTML = response.data
-        .map((species) => `<option value="${species.id}">${species.name}</option>`)
+        .map((species) => `<option value="${species.id}">${translateSpeciesName(species.name)}</option>`)
         .join('');
 }
 
@@ -128,7 +142,7 @@ async function bootstrap(): Promise<void> {
         await ensureOwner();
         await loadSpecies();
         const pet = await loadPet(petId);
-        setStatus(`Editing: ${pet.name}`, 'neutral');
+        setStatus(`Đang chỉnh sửa: ${pet.name}`, 'neutral');
     } catch (error) {
         setStatus((error as Error).message, 'error');
         return;
@@ -141,7 +155,7 @@ async function bootstrap(): Promise<void> {
             const payload = normalizeFormPayload(formEl);
             await callApi(`/api/owner/pets/${petId}`, 'PUT', payload);
             const updatedPet = await loadPet(petId);
-            setStatus(`Saved successfully: ${updatedPet.name}`, 'success');
+            setStatus(`Đã lưu thành công: ${updatedPet.name}`, 'success');
         } catch (error) {
             setStatus((error as Error).message, 'error');
         }

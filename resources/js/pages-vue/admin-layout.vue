@@ -7,7 +7,7 @@
         
         <div class="space-y-2">
           <router-link to="/admin/dashboard" class="block px-4 py-2 rounded hover:bg-slate-700" active-class="bg-blue-600">
-            📊 Dashboard
+            📊 Bảng điều khiển
           </router-link>
           
           <div class="text-xs uppercase text-gray-400 mt-6 mb-2">Quản Lý</div>
@@ -82,7 +82,7 @@ const userInfo = ref({ name: 'Admin' });
 
 const pageTitle = computed(() => {
   const titles = {
-    'dashboard': '📊 Dashboard',
+    'dashboard': '📊 Bảng điều khiển',
     'users': '👥 Quản Lý Người Dùng',
     'doctors': '🏥 Quản Lý Bác Sĩ',
     'services': '⚕️ Quản Lý Dịch Vụ',

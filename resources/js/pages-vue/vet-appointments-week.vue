@@ -57,6 +57,20 @@ function formatDateLabel(date: Date): string {
     });
 }
 
+function formatStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+        awaiting_exam: 'Chờ khám',
+        examining: 'Đang khám',
+        awaiting_lab: 'Chờ xét nghiệm',
+        treating: 'Đang điều trị',
+        completed: 'Hoàn thành',
+        confirmed: 'Đã xác nhận',
+        cancelled: 'Đã hủy',
+    };
+
+    return map[status] ?? status;
+}
+
 function formatDateTime(input: string): string {
     const date = new Date(input);
     if (Number.isNaN(date.getTime())) return input;
@@ -131,17 +145,17 @@ function renderWeek(): void {
         const items = grouped[key] ?? [];
 
         const cards = items.length === 0
-            ? '<p class="rounded-xl border border-dashed border-[#C7CFDA] bg-white px-3 py-3 text-xs text-[#64748B]">No appointments</p>'
+            ? '<p class="rounded-xl border border-dashed border-[#C7CFDA] bg-white px-3 py-3 text-xs text-[#64748B]">Không có lịch hẹn</p>'
             : items.map((appointment) => `
                 <article class="rounded-xl border border-[#DDE1E6] bg-white p-3">
                     <div class="flex items-start justify-between gap-2">
-                        <p class="text-sm font-bold text-[#333333]">${appointment.pet?.name ?? 'Unknown pet'}</p>
-                        <span class="rounded-full px-2 py-1 text-[10px] font-semibold ${statusBadge(appointment.status)}">${appointment.status.toUpperCase()}</span>
+                        <p class="text-sm font-bold text-[#333333]">${appointment.pet?.name ?? 'Thú cưng chưa rõ'}</p>
+                        <span class="rounded-full px-2 py-1 text-[10px] font-semibold ${statusBadge(appointment.status)}">${formatStatusLabel(appointment.status)}</span>
                     </div>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">${appointment.pet?.species?.name ?? 'N/A'} • ${appointment.owner?.name ?? 'N/A'}</p>
+                    <p class="mt-1 text-xs text-[#4A4A4A]">${appointment.pet?.species?.name ?? 'Chưa có'} • ${appointment.owner?.name ?? 'Chưa có'}</p>
                     <p class="mt-1 text-xs text-[#4A4A4A]">${formatDateTime(appointment.appointment_at)}</p>
-                    <p class="mt-1 text-xs text-[#64748B]">Queue: ${appointment.queue_number ?? 'N/A'}</p>
-                    <a href="/vet/appointments/${appointment.id}" class="mt-2 inline-flex items-center rounded-lg border border-[#2A6496] bg-[#2A6496] px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-[#235780]">Open</a>
+                    <p class="mt-1 text-xs text-[#64748B]">Số thứ tự: ${appointment.queue_number ?? 'Chưa có'}</p>
+                    <a href="/vet/appointments/${appointment.id}" class="mt-2 inline-flex items-center rounded-lg border border-[#2A6496] bg-[#2A6496] px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-[#235780]">Mở ca</a>
                 </article>
             `).join('');
 
@@ -156,7 +170,7 @@ function renderWeek(): void {
 
 async function loadAppointments(): Promise<void> {
     if (gridEl) {
-        gridEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Loading weekly schedule...</div>';
+        gridEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-4 text-sm text-[#4A4A4A]">Đang tải lịch theo tuần...</div>';
     }
 
     const response = await callApi<{ data: Appointment[] }>('/api/vet/appointments', 'GET');
@@ -167,7 +181,7 @@ async function loadAppointments(): Promise<void> {
 onMounted(() => {
     void loadAppointments().catch(() => {
         if (gridEl) {
-            gridEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-4 text-sm text-[#B91C1C]">Failed to load weekly schedule.</div>';
+            gridEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-4 text-sm text-[#B91C1C]">Không thể tải lịch theo tuần.</div>';
         }
     });
 

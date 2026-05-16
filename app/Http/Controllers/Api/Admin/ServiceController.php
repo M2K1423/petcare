@@ -55,7 +55,7 @@ class ServiceController extends Controller
             $service->id,
             [],
             $service->only(['name', 'price', 'duration_minutes']),
-            "Created service: {$service->name}"
+            "Đã tạo dịch vụ: {$service->name}"
         );
 
         return response()->json($service, Response::HTTP_CREATED);
@@ -90,7 +90,7 @@ class ServiceController extends Controller
             $service->id,
             $oldValues,
             $newValues,
-            "Updated service: {$service->name}"
+            "Đã cập nhật dịch vụ: {$service->name}"
         );
 
         return response()->json($service);
@@ -112,10 +112,10 @@ class ServiceController extends Controller
             $serviceId,
             $service->only(['name', 'price']),
             [],
-            "Deleted service: {$serviceName}"
+            "Đã xóa dịch vụ: {$serviceName}"
         );
 
-        return response()->json(['message' => 'Service deleted successfully']);
+        return response()->json(['message' => 'Đã xóa dịch vụ thành công']);
     }
 
     public function toggle(Request $request, Service $service)
@@ -133,10 +133,10 @@ class ServiceController extends Controller
             $service->id,
             ['is_active' => $oldValue],
             ['is_active' => $service->is_active],
-            "Toggled service status: {$service->name} → " . ($service->is_active ? 'Active' : 'Inactive')
+            "Đã chuyển trạng thái dịch vụ: {$service->name} → " . ($service->is_active ? 'Đang hoạt động' : 'Ngừng hoạt động')
         );
 
-        return response()->json(['message' => 'Service status toggled', 'service' => $service]);
+        return response()->json(['message' => 'Đã chuyển trạng thái dịch vụ', 'service' => $service]);
     }
 
     public function updatePrice(Request $request, Service $service)
@@ -158,9 +158,9 @@ class ServiceController extends Controller
             $service->id,
             ['price' => $oldPrice],
             ['price' => $service->price],
-            "Updated price for service: {$service->name} ({$oldPrice} → {$service->price})"
+            "Đã cập nhật giá dịch vụ: {$service->name} ({$oldPrice} → {$service->price})"
         );
 
-        return response()->json(['message' => 'Service price updated', 'service' => $service]);
+        return response()->json(['message' => 'Đã cập nhật giá dịch vụ', 'service' => $service]);
     }
 }

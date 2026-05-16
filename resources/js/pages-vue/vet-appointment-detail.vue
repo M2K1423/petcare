@@ -112,15 +112,15 @@ function setStatus(message: string, tone: 'success' | 'error'): void {
 
 function workflowLabel(status?: string | null): string {
     const map: Record<string, string> = {
-        awaiting_exam: 'Cho kham',
-        examining: 'Dang kham',
-        awaiting_lab: 'Cho xet nghiem',
-        treating: 'Dang dieu tri',
-        completed: 'Hoan thanh',
-        follow_up: 'Tai kham',
+        awaiting_exam: 'Chờ khám',
+        examining: 'Đang khám',
+        awaiting_lab: 'Chờ xét nghiệm',
+        treating: 'Đang điều trị',
+        completed: 'Hoàn thành',
+        follow_up: 'Tái khám',
     };
 
-    if (!status) return 'Cho kham';
+    if (!status) return 'Chờ khám';
     return map[status] ?? status;
 }
 
@@ -135,7 +135,7 @@ function parseJsonArray(value: string): Array<Record<string, unknown>> | null {
 
     const parsed = JSON.parse(trimmed);
     if (!Array.isArray(parsed)) {
-        throw new Error('JSON payload must be an array.');
+        throw new Error('Trường JSON phải là một mảng.');
     }
 
     return parsed as Array<Record<string, unknown>>;
@@ -149,33 +149,33 @@ function renderAppointment(payload: ShowResponse): void {
     const previousRecords = payload.meta?.previous_medical_records ?? [];
 
     const vaccinationHtml = vaccinations.length === 0
-        ? '<p class="text-xs text-[#64748B]">Chua co lich su tiem phong.</p>'
-        : vaccinations.map((item) => `<li class="text-xs text-[#4A4A4A]">${item.vaccine_name ?? 'Vaccine'} • ${item.vaccinated_on ?? 'N/A'}${item.next_due_on ? ` • Mui sau: ${item.next_due_on}` : ''}</li>`).join('');
+        ? '<p class="text-xs text-[#64748B]">Chưa có lịch sử tiêm phòng.</p>'
+        : vaccinations.map((item) => `<li class="text-xs text-[#4A4A4A]">${item.vaccine_name ?? 'Vắc xin'} • ${item.vaccinated_on ?? 'Chưa có'}${item.next_due_on ? ` • Mũi sau: ${item.next_due_on}` : ''}</li>`).join('');
 
     const previousRecordHtml = previousRecords.length === 0
-        ? '<p class="text-xs text-[#64748B]">Chua co lan kham truoc.</p>'
-        : previousRecords.map((record) => `<li class="text-xs text-[#4A4A4A]">${record.record_code ?? 'N/A'} • ${record.record_date ?? 'N/A'} • ${record.final_diagnosis ?? record.diagnosis ?? 'N/A'}</li>`).join('');
+        ? '<p class="text-xs text-[#64748B]">Chưa có lần khám trước.</p>'
+        : previousRecords.map((record) => `<li class="text-xs text-[#4A4A4A]">${record.record_code ?? 'Chưa có'} • ${record.record_date ?? 'Chưa có'} • ${record.final_diagnosis ?? record.diagnosis ?? 'Chưa có'}</li>`).join('');
 
     const acceptButton = (appointment.workflow_status ?? 'awaiting_exam') === 'awaiting_exam'
-        ? '<button id="vet-accept-case" type="button" class="inline-flex items-center rounded-xl border border-[#0F8A5F] bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Nhan ca kham</button>'
+        ? '<button id="vet-accept-case" type="button" class="inline-flex items-center rounded-xl border border-[#0F8A5F] bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Nhận ca khám</button>'
         : '';
 
     contentEl.innerHTML = `
         <div class="grid gap-4 sm:grid-cols-2">
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Pet:</span> ${appointment.pet?.name ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Species:</span> ${appointment.pet?.species?.name ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Breed:</span> ${appointment.pet?.breed ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Owner:</span> ${appointment.owner?.name ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Phone:</span> ${appointment.owner?.phone ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Email:</span> ${appointment.owner?.email ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Doctor:</span> ${appointment.doctor?.user?.name ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Service:</span> ${appointment.service?.name ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Date time:</span> ${formatDateTime(appointment.appointment_at)}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Status:</span> ${workflowLabel(appointment.workflow_status)}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Reason:</span> ${appointment.reason ?? 'N/A'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Medical Record Code:</span> ${appointment.medical_record?.record_code ?? 'Chua tao'}</div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Vaccination History:</span><ul class="mt-2 space-y-1">${vaccinationHtml}</ul></div>
-            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Previous Visits:</span><ul class="mt-2 space-y-1">${previousRecordHtml}</ul></div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Thú cưng:</span> ${appointment.pet?.name ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Loài:</span> ${appointment.pet?.species?.name ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Giống:</span> ${appointment.pet?.breed ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Chủ nuôi:</span> ${appointment.owner?.name ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Điện thoại:</span> ${appointment.owner?.phone ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Email:</span> ${appointment.owner?.email ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Bác sĩ:</span> ${appointment.doctor?.user?.name ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Dịch vụ:</span> ${appointment.service?.name ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Thời gian:</span> ${formatDateTime(appointment.appointment_at)}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4"><span class="font-semibold text-[#333333]">Trạng thái:</span> ${workflowLabel(appointment.workflow_status)}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Lý do:</span> ${appointment.reason ?? 'Chưa có'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Mã bệnh án:</span> ${appointment.medical_record?.record_code ?? 'Chưa tạo'}</div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Lịch sử tiêm phòng:</span><ul class="mt-2 space-y-1">${vaccinationHtml}</ul></div>
+            <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-4 sm:col-span-2"><span class="font-semibold text-[#333333]">Lần khám trước:</span><ul class="mt-2 space-y-1">${previousRecordHtml}</ul></div>
             ${acceptButton ? `<div class="sm:col-span-2">${acceptButton}</div>` : ''}
         </div>
     `;
@@ -191,9 +191,9 @@ function renderAppointment(payload: ShowResponse): void {
         try {
             await callApi(`/api/vet/appointments/${appointmentId}/accept`, 'PATCH');
             await loadAppointment();
-            setStatus('Da tiep nhan ca kham.', 'success');
+            setStatus('Đã tiếp nhận ca khám.', 'success');
         } catch (error) {
-            setStatus((error as Error).message || 'Khong the tiep nhan ca kham.', 'error');
+            setStatus((error as Error).message || 'Không thể tiếp nhận ca khám.', 'error');
             acceptEl.disabled = false;
         }
     });
@@ -237,7 +237,7 @@ async function loadAppointment(): Promise<void> {
 
     const appointmentId = Number(rootEl.getAttribute('data-appointment-id'));
     if (!appointmentId) {
-        contentEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-[#B91C1C]">Invalid appointment id.</div>';
+        contentEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-[#B91C1C]">Mã lịch hẹn không hợp lệ.</div>';
         return;
     }
 
@@ -287,10 +287,10 @@ async function saveMedicalRecord(): Promise<void> {
             notes: notesEl?.value || null,
         });
 
-        setStatus('Medical record saved successfully.', 'success');
+        setStatus('Đã lưu bệnh án thành công.', 'success');
         await loadAppointment();
     } catch (error) {
-        setStatus((error as Error).message || 'Failed to save medical record.', 'error');
+        setStatus((error as Error).message || 'Không thể lưu bệnh án.', 'error');
     } finally {
         submitButtonEl?.removeAttribute('disabled');
     }
@@ -299,7 +299,7 @@ async function saveMedicalRecord(): Promise<void> {
 onMounted(() => {
     loadAppointment().catch(() => {
         if (contentEl) {
-            contentEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-[#B91C1C]">Failed to load appointment detail.</div>';
+            contentEl.innerHTML = '<div class="rounded-2xl border border-[#FECACA] bg-[#FEF2F2] p-5 text-[#B91C1C]">Không thể tải chi tiết lịch hẹn.</div>';
         }
     });
 

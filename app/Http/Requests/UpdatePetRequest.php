@@ -29,4 +29,15 @@ class UpdatePetRequest extends FormRequest
             'notes' => ['nullable', 'string'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'species_id.exists' => 'Loài thú cưng không hợp lệ.',
+            'name.string' => 'Tên thú cưng phải là chuỗi ký tự.',
+            'gender.in' => 'Giới tính thú cưng không hợp lệ.',
+            'birth_date.before_or_equal' => 'Ngày sinh phải là ngày hiện tại hoặc trước đó.',
+            'weight.numeric' => 'Cân nặng phải là số.',
+        ];
+    }
 }
