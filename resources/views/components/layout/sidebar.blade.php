@@ -371,13 +371,14 @@
         const token = localStorage.getItem('petcare_sanctum_token');
         if (token) {
             try {
-                const res = await fetch('/api/user', {
+                const res = await fetch('/api/auth/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
                     }
                 });
-                const user = await res.json();
+                const data = await res.json();
+                const user = data.user;
                 if (user && user.role) {
                     if (user.role === 'owner') {
                         document.getElementById('nav-owner')?.classList.remove('hidden');

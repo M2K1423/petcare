@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import './owner-pay';
 import './cart-store';
+import './realtime';
 
 const pageNode = document.querySelector('[data-page]:not([data-page=""])');
 const pageKey = pageNode?.dataset?.page || '';

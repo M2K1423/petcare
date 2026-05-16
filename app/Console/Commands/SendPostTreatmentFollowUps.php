@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AppNotification;
 use App\Models\Appointment;
+use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -26,7 +27,7 @@ class SendPostTreatmentFollowUps extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(NotificationService $notifications): void
     {
         $targetDate = Carbon::today()->subDays(3);
 
@@ -52,7 +53,7 @@ class SendPostTreatmentFollowUps extends Command
                 continue;
             }
 
-            AppNotification::create([
+            $notifications->create([
                 'user_id' => $owner->id,
                 'appointment_id' => $appointment->id,
                 'type' => 'aftercare_followup',
