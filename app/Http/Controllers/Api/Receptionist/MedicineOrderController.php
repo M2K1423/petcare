@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Receptionist;
 
 use App\Http\Controllers\Controller;
 use App\Models\MedicineOrder;
+use App\Services\NotificationService;
 use App\Services\VnpayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class MedicineOrderController extends Controller
 {
     public function __construct(
+        private readonly NotificationService $notifications,
         private readonly VnpayService $vnpay,
     ) {
     }
@@ -40,7 +42,7 @@ class MedicineOrderController extends Controller
     {
         if ($order->status !== 'pending') {
             return response()->json([
-                'message' => 'Chỉ những đơn đang chờ mới có thể xác nhận.',
+                'message' => 'Only pending orders can be confirmed.',
             ], 422);
         }
 
@@ -54,7 +56,7 @@ class MedicineOrderController extends Controller
 
             foreach ($items as $item) {
                 if (($item->medicine?->stock_quantity ?? 0) < $item->quantity) {
-                    throw new HttpException(422, "Không đủ tồn kho cho {$item->medicine?->name}.");
+                    throw new HttpException(422, "Insufficient stock for {$item->medicine?->name}.");
                 }
             }
 
@@ -77,7 +79,7 @@ class MedicineOrderController extends Controller
                     'payment_method' => $validated['payment_method'] ?? 'cash',
                     'gateway' => ($validated['payment_method'] ?? 'cash') === 'vnpay' ? 'vnpay' : null,
                     'status' => 'pending',
-                    'notes' => 'Chờ thanh toán cho đơn thuốc đã xác nhận.',
+                    'notes' => 'Waiting for payment on the confirmed medicine order.',
                 ],
             );
 
@@ -89,8 +91,16 @@ class MedicineOrderController extends Controller
             ]);
         });
 
+        $this->notifications->create([
+            'user_id' => $order->owner_id,
+            'appointment_id' => null,
+            'type' => 'medicine_order_confirmed',
+            'title' => 'Don thuoc da duoc xac nhan',
+            'message' => "Don thuoc #{$order->id} cho {$order->pet?->name} da duoc le tan xac nhan va san sang thanh toan.",
+        ]);
+
         return response()->json([
-            'message' => 'Đã xác nhận đơn và tạo thanh toán chờ.',
+            'message' => 'Medicine order confirmed and payment created.',
             'data' => $order,
         ]);
     }
@@ -104,7 +114,7 @@ class MedicineOrderController extends Controller
 
         if (! in_array($order->status, ['confirmed', 'paid'], true)) {
             return response()->json([
-                'message' => 'Đơn phải được xác nhận trước khi thu tiền.',
+                'message' => 'The order must be confirmed before collecting payment.',
             ], 422);
         }
 
@@ -112,13 +122,13 @@ class MedicineOrderController extends Controller
 
         if (! $payment) {
             return response()->json([
-                'message' => 'Không tồn tại bản ghi thanh toán cho đơn này.',
+                'message' => 'Payment record is missing for this order.',
             ], 422);
         }
 
         if ($payment->status === 'paid') {
             return response()->json([
-                'message' => 'Đơn này đã được thanh toán.',
+                'message' => 'This order has already been paid.',
                 'data' => $order->load([
                     'owner:id,name,phone,email',
                     'pet:id,name',
@@ -134,13 +144,13 @@ class MedicineOrderController extends Controller
                 'gateway' => 'vnpay',
                 'status' => 'pending',
                 'paid_at' => null,
-                'notes' => $validated['notes'] ?? 'Chờ thanh toán qua VNPay.',
+                'notes' => $validated['notes'] ?? 'Waiting for VNPay payment.',
             ]);
 
             $paymentUrl = $this->vnpay->createPaymentUrl($payment->fresh(), $request);
 
             return response()->json([
-                'message' => 'Đã tạo thanh toán VNPay thành công.',
+                'message' => 'VNPay payment link created successfully.',
                 'data' => $order->fresh([
                     'owner:id,name,phone,email',
                     'pet:id,name',
@@ -159,7 +169,7 @@ class MedicineOrderController extends Controller
                 'status' => 'paid',
                 'paid_at' => $paidAt,
                 'transaction_code' => $payment->transaction_code ?: 'MED-' . strtoupper(Str::random(10)),
-                'notes' => $validated['notes'] ?? 'Đơn thuốc đã được thanh toán tại quầy lễ tân.',
+                'notes' => $validated['notes'] ?? 'Medicine order paid at reception.',
             ]);
 
             $order->update([
@@ -168,8 +178,16 @@ class MedicineOrderController extends Controller
             ]);
         });
 
+        $this->notifications->create([
+            'user_id' => $order->owner_id,
+            'appointment_id' => null,
+            'type' => 'medicine_order_paid',
+            'title' => 'Don thuoc da thanh toan',
+            'message' => "Don thuoc #{$order->id} da duoc ghi nhan thanh toan thanh cong.",
+        ]);
+
         return response()->json([
-            'message' => 'Đã thu tiền thành công.',
+            'message' => 'Payment collected successfully.',
             'data' => $order->fresh([
                 'owner:id,name,phone,email',
                 'pet:id,name',

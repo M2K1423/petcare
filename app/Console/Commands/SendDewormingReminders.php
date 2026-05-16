@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AppNotification;
 use App\Models\Vaccination;
+use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -26,7 +27,7 @@ class SendDewormingReminders extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(NotificationService $notifications): void
     {
         $targetDate = Carbon::today()->addDays(3);
 
@@ -56,7 +57,7 @@ class SendDewormingReminders extends Command
                 continue;
             }
 
-            AppNotification::create([
+            $notifications->create([
                 'user_id' => $owner->id,
                 'appointment_id' => null,
                 'type' => 'deworming_reminder',
