@@ -46,6 +46,8 @@ const pageLoaders = {
 	'admin-logs': () => import('./pages-vue/admin-logs.vue'),
 };
 
+import { useNotification } from './composables/useNotification';
+
 async function boot() {
 	const load = pageLoaders[pageKey];
 	if (!load) return;
@@ -63,4 +65,14 @@ async function boot() {
 	}
 }
 
-boot();
+boot().then(() => {
+	// Lắng nghe sự kiện realtime và hiển thị Toast
+	const { notifyInfo } = useNotification();
+	window.addEventListener('petcare-notification-received', (event) => {
+		const data = event.detail;
+		if (data) {
+			const message = data.message || data.title || data.content || 'Bạn có một thông báo mới!';
+			notifyInfo(`🔔 ${message}`);
+		}
+	});
+});

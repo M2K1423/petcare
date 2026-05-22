@@ -81,6 +81,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 const summary = ref({});
 const todayStats = ref({});
@@ -96,24 +99,29 @@ const formatDate = (date) => {
   return new Date(date).toLocaleString('vi-VN');
 };
 
-const fetchDashboard = async () => {
+const fetchDashboard = async (showToast = false) => {
   try {
     const res = await fetch('/api/admin/dashboard', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
-    summary.value = data.summary;
-    todayStats.value = data.today_stats;
-    revenue.value = data.revenue;
-    alerts.value = data.alerts;
-    recentActivity.value = data.recent_activity;
+    summary.value = data.summary || {};
+    todayStats.value = data.today_stats || {};
+    revenue.value = data.revenue || {};
+    alerts.value = data.alerts || [];
+    recentActivity.value = data.recent_activity || [];
+    if (showToast) notifySuccess('Làm mới dữ liệu thành công!');
   } catch (err) {
-    console.error('Lỗi tải dashboard:', err);
+    handleApiError(err);
   }
 };
 
 const refreshDashboard = () => {
-  fetchDashboard();
+  fetchDashboard(true);
 };
 
 onMounted(() => {

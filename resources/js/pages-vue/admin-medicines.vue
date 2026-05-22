@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
 type Medicine = {
     id: number;
@@ -111,10 +114,12 @@ function formatCurrency(value: number | string): string {
 }
 
 function setStatus(message: string, tone: 'success' | 'error'): void {
-    if (!statusEl) return;
-    statusEl.textContent = message;
-    statusEl.className = `mt-4 rounded-2xl px-4 py-3 text-sm ${tone === 'success' ? 'bg-[#ECFDF3] text-[#027A48]' : 'bg-[#FEF3F2] text-[#B42318]'}`;
-    statusEl.classList.remove('hidden');
+    if (tone === 'success') {
+        notifySuccess(message);
+    } else {
+        notifyError(message);
+    }
+    // Vẫn giữ UI cũ nếu muốn, hoặc bỏ. Hiện tại mình bỏ UI cũ (statusEl) để dồn về Toast
 }
 
 function clearStatus(): void {
@@ -225,11 +230,11 @@ function renderTable(medicines: Medicine[]): void {
 
             try {
                 await callApi(`/api/admin/medicines/${id}`, 'DELETE');
-                setStatus('Medicine deleted successfully.', 'success');
+                notifySuccess('Medicine deleted successfully.');
                 await loadMedicines();
                 if (idInput?.value === String(id)) resetForm();
             } catch (error) {
-                setStatus((error as Error).message || 'Failed to delete medicine.', 'error');
+                notifyError((error as Error).message || 'Failed to delete medicine.');
             }
         });
     });
@@ -322,16 +327,16 @@ async function saveMedicine(): Promise<void> {
     try {
         if (editingId) {
             await callApi(`/api/admin/medicines/${editingId}`, 'PUT', payload);
-            setStatus('Medicine updated successfully.', 'success');
+            notifySuccess('Medicine updated successfully.');
         } else {
             await callApi('/api/admin/medicines', 'POST', payload);
-            setStatus('Medicine created successfully.', 'success');
+            notifySuccess('Medicine created successfully.');
         }
 
         resetForm();
         await loadMedicines();
     } catch (error) {
-        setStatus((error as Error).message || 'Failed to save medicine.', 'error');
+        notifyError((error as Error).message || 'Failed to save medicine.');
     } finally {
         submitButtonEl?.removeAttribute('disabled');
     }
@@ -339,7 +344,7 @@ async function saveMedicine(): Promise<void> {
 
 onMounted(() => {
     loadMedicines().catch((error) => {
-        setStatus((error as Error).message || 'Failed to load medicines.', 'error');
+        notifyError((error as Error).message || 'Failed to load medicines.');
     });
 
     formEl?.addEventListener('submit', (event) => {

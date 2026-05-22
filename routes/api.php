@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Owner\AppointmentController;
+use App\Http\Controllers\Api\PdfExportController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Owner\PetHealthRecordController;
 use App\Http\Controllers\Api\Owner\PetController;
@@ -90,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::patch('/vet/appointments/{appointment}/accept', [VetAppointmentController::class, 'acceptCase'])->name('api.vet.appointments.accept');
         Route::patch('/vet/appointments/{appointment}/workflow', [VetAppointmentController::class, 'updateWorkflowStatus'])->name('api.vet.appointments.workflow.update');
         Route::put('/vet/appointments/{appointment}/medical-record', [VetAppointmentController::class, 'saveMedicalRecord'])->name('api.vet.appointments.medical-record.save');
+        Route::get('/vet/appointments/{appointment}/prescription/pdf', [PdfExportController::class, 'exportPrescription'])->name('api.vet.appointments.prescription.pdf');
     });
 
     Route::middleware('role:receptionist')->group(function (): void {
@@ -126,6 +128,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/receptionist/medicine-orders', [ReceptionistMedicineOrderController::class, 'index'])->name('api.receptionist.medicine-orders.index');
         Route::patch('/receptionist/medicine-orders/{order}/confirm', [ReceptionistMedicineOrderController::class, 'confirm'])->name('api.receptionist.medicine-orders.confirm');
         Route::patch('/receptionist/medicine-orders/{order}/collect-payment', [ReceptionistMedicineOrderController::class, 'collect'])->name('api.receptionist.medicine-orders.collect-payment');
+        Route::get('/receptionist/payments/{payment}/invoice/pdf', [PdfExportController::class, 'exportInvoice'])->name('api.receptionist.payments.invoice.pdf');
     });
 
     Route::middleware('role:admin')->group(function (): void {
@@ -173,6 +176,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/admin/payments/{payment}/refund', [AdminPaymentController::class, 'refund'])->name('api.admin.payments.refund');
         Route::get('/admin/payments/stats/summary', [AdminPaymentController::class, 'getStats'])->name('api.admin.payments.stats');
         Route::get('/admin/payments/pending/list', [AdminPaymentController::class, 'getPendingPayments'])->name('api.admin.payments.pending');
+        Route::get('/admin/payments/{payment}/invoice/pdf', [PdfExportController::class, 'exportInvoice'])->name('api.admin.payments.invoice.pdf');
 
         // Appointment Management
         Route::apiResource('/admin/appointments', AdminAppointmentController::class, ['only' => ['index', 'show']])->names('api.admin.appointments');

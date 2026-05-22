@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 interface Species {
     id: number;
@@ -38,7 +41,7 @@ async function loadSpecies() {
             `;
         }
     } catch (e) {
-        console.error(e);
+        handleApiError(e);
     }
 }
 
@@ -140,10 +143,10 @@ async function submitWalkIn(form: HTMLFormElement) {
 (window as any).checkIn = async function(appId: number) {
     try {
         await callApi<any>(`/api/receptionist/appointments/${appId}/check-in`, 'PATCH');
-        alert('Check-in successful!');
+        notifySuccess('Check-in successful!');
         loadAppointments();
     } catch (e) {
-        alert('Failed to check-in.');
+        handleApiError(e);
     }
 };
 

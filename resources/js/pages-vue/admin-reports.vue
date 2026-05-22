@@ -136,6 +136,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 const reportTypes = ['Lịch Hẹn', 'Doanh Thu', 'Hiệu Suất Bác Sĩ', 'Dịch Vụ Phổ Biến', 'Khách Hàng'];
 const currentReport = ref('Lịch Hẹn');
@@ -176,6 +179,12 @@ const generateReport = async () => {
     const res = await fetch(endpoint, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
+    
     const data = await res.json();
 
     switch (currentReport.value) {
@@ -195,8 +204,9 @@ const generateReport = async () => {
         customerStats.value = data.data;
         break;
     }
+    notifySuccess('Đã tạo báo cáo thành công!');
   } catch (err) {
-    console.error('Lỗi tạo báo cáo:', err);
+    handleApiError(err);
   }
 };
 </script>

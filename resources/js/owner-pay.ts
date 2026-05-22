@@ -1,4 +1,7 @@
 import { callApi } from './auth/http';
+import { useNotification } from './composables/useNotification';
+
+const { notifyError } = useNotification();
 
 // Attach a helper to window so pages can trigger owner payments (VNPay etc.)
 (window as any).collectOwnerPayment = async function (orderId: number, method: string = 'vnpay') {
@@ -16,9 +19,7 @@ import { callApi } from './auth/http';
         window.location.reload();
     } catch (err: any) {
         const message = err?.message || 'Failed to initiate payment.';
-        // Expose a simple alert for now; pages may show nicer UI
-        // eslint-disable-next-line no-alert
-        alert(message);
+        notifyError(message);
     }
 };
 

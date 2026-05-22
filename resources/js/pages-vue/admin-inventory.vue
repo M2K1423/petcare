@@ -80,6 +80,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyInfo, handleApiError } = useNotification();
 
 const inventory = ref([]);
 
@@ -125,15 +128,19 @@ const fetchInventory = async () => {
     const res = await fetch('/api/admin/inventory', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     inventory.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải kho:', err);
+    handleApiError(err);
   }
 };
 
 const importInventory = () => {
-  alert('Chế độ nhập từ file (triển khai Upload CSV)');
+  notifyInfo('Chế độ nhập từ file (triển khai Upload CSV)');
 };
 
 const exportInventory = () => {
@@ -150,7 +157,7 @@ const exportInventory = () => {
 };
 
 const viewValue = () => {
-  alert(`Tổng Giá Trị Kho: ${formatCurrency(totalValue.value)}`);
+  notifyInfo(`Tổng Giá Trị Kho: ${formatCurrency(totalValue.value)}`);
 };
 
 onMounted(fetchInventory);

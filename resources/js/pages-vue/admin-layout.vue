@@ -75,9 +75,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useNotification } from '../composables/useNotification';
 
 const router = useRouter();
 const route = useRoute();
+const { handleApiError } = useNotification();
 const userInfo = ref({ name: 'Admin' });
 
 const pageTitle = computed(() => {
@@ -103,10 +105,14 @@ onMounted(async () => {
     const res = await fetch('/api/auth/me', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     userInfo.value = data;
   } catch (err) {
-    console.error(err);
+    handleApiError(err);
   }
 });
 

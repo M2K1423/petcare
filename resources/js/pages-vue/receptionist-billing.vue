@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
 interface UnpaidBill {
     id: number;
@@ -46,7 +49,12 @@ function showPaymentNotice(): void {
 
     if (!status || !message) return;
 
-    alert(message);
+    if (status === 'success') {
+        notifySuccess(message);
+    } else {
+        notifyError(message);
+    }
+    
     params.delete('paymentStatus');
     params.delete('paymentMessage');
     const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
@@ -128,7 +136,12 @@ async function loadMedicineOrders() {
                         ${canConfirm ? `<button onclick="confirmMedicineOrder(${order.id})" class="rounded-lg bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white hover:bg-[#235780]">Confirm Order & Create Payment</button>` : ''}
                         ${canCollect ? `<button onclick="collectMedicinePayment(${order.id}, 'cash')" class="rounded-lg bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Collect Cash</button>` : ''}
                         ${canCollect ? `<button onclick="collectMedicinePayment(${order.id}, 'vnpay')" class="rounded-lg bg-[#0055A6] px-4 py-2 text-sm font-semibold text-white hover:bg-[#00427F]">Pay with VNPay</button>` : ''}
-                        ${order.payment?.status === 'paid' ? `<span class="inline-flex items-center rounded-lg bg-[#ECFDF3] px-4 py-2 text-sm font-semibold text-[#027A48]">${paidLabel}</span>` : ''}
+                        ${order.payment?.status === 'paid' ? `
+                            <span class="inline-flex items-center rounded-lg bg-[#ECFDF3] px-4 py-2 text-sm font-semibold text-[#027A48]">${paidLabel}</span>
+                            <button onclick="window.open('/api/receptionist/payments/${order.payment.id}/invoice/pdf', '_blank')" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 flex items-center gap-2">
+                                <i class="fas fa-print"></i> In Hóa Đơn
+                            </button>
+                        ` : ''}
                     </div>
                 </article>
             `;
@@ -155,10 +168,10 @@ async function loadMedicineOrders() {
         await callApi(`/api/receptionist/medicine-orders/${orderId}/confirm`, 'PATCH', {
             payment_method: 'cash',
         });
-        alert('Order confirmed and payment created.');
+        notifySuccess('Order confirmed and payment created.');
         await loadMedicineOrders();
     } catch (error: any) {
-        alert(error.message || 'Failed to confirm order.');
+        handleApiError(error);
     }
 };
 
@@ -173,10 +186,15 @@ async function loadMedicineOrders() {
             return;
         }
 
-        alert('Payment collected successfully.');
+        notifySuccess('Payment collected successfully.');
         await loadMedicineOrders();
+        
+        // Mở in hóa đơn cho payment của Medicine Order
+        if (response?.data?.payment?.id) {
+            window.open(`/api/receptionist/payments/${response.data.payment.id}/invoice/pdf`, '_blank');
+        }
     } catch (error: any) {
-        alert(error.message || 'Failed to collect payment.');
+        handleApiError(error);
     }
 };
 
@@ -205,11 +223,15 @@ async function processPayment(form: HTMLFormElement) {
             return;
         }
 
-        alert('Payment processed successfully!');
+        notifySuccess('Payment processed successfully!');
         hideModal();
         await loadUnpaidBills();
+
+        if (response?.data?.id) {
+            window.open(`/api/receptionist/payments/${response.data.id}/invoice/pdf`, '_blank');
+        }
     } catch (e: any) {
-        alert(e.message || 'Failed to process payment.');
+        handleApiError(e);
     }
 }
 

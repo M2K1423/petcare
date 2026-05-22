@@ -152,6 +152,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 const logs = ref([]);
 const search = ref('');
@@ -226,10 +229,14 @@ const fetchLogs = async () => {
     const res = await fetch('/api/admin/logs', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
-    logs.value = data.data;
+    logs.value = data.data || [];
   } catch (err) {
-    console.error('Lỗi tải nhật ký:', err);
+    handleApiError(err);
   }
 };
 
@@ -242,14 +249,18 @@ const clearOldLogs = async () => {
   const days = prompt('Xóa nhật ký cũ hơn (ngày):', '30');
   if (days) {
     try {
-      await fetch(`/api/admin/logs/clear-old?days=${days}`, {
+      const res = await fetch(`/api/admin/logs/clear-old?days=${days}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-      fetchLogs();
-      alert('✓ Xóa nhật ký cũ thành công!');
+      if (res.ok) {
+          notifySuccess('Xóa nhật ký cũ thành công!');
+          fetchLogs();
+      } else {
+          await handleApiError(null, res);
+      }
     } catch (err) {
-      console.error('Lỗi xóa nhật ký:', err);
+      handleApiError(err);
     }
   }
 };

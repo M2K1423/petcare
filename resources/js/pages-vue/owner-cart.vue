@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { callApi } from '../auth/http';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
 type CartItem = { medicine: { id: number; name: string; price: number | string; unit?: string | null }; quantity: number };
 
@@ -112,13 +115,12 @@ async function loadPets() {
 
 async function checkoutFlow() {
     if (!selectedPet.value) {
-        // eslint-disable-next-line no-alert
-        alert('Please choose a pet before checkout.');
+        notifyError('Please choose a pet before checkout.');
         return;
     }
 
     if (items.value.length === 0) {
-        alert('Your cart is empty.');
+        notifyError('Your cart is empty.');
         return;
     }
 
@@ -143,9 +145,9 @@ async function checkoutFlow() {
         items.value = [];
         total.value = 0;
         render();
-        alert('Order created successfully.');
+        notifySuccess('Order created successfully.');
     } catch (err: any) {
-        alert(err?.message || 'Failed to create order.');
+        handleApiError(err);
     }
 }
 

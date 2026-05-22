@@ -69,6 +69,7 @@
             <td class="px-6 py-4 space-x-2 text-sm">
               <button v-if="payment.status === 'pending'" @click="confirmPayment(payment)" class="text-green-600 hover:text-green-800">✓</button>
               <button v-if="payment.status === 'completed'" @click="refundPayment(payment)" class="text-orange-600 hover:text-orange-800">↩️</button>
+              <button v-if="payment.status === 'completed'" @click="printInvoice(payment)" class="text-indigo-600 hover:text-indigo-800" title="In Hóa Đơn">🖨️</button>
               <button @click="viewDetails(payment)" class="text-blue-600 hover:text-blue-800">👁️</button>
             </td>
           </tr>
@@ -114,6 +115,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 const payments = ref([]);
 const search = ref('');
@@ -167,42 +171,65 @@ const fetchPayments = async () => {
     const res = await fetch('/api/admin/payments', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     payments.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải thanh toán:', err);
+    handleApiError(err);
   }
 };
 
 const confirmPayment = async (payment) => {
   try {
-    await fetch(`/api/admin/payments/${payment.id}/confirm`, {
+    const res = await fetch(`/api/admin/payments/${payment.id}/confirm`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
-    fetchPayments();
+    if (res.ok) {
+        notifySuccess('Xác nhận thanh toán thành công!');
+        fetchPayments();
+    } else {
+        await handleApiError(null, res);
+    }
   } catch (err) {
-    console.error('Lỗi xác nhận thanh toán:', err);
+    handleApiError(err);
   }
 };
 
-const refundPayment = (payment) => {
+const refundPayment = async (payment) => {
   const reason = prompt('Lý do hoàn tiền:');
   if (reason) {
-    fetch(`/api/admin/payments/${payment.id}/refund`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ reason })
-    }).then(() => fetchPayments());
+    try {
+      const res = await fetch(`/api/admin/payments/${payment.id}/refund`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ reason })
+      });
+      if (res.ok) {
+          notifySuccess('Hoàn tiền thành công!');
+          fetchPayments();
+      } else {
+          await handleApiError(null, res);
+      }
+    } catch (err) {
+      handleApiError(err);
+    }
   }
 };
 
 const viewDetails = (payment) => {
   selectedPayment.value = payment;
   showDetail.value = true;
+};
+
+const printInvoice = (payment) => {
+  window.open(`/api/admin/payments/${payment.id}/invoice/pdf`, '_blank');
 };
 
 onMounted(fetchPayments);

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyInfo, handleApiError } = useNotification();
 
 interface QueueItem {
     id: number;
@@ -25,7 +28,7 @@ async function fetchDashboardData() {
             fetchUnpaidStats(),
         ]);
     } catch (e) {
-        console.error('Error fetching dashboard info', e);
+        handleApiError(e);
     }
 }
 
@@ -101,20 +104,12 @@ async function fetchUnpaidStats() {
 
     try {
         await callApi<any>(`/api/receptionist/appointments/${appId}/emergency`, 'PATCH');
-        showToast('Emergency alert triggered');
+        notifySuccess('Emergency alert triggered');
         fetchDashboardData();
     } catch (e) {
-        alert('Failed to mark emergency.');
+        handleApiError(e);
     }
 };
-
-function showToast(msg: string) {
-    const el = document.getElementById('toast-message');
-    if (!el) return;
-    el.innerText = msg;
-    el.classList.remove('hidden');
-    setTimeout(() => el.classList.add('hidden'), 3000);
-}
 
 onMounted(() => {
     fetchDashboardData();

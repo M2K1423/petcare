@@ -3,7 +3,7 @@
     <div class="flex gap-4">
       <input v-model="search" type="text" placeholder="Tìm kiếm bác sĩ..." 
         class="flex-1 px-4 py-2 border rounded-lg">
-      <button @click="showForm = true" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
+      <button @click="openCreateForm" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
         ➕ Thêm Bác Sĩ
       </button>
     </div>
@@ -42,11 +42,26 @@
         <h3 class="text-2xl font-bold mb-6">{{ editingId ? 'Sửa Bác Sĩ' : 'Thêm Bác Sĩ Mới' }}</h3>
 
         <div class="space-y-4">
-          <input v-model="form.license_number" placeholder="Bằng Cấp" class="w-full px-4 py-2 border rounded">
-          <input v-model="form.specialty" placeholder="Chuyên Khoa" class="w-full px-4 py-2 border rounded">
-          <input v-model.number="form.years_of_experience" type="number" placeholder="Năm Kinh Nghiệm" class="w-full px-4 py-2 border rounded">
-          <input v-model="form.phone" placeholder="Điện Thoại" class="w-full px-4 py-2 border rounded">
-          <input v-model="form.email" type="email" placeholder="Email" class="w-full px-4 py-2 border rounded">
+          <div>
+            <input v-model="form.license_number" placeholder="Bằng Cấp" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.license_number}">
+            <span v-if="errors.license_number" class="text-red-500 text-xs">{{ errors.license_number }}</span>
+          </div>
+          <div>
+            <input v-model="form.specialty" placeholder="Chuyên Khoa" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.specialty}">
+            <span v-if="errors.specialty" class="text-red-500 text-xs">{{ errors.specialty }}</span>
+          </div>
+          <div>
+            <input v-model.number="form.years_of_experience" type="number" placeholder="Năm Kinh Nghiệm" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.years_of_experience}">
+            <span v-if="errors.years_of_experience" class="text-red-500 text-xs">{{ errors.years_of_experience }}</span>
+          </div>
+          <div>
+            <input v-model="form.phone" placeholder="Điện Thoại" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.phone}">
+            <span v-if="errors.phone" class="text-red-500 text-xs">{{ errors.phone }}</span>
+          </div>
+          <div>
+            <input v-model="form.email" type="email" placeholder="Email" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.email}">
+            <span v-if="errors.email" class="text-red-500 text-xs">{{ errors.email }}</span>
+          </div>
 
           <div class="flex gap-2">
             <button @click="saveDoctor" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
@@ -64,11 +79,15 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
 const doctors = ref([]);
 const search = ref('');
 const showForm = ref(false);
 const editingId = ref(null);
+const errors = ref({});
 const form = ref({
   license_number: '',
   specialty: '',
@@ -92,20 +111,33 @@ const fetchDoctors = async () => {
     const res = await fetch('/api/admin/doctors', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     doctors.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải bác sĩ:', err);
+    handleApiError(err);
   }
+};
+
+const openCreateForm = () => {
+  editingId.value = null;
+  form.value = { license_number: '', specialty: '', years_of_experience: 0, phone: '', email: '' };
+  errors.value = {};
+  showForm.value = true;
 };
 
 const editDoctor = (doctor) => {
   editingId.value = doctor.id;
   form.value = { ...doctor };
+  errors.value = {};
   showForm.value = true;
 };
 
 const saveDoctor = async () => {
+  errors.value = {};
   try {
     const url = editingId.value ? `/api/admin/doctors/${editingId.value}` : '/api/admin/doctors';
     const method = editingId.value ? 'PUT' : 'POST';
@@ -123,23 +155,31 @@ const saveDoctor = async () => {
       showForm.value = false;
       editingId.value = null;
       form.value = { license_number: '', specialty: '', years_of_experience: 0, phone: '', email: '' };
+      notifySuccess(method === 'PUT' ? 'Cập nhật bác sĩ thành công!' : 'Thêm bác sĩ thành công!');
       fetchDoctors();
+    } else {
+        errors.value = await handleApiError(null, res);
     }
   } catch (err) {
-    console.error('Lỗi lưu bác sĩ:', err);
+    errors.value = await handleApiError(err);
   }
 };
 
 const deleteDoctor = async (doctor) => {
   if (confirm(`Xác nhận xóa bác sĩ ${doctor.user?.name}?`)) {
     try {
-      await fetch(`/api/admin/doctors/${doctor.id}`, {
+      const res = await fetch(`/api/admin/doctors/${doctor.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-      fetchDoctors();
+      if (res.ok) {
+          notifySuccess('Xóa bác sĩ thành công!');
+          fetchDoctors();
+      } else {
+          await handleApiError(null, res);
+      }
     } catch (err) {
-      console.error('Lỗi xóa bác sĩ:', err);
+      handleApiError(err);
     }
   }
 };

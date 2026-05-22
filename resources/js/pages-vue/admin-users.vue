@@ -87,16 +87,31 @@
         <h3 class="text-lg font-bold mb-4">{{ editingUser ? 'Sửa Người Dùng' : 'Thêm Người Dùng Mới' }}</h3>
         
         <div class="space-y-4">
-          <input v-model="form.name" type="text" placeholder="Tên" class="w-full px-4 py-2 border rounded">
-          <input v-model="form.email" type="email" placeholder="Email" class="w-full px-4 py-2 border rounded">
-          <input v-model="form.phone" type="text" placeholder="Điện thoại" class="w-full px-4 py-2 border rounded">
+          <div>
+            <input v-model="form.name" type="text" placeholder="Tên" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.name}">
+            <span v-if="errors.name" class="text-red-500 text-xs">{{ errors.name }}</span>
+          </div>
+          <div>
+            <input v-model="form.email" type="email" placeholder="Email" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.email}">
+            <span v-if="errors.email" class="text-red-500 text-xs">{{ errors.email }}</span>
+          </div>
+          <div>
+            <input v-model="form.phone" type="text" placeholder="Điện thoại" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.phone}">
+            <span v-if="errors.phone" class="text-red-500 text-xs">{{ errors.phone }}</span>
+          </div>
           
-          <select v-model="form.role_id" class="w-full px-4 py-2 border rounded">
-            <option value="">Chọn Role</option>
-            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
-          </select>
+          <div>
+            <select v-model="form.role_id" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.role_id}">
+              <option value="">Chọn Role</option>
+              <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+            </select>
+            <span v-if="errors.role_id" class="text-red-500 text-xs">{{ errors.role_id }}</span>
+          </div>
 
-          <input v-if="!editingUser" v-model="form.password" type="password" placeholder="Mật khẩu" class="w-full px-4 py-2 border rounded">
+          <div v-if="!editingUser">
+            <input v-model="form.password" type="password" placeholder="Mật khẩu" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.password}">
+            <span v-if="errors.password" class="text-red-500 text-xs">{{ errors.password }}</span>
+          </div>
 
           <div class="flex gap-2">
             <button @click="saveUser" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
@@ -114,6 +129,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
 const searchQuery = ref('');
 const filterRole = ref('');
@@ -123,6 +141,7 @@ const roles = ref([]);
 const showModal = ref(false);
 const editingUser = ref(null);
 const form = ref({ name: '', email: '', phone: '', role_id: '', password: '' });
+const errors = ref({});
 
 const totalPages = computed(() => Math.ceil(filteredUsers.value.length / 10));
 
@@ -149,10 +168,14 @@ const fetchUsers = async () => {
     const res = await fetch('/api/admin/users', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     users.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải người dùng:', err);
+    handleApiError(err);
   }
 };
 
@@ -178,16 +201,19 @@ const fetchRoles = async () => {
 const openCreateModal = () => {
   editingUser.value = null;
   form.value = { name: '', email: '', phone: '', role_id: '', password: '' };
+  errors.value = {};
   showModal.value = true;
 };
 
 const editUser = (user) => {
   editingUser.value = user;
   form.value = { ...user, role_id: user.role.id };
+  errors.value = {};
   showModal.value = true;
 };
 
 const saveUser = async () => {
+  errors.value = {};
   try {
     const url = editingUser.value 
       ? `/api/admin/users/${editingUser.value.id}`
@@ -206,23 +232,31 @@ const saveUser = async () => {
     
     if (res.ok) {
       showModal.value = false;
+      notifySuccess(editingUser.value ? 'Cập nhật thành công!' : 'Thêm mới thành công!');
       fetchUsers();
+    } else {
+      errors.value = await handleApiError(null, res);
     }
   } catch (err) {
-    console.error('Lỗi lưu người dùng:', err);
+    errors.value = await handleApiError(err);
   }
 };
 
 const toggleLock = async (user) => {
   try {
     const endpoint = user.is_locked ? 'unlock' : 'lock';
-    await fetch(`/api/admin/users/${user.id}/${endpoint}`, {
+    const res = await fetch(`/api/admin/users/${user.id}/${endpoint}`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
-    fetchUsers();
+    if (res.ok) {
+        notifySuccess(user.is_locked ? 'Đã mở khóa tài khoản!' : 'Đã khóa tài khoản!');
+        fetchUsers();
+    } else {
+        await handleApiError(null, res);
+    }
   } catch (err) {
-    console.error('Lỗi thay đổi trạng thái khóa:', err);
+    handleApiError(err);
   }
 };
 
@@ -230,7 +264,7 @@ const resetPassword = async (user) => {
   const newPassword = prompt('Nhập mật khẩu mới:');
   if (newPassword) {
     try {
-      await fetch(`/api/admin/users/${user.id}/reset-password`, {
+      const res = await fetch(`/api/admin/users/${user.id}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -238,9 +272,13 @@ const resetPassword = async (user) => {
         },
         body: JSON.stringify({ password: newPassword })
       });
-      alert('Reset mật khẩu thành công!');
+      if (res.ok) {
+          notifySuccess('Reset mật khẩu thành công!');
+      } else {
+          await handleApiError(null, res);
+      }
     } catch (err) {
-      console.error('Lỗi reset mật khẩu:', err);
+      handleApiError(err);
     }
   }
 };
@@ -248,13 +286,18 @@ const resetPassword = async (user) => {
 const deleteUser = async (user) => {
   if (confirm(`Xác nhận xóa người dùng ${user.name}?`)) {
     try {
-      await fetch(`/api/admin/users/${user.id}`, {
+      const res = await fetch(`/api/admin/users/${user.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-      fetchUsers();
+      if (res.ok) {
+          notifySuccess('Xóa người dùng thành công!');
+          fetchUsers();
+      } else {
+          await handleApiError(null, res);
+      }
     } catch (err) {
-      console.error('Lỗi xóa người dùng:', err);
+      handleApiError(err);
     }
   }
 };

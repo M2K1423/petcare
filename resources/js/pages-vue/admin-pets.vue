@@ -85,6 +85,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifyInfo, handleApiError } = useNotification();
 
 const pets = ref([]);
 const search = ref('');
@@ -112,10 +115,14 @@ const fetchPets = async () => {
     const res = await fetch('/api/admin/pets', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     pets.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải thú cưng:', err);
+    handleApiError(err);
   }
 };
 
@@ -125,11 +132,11 @@ const viewPet = (pet) => {
 };
 
 const viewAppointments = (pet) => {
-  alert(`Lịch hẹn của ${pet.name}:\n(Sẽ hiển thị danh sách lịch hẹn)`);
+  notifyInfo(`Lịch hẹn của ${pet.name}:\n(Sẽ hiển thị danh sách lịch hẹn)`);
 };
 
 const viewHealth = (pet) => {
-  alert(`Hồ sơ sức khỏe của ${pet.name}:\n(Sẽ hiển thị hồ sơ y tế)`);
+  notifyInfo(`Hồ sơ sức khỏe của ${pet.name}:\n(Sẽ hiển thị hồ sơ y tế)`);
 };
 
 onMounted(fetchPets);

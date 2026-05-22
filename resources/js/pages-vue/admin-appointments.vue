@@ -78,6 +78,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 const appointments = ref([]);
 const search = ref('');
@@ -135,52 +138,86 @@ const fetchAppointments = async () => {
     const res = await fetch('/api/admin/appointments', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     appointments.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải lịch hẹn:', err);
+    handleApiError(err);
   }
 };
 
-const assignDoctor = (apt) => {
+const assignDoctor = async (apt) => {
   const doctorId = prompt('Nhập ID Bác Sĩ:');
   if (doctorId) {
-    fetch(`/api/admin/appointments/${apt.id}/assign-doctor`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ doctor_id: parseInt(doctorId) })
-    }).then(() => fetchAppointments());
+    try {
+      const res = await fetch(`/api/admin/appointments/${apt.id}/assign-doctor`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ doctor_id: parseInt(doctorId) })
+      });
+      if (res.ok) {
+          notifySuccess('Gán bác sĩ thành công!');
+          fetchAppointments();
+      } else {
+          await handleApiError(null, res);
+      }
+    } catch (err) {
+      handleApiError(err);
+    }
   }
 };
 
-const reschedule = (apt) => {
+const reschedule = async (apt) => {
   const newTime = prompt('Nhập thời gian mới (YYYY-MM-DD HH:MM):');
   if (newTime) {
-    fetch(`/api/admin/appointments/${apt.id}/reschedule`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ new_appointment_time: newTime })
-    }).then(() => fetchAppointments());
+    try {
+      const res = await fetch(`/api/admin/appointments/${apt.id}/reschedule`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ new_appointment_time: newTime })
+      });
+      if (res.ok) {
+          notifySuccess('Đổi lịch thành công!');
+          fetchAppointments();
+      } else {
+          await handleApiError(null, res);
+      }
+    } catch (err) {
+      handleApiError(err);
+    }
   }
 };
 
-const cancelAppointment = (apt) => {
+const cancelAppointment = async (apt) => {
   const reason = prompt('Lý do hủy:');
   if (reason) {
-    fetch(`/api/admin/appointments/${apt.id}/cancel`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ reason })
-    }).then(() => fetchAppointments());
+    try {
+      const res = await fetch(`/api/admin/appointments/${apt.id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ reason })
+      });
+      if (res.ok) {
+          notifySuccess('Hủy lịch thành công!');
+          fetchAppointments();
+      } else {
+          await handleApiError(null, res);
+      }
+    } catch (err) {
+      handleApiError(err);
+    }
   }
 };
 

@@ -162,6 +162,9 @@ function sectionFormShell(title: string, description: string, fieldsHtml: string
                         <button type="submit" class="rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white hover:bg-[#235780]">Lưu mô-đun</button>
                         <button id="vet-module-accept" type="button" class="rounded-xl border border-[#0F8A5F] bg-[#0F8A5F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0C734F]">Nhận ca</button>
                         <button id="vet-module-refresh" type="button" class="rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] hover:border-[#2A6496] hover:text-[#2A6496]">Làm mới</button>
+                        <button id="vet-module-print" type="button" class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 flex items-center gap-2">
+                            <i class="fas fa-print"></i> In Đơn Thuốc
+                        </button>
                     </div>
                 </form>
                 <div id="vet-module-status" class="mt-4 hidden rounded-2xl px-4 py-3 text-sm"></div>
@@ -520,6 +523,15 @@ function renderModuleSection(): void {
             setModuleStatus((error as Error).message || 'Không thể nhận ca khám.', 'error');
             acceptButton.disabled = false;
         }
+    });
+
+    const printButton = document.getElementById('vet-module-print') as HTMLButtonElement | null;
+    printButton?.addEventListener('click', () => {
+        if (!selectedAppointmentId) {
+            setModuleStatus('Vui lòng chọn một lịch hẹn trước.', 'error');
+            return;
+        }
+        window.open(`/api/vet/appointments/${selectedAppointmentId}/prescription/pdf`, '_blank');
     });
 
     const contextEl = document.getElementById('vet-module-context');

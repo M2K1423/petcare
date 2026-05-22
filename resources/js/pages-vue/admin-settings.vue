@@ -135,6 +135,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyInfo, handleApiError } = useNotification();
 
 const settings = ref({
   clinic_name: '',
@@ -168,16 +171,20 @@ const fetchSettings = async () => {
     const res = await fetch('/api/admin/settings', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     Object.assign(settings.value, data.data);
   } catch (err) {
-    console.error('Lỗi tải cấu hình:', err);
+    handleApiError(err);
   }
 };
 
 const saveSettings = async () => {
   try {
-    await fetch('/api/admin/settings', {
+    const res = await fetch('/api/admin/settings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -185,16 +192,20 @@ const saveSettings = async () => {
       },
       body: JSON.stringify(settings.value)
     });
-    alert('✓ Lưu cấu hình thành công!');
+    if (res.ok) {
+        notifySuccess('Lưu cấu hình thành công!');
+    } else {
+        await handleApiError(null, res);
+    }
   } catch (err) {
-    console.error('Lỗi lưu cấu hình:', err);
-    alert('❌ Lỗi lưu cấu hình!');
+    handleApiError(err);
   }
 };
 
 const resetSettings = () => {
   if (confirm('Bạn có chắc chắn muốn đặt lại cấu hình?')) {
     fetchSettings();
+    notifyInfo('Đã tải lại cấu hình gốc');
   }
 };
 

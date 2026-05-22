@@ -3,7 +3,7 @@
     <div class="flex gap-4">
       <input v-model="search" type="text" placeholder="Tìm kiếm dịch vụ..." 
         class="flex-1 px-4 py-2 border rounded-lg">
-      <button @click="showForm = true" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
+      <button @click="openCreateForm" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
         ➕ Thêm Dịch Vụ
       </button>
     </div>
@@ -47,11 +47,23 @@
         <h3 class="text-2xl font-bold mb-6">{{ editingId ? 'Sửa Dịch Vụ' : 'Thêm Dịch Vụ Mới' }}</h3>
 
         <div class="space-y-4">
-          <input v-model="form.name" placeholder="Tên Dịch Vụ" class="w-full px-4 py-2 border rounded">
-          <textarea v-model="form.description" placeholder="Mô Tả" rows="3" class="w-full px-4 py-2 border rounded"></textarea>
+          <div>
+            <input v-model="form.name" placeholder="Tên Dịch Vụ" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.name}">
+            <span v-if="errors.name" class="text-red-500 text-xs">{{ errors.name }}</span>
+          </div>
+          <div>
+            <textarea v-model="form.description" placeholder="Mô Tả" rows="3" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.description}"></textarea>
+            <span v-if="errors.description" class="text-red-500 text-xs">{{ errors.description }}</span>
+          </div>
           <div class="grid grid-cols-2 gap-4">
-            <input v-model.number="form.price" type="number" placeholder="Giá" class="px-4 py-2 border rounded">
-            <input v-model.number="form.duration_minutes" type="number" placeholder="Thời Gian (phút)" class="px-4 py-2 border rounded">
+            <div>
+              <input v-model.number="form.price" type="number" placeholder="Giá" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.price}">
+              <span v-if="errors.price" class="text-red-500 text-xs">{{ errors.price }}</span>
+            </div>
+            <div>
+              <input v-model.number="form.duration_minutes" type="number" placeholder="Thời Gian (phút)" class="w-full px-4 py-2 border rounded" :class="{'border-red-500': errors.duration_minutes}">
+              <span v-if="errors.duration_minutes" class="text-red-500 text-xs">{{ errors.duration_minutes }}</span>
+            </div>
           </div>
 
           <div class="flex gap-2">
@@ -70,11 +82,15 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
 const services = ref([]);
 const search = ref('');
 const showForm = ref(false);
 const editingId = ref(null);
+const errors = ref({});
 const form = ref({
   name: '',
   description: '',
@@ -101,20 +117,33 @@ const fetchServices = async () => {
     const res = await fetch('/api/admin/services', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!res.ok) {
+        await handleApiError(null, res);
+        return;
+    }
     const data = await res.json();
     services.value = data.data;
   } catch (err) {
-    console.error('Lỗi tải dịch vụ:', err);
+    handleApiError(err);
   }
+};
+
+const openCreateForm = () => {
+  editingId.value = null;
+  form.value = { name: '', description: '', price: 0, duration_minutes: 30, is_active: true };
+  errors.value = {};
+  showForm.value = true;
 };
 
 const editService = (service) => {
   editingId.value = service.id;
   form.value = { ...service };
+  errors.value = {};
   showForm.value = true;
 };
 
 const saveService = async () => {
+  errors.value = {};
   try {
     const url = editingId.value ? `/api/admin/services/${editingId.value}` : '/api/admin/services';
     const method = editingId.value ? 'PUT' : 'POST';
@@ -132,35 +161,48 @@ const saveService = async () => {
       showForm.value = false;
       editingId.value = null;
       form.value = { name: '', description: '', price: 0, duration_minutes: 30, is_active: true };
+      notifySuccess(method === 'PUT' ? 'Cập nhật dịch vụ thành công!' : 'Đã thêm dịch vụ mới!');
       fetchServices();
+    } else {
+        errors.value = await handleApiError(null, res);
     }
   } catch (err) {
-    console.error('Lỗi lưu dịch vụ:', err);
+    errors.value = await handleApiError(err);
   }
 };
 
 const toggleService = async (service) => {
   try {
-    await fetch(`/api/admin/services/${service.id}/toggle`, {
+    const res = await fetch(`/api/admin/services/${service.id}/toggle`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
-    fetchServices();
+    if (res.ok) {
+        notifySuccess(service.is_active ? 'Đã tắt dịch vụ!' : 'Đã bật dịch vụ!');
+        fetchServices();
+    } else {
+        await handleApiError(null, res);
+    }
   } catch (err) {
-    console.error('Lỗi thay đổi trạng thái dịch vụ:', err);
+    handleApiError(err);
   }
 };
 
 const deleteService = async (service) => {
   if (confirm(`Xác nhận xóa dịch vụ ${service.name}?`)) {
     try {
-      await fetch(`/api/admin/services/${service.id}`, {
+      const res = await fetch(`/api/admin/services/${service.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-      fetchServices();
+      if (res.ok) {
+          notifySuccess('Xóa dịch vụ thành công!');
+          fetchServices();
+      } else {
+          await handleApiError(null, res);
+      }
     } catch (err) {
-      console.error('Lỗi xóa dịch vụ:', err);
+      handleApiError(err);
     }
   }
 };
