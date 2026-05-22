@@ -138,6 +138,18 @@
                 <span>Bảng điều khiển bác sĩ</span>
             </a>
 
+            <a href="{{ route('vet.workflow.intake') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
+                        <path d="M6 18h12"></path>
+                        <path d="M12 2v16"></path>
+                        <path d="M8 8a4 4 0 0 1 8 0v2a4 4 0 0 1-8 0z"></path>
+                    </svg>
+                </span>
+                <span>Khám và điều trị</span>
+            </a>
+
+            {{--
             <a href="{{ route('vet.workflow.schedule') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.schedule') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
@@ -150,7 +162,7 @@
                 <span>Quản lý lịch khám</span>
             </a>
 
-            <a href="{{ route('vet.workflow.intake') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.intake') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+            <a href="{{ route('vet.workflow.intake') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.workflow.*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
                         <path d="M6 18h12"></path>
@@ -265,6 +277,8 @@
                 </span>
                 <span>Ký xác nhận</span>
             </a>
+
+            --}}
 
             <a href="{{ route('vet.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.appointments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Services\NotificationService;
 use App\Models\Appointment;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
@@ -10,6 +11,11 @@ use App\Http\Controllers\Controller;
 
 class AppointmentController extends Controller
 {
+    public function __construct(
+        private readonly NotificationService $notifications,
+    ) {
+    }
+
     public function index(Request $request)
     {
         if (!auth()->user()?->hasRole('admin')) {
@@ -78,6 +84,18 @@ class AppointmentController extends Controller
         $oldDoctorId = $appointment->doctor_id;
         $appointment->doctor_id = $validated['doctor_id'];
         $appointment->save();
+
+        $appointment->load(['doctor.user', 'pet']);
+
+        if ($appointment->doctor?->user_id) {
+            $this->notifications->create([
+                'user_id' => $appointment->doctor->user_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_assigned',
+                'title' => 'Bạn được phân công lịch hẹn mới',
+                'message' => "Lịch hẹn #{$appointment->id} cho {$appointment->pet?->name} đã được phân công cho bạn.",
+            ]);
+        }
 
         ActivityLog::log(
             auth()->id(),

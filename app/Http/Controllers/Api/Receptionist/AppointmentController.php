@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Api\Receptionist;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class AppointmentController extends Controller
 {
+    public function __construct(
+        private readonly NotificationService $notifications,
+    ) {
+    }
+
     /**
      * Danh sach lich hen (co filter)
      */
@@ -63,6 +69,10 @@ class AppointmentController extends Controller
         $appointment = Appointment::create($validated);
 
         $this->assignQueueNumber($appointment);
+
+        if (! empty($validated['doctor_id'])) {
+            $this->notifyAssignedDoctor($appointment->fresh(['pet', 'doctor.user']));
+        }
 
         return response()->json([
             'message' => 'Tao lich hen thanh cong.',
@@ -149,6 +159,23 @@ class AppointmentController extends Controller
 
         $appointment->update([
             'queue_number' => $maxQueue + 1,
+        ]);
+    }
+
+    private function notifyAssignedDoctor(Appointment $appointment): void
+    {
+        $doctor = $appointment->doctor;
+
+        if (! $doctor?->user_id) {
+            return;
+        }
+
+        $this->notifications->create([
+            'user_id' => $doctor->user_id,
+            'appointment_id' => $appointment->id,
+            'type' => 'appointment_assigned',
+            'title' => 'Có lịch hẹn mới được phân công',
+            'message' => "Bạn vừa được phân công lịch hẹn cho {$appointment->pet?->name} vào " . $appointment->appointment_at?->format('H:i d/m/Y') . '.',
         ]);
     }
 }
