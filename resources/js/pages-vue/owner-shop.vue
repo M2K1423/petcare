@@ -134,37 +134,35 @@ function renderMedicines(medicines: Medicine[]): void {
     }
 
     medicineListEl.innerHTML = medicines.map((medicine) => `
-        <article class="rounded-3xl border border-[#DDE1E6] bg-[#F9FBFD] p-5">
-            <div class="flex items-start gap-4">
-                <img src="${medicine.image_url || getFallbackImage(medicine)}" alt="${medicine.name}" class="h-24 w-24 shrink-0 rounded-2xl border border-[#DDE1E6] object-cover bg-white">
-                <div class="min-w-0 flex-1">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            ${medicine.category ? `<p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5078A0]">${medicine.category}</p>` : ''}
-                            <h3 class="text-base font-bold text-[#333333]">${medicine.name}</h3>
-                        </div>
-                        <div class="flex flex-col items-end gap-2">
-                            <span class="rounded-full bg-[#E8F3FF] px-3 py-1 text-xs font-semibold text-[#2A6496]">${medicine.stock_quantity} in stock</span>
-                            ${getMedicineWarning(medicine) ? `<span class="rounded-full bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold text-[#C2410C]">${getMedicineWarning(medicine)}</span>` : ''}
-                        </div>
-                    </div>
-                    <p class="mt-1 text-sm text-[#4A4A4A]">${medicine.description ?? 'Medicine available at the clinic.'}</p>
-                </div>
+        <article class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col hover:border-[#1D4ED8] hover:shadow-md transition group h-full">
+            <div class="aspect-[4/3] bg-slate-100 rounded-xl mb-3 overflow-hidden flex items-center justify-center relative w-full">
+                ${medicine.stock_quantity <= 0 ? `<span class="absolute inset-0 bg-white/70 flex items-center justify-center font-bold text-red-500 text-sm z-10 backdrop-blur-[1px]">Hết hàng</span>` : ''}
+                <img src="${medicine.image_url || getFallbackImage(medicine)}" alt="${medicine.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             </div>
-
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <p class="text-lg font-extrabold text-[#2A6496]">${formatCurrency(medicine.price)}</p>
-                    <p class="text-xs text-[#4A4A4A]">${medicine.unit ? `Unit: ${medicine.unit}` : 'Unit available at reception'}</p>
+            
+            <div class="flex flex-col flex-1">
+                ${medicine.category ? `<p class="text-[10px] font-semibold uppercase tracking-wider text-[#5078A0] mb-1">${medicine.category}</p>` : ''}
+                <h3 class="font-semibold text-slate-800 text-sm line-clamp-2 mb-1 group-hover:text-[#1D4ED8]">${medicine.name}</h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mb-3 flex-1">${medicine.description ?? 'Sản phẩm có sẵn tại phòng khám.'}</p>
+                
+                <div class="flex items-end justify-between mb-3 border-t border-slate-100 pt-3">
+                    <div>
+                        <span class="text-[#1D4ED8] font-bold text-base sm:text-lg block leading-tight">${formatCurrency(medicine.price)}</span>
+                        <span class="text-[11px] text-slate-500">ĐVT: ${medicine.unit || 'hộp'}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[11px] bg-[#E8F3FF] text-[#2A6496] px-2 py-1 rounded font-medium whitespace-nowrap">Kho: ${medicine.stock_quantity}</span>
+                        ${getMedicineWarning(medicine) ? `<div class="mt-1"><span class="text-[10px] text-red-500 font-medium">${getMedicineWarning(medicine)}</span></div>` : ''}
+                    </div>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <label class="text-sm text-[#333333]">
-                        Qty
-                        <input data-medicine-qty="${medicine.id}" type="number" min="1" max="${medicine.stock_quantity}" value="1" class="ml-2 w-20 rounded-xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none transition focus:border-[#2A6496]">
-                    </label>
-                    <button data-medicine-add="${medicine.id}" type="button" class="rounded-xl bg-[#2A6496] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:cursor-not-allowed disabled:opacity-60" ${medicine.stock_quantity <= 0 ? 'disabled' : ''}>
-                        Add to cart
+                
+                <div class="flex items-center gap-2 mt-auto">
+                    <div class="w-16 sm:w-20 shrink-0">
+                        <input data-medicine-qty="${medicine.id}" type="number" min="1" max="${medicine.stock_quantity}" value="1" class="w-full rounded-xl border border-slate-200 px-1 sm:px-2 py-2 text-center text-sm outline-none transition focus:border-[#1D4ED8] focus:ring-1 focus:ring-[#1D4ED8]" ${medicine.stock_quantity <= 0 ? 'disabled' : ''}>
+                    </div>
+                    <button data-medicine-add="${medicine.id}" type="button" class="flex-1 rounded-xl bg-[#2A6496] px-2 py-2 text-sm font-semibold text-white transition hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-1.5" ${medicine.stock_quantity <= 0 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                        <span class="whitespace-nowrap">Thêm</span>
                     </button>
                 </div>
             </div>

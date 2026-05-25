@@ -69,7 +69,22 @@ async function bootRealtime(): Promise<void> {
         }));
     });
 
+    // Subscribe chat user channel để nhận thông báo phiên chat mới/đóng
+    window.Echo.private(`chat.user.${userId}`).listen('.chat.session.updated', (event: unknown) => {
+        window.dispatchEvent(new CustomEvent('petcare-chat-session-updated', { detail: event }));
+    });
+
     window.__petcareRealtimeBooted = true;
+}
+
+export function subscribeChatSession(sessionId: number, onMessage: (msg: unknown) => void): void {
+    if (!window.Echo) return;
+    window.Echo.private(`chat.session.${sessionId}`).listen('.chat.message.sent', onMessage);
+}
+
+export function unsubscribeChatSession(sessionId: number): void {
+    if (!window.Echo) return;
+    window.Echo.leave(`chat.session.${sessionId}`);
 }
 
 void bootRealtime();

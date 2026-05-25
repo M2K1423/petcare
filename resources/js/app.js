@@ -27,6 +27,7 @@ const pageLoaders = {
 	'receptionist-dashboard': () => import('./pages-vue/receptionist-dashboard.vue'),
 	'receptionist-appointments': () => import('./pages-vue/receptionist-appointments.vue'),
 	'receptionist-appointment-detail': () => import('./pages-vue/receptionist-appointment-detail.vue'),
+	'receptionist-shop': () => import('./pages-vue/receptionist-shop.vue'),
 	'receptionist-billing': () => import('./pages-vue/receptionist-billing.vue'),
 	'receptionist-walkins': () => import('./pages-vue/receptionist-appointments.vue'),
 
@@ -65,7 +66,20 @@ async function boot() {
 	}
 }
 
+// Hàm mount riêng cho Chat Widget (Toàn cục)
+async function mountChatWidget() {
+	const root = document.getElementById('chat-widget-root');
+	if (root) {
+		const module = await import('./pages-vue/chat-widget.vue');
+		if (module?.default) {
+			const chatApp = createApp(module.default);
+			chatApp.mount(root);
+		}
+	}
+}
+
 boot().then(() => {
+	mountChatWidget();
 	// Lắng nghe sự kiện realtime và hiển thị Toast
 	const { notifyInfo } = useNotification();
 	window.addEventListener('petcare-notification-received', (event) => {

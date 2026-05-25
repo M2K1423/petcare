@@ -49,6 +49,16 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('api.notifications.index');
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('api.notifications.read');
 
+    // Chat (Owner ↔ Vet/Receptionist)
+    Route::prefix('chat')->group(function (): void {
+        Route::get('/staff', [\App\Http\Controllers\Api\ChatController::class, 'getStaffList'])->name('api.chat.staff');
+        Route::get('/sessions', [\App\Http\Controllers\Api\ChatController::class, 'mySessions'])->name('api.chat.sessions.index');
+        Route::post('/sessions', [\App\Http\Controllers\Api\ChatController::class, 'startSession'])->name('api.chat.sessions.store');
+        Route::get('/sessions/{chatSession}/messages', [\App\Http\Controllers\Api\ChatController::class, 'getMessages'])->name('api.chat.sessions.messages');
+        Route::post('/sessions/{chatSession}/messages', [\App\Http\Controllers\Api\ChatController::class, 'sendMessage'])->name('api.chat.sessions.messages.store');
+        Route::patch('/sessions/{chatSession}/close', [\App\Http\Controllers\Api\ChatController::class, 'closeSession'])->name('api.chat.sessions.close');
+    });
+
     Route::middleware('role:owner')->get('/owner/dashboard', function (Request $request) {
         return response()->json([
             'dashboard' => 'Owner dashboard',
@@ -129,6 +139,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::patch('/receptionist/medicine-orders/{order}/confirm', [ReceptionistMedicineOrderController::class, 'confirm'])->name('api.receptionist.medicine-orders.confirm');
         Route::patch('/receptionist/medicine-orders/{order}/collect-payment', [ReceptionistMedicineOrderController::class, 'collect'])->name('api.receptionist.medicine-orders.collect-payment');
         Route::get('/receptionist/payments/{payment}/invoice/pdf', [PdfExportController::class, 'exportInvoice'])->name('api.receptionist.payments.invoice.pdf');
+
+        // Bán thuốc tại quầy (Shop/POS)
+        Route::get('/receptionist/medicines', [MedicineController::class, 'index'])->name('api.receptionist.medicines.index');
+        Route::post('/receptionist/medicine-orders', [ReceptionistMedicineOrderController::class, 'store'])->name('api.receptionist.medicine-orders.store');
     });
 
     Route::middleware('role:admin')->group(function (): void {

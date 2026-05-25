@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-50 border-b border-[#DDE1E6] bg-gradient-to-r from-[#BFE0FF] via-[#FFFFFF] to-[#FFF7D6] shadow-[0_4px_16px_rgba(0,0,0,0.05)] lg:ml-72 lg:w-[calc(100%-18rem)]">
+<header class="sticky top-0 z-50 border-b border-[#DDE1E6] bg-gradient-to-r from-[#BFE0FF] via-[#FFFFFF] to-[#FFF7D6] shadow-[0_4px_16px_rgba(0,0,0,0.05)] lg:ml-80 lg:w-[calc(100%-20rem)]">
     <div class="flex w-full flex-wrap items-center gap-4 px-6 py-4 md:px-10">
         <a href="{{ route('sanctum.auth') }}" class="group inline-flex items-center gap-3">
             <span class="grid h-9 w-9 place-content-center rounded-full border border-[#C1C4C9] bg-[#FFFFFF] text-xs font-bold text-[#999999]">PAW</span>

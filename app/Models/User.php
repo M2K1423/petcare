@@ -77,4 +77,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    public function chatSessionsAsOwner(): HasMany
+    {
+        return $this->hasMany(ChatSession::class, 'owner_id');
+    }
+
+    public function chatSessionsAsStaff(): HasMany
+    {
+        return $this->hasMany(ChatSession::class, 'staff_id');
+    }
 }

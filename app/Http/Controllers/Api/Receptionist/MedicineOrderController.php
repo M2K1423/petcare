@@ -38,6 +38,102 @@ class MedicineOrderController extends Controller
         ]);
     }
 
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'owner_id' => 'required|exists:users,id',
+            'pet_id' => 'required|exists:pets,id',
+            'notes' => 'nullable|string|max:1000',
+            'items' => 'required|array|min:1',
+            'items.*.medicine_id' => 'required|exists:medicines,id',
+            'items.*.quantity' => 'required|integer|min:1|max:100',
+        ]);
+
+        $pet = \App\Models\Pet::query()
+            ->where('id', $validated['pet_id'])
+            ->where('owner_id', $validated['owner_id'])
+            ->firstOrFail();
+
+        $medicineIds = collect($validated['items'])
+            ->pluck('medicine_id')
+            ->unique()
+            ->values();
+
+        $medicines = \App\Models\Medicine::query()
+            ->whereKey($medicineIds)
+            ->get()
+            ->keyBy('id');
+
+        $total = 0;
+        $items = [];
+
+        foreach ($validated['items'] as $item) {
+            $medicine = $medicines->get($item['medicine_id']);
+
+            if (! $medicine) {
+                return response()->json([
+                    'message' => 'Không tìm thấy thuốc.',
+                ], 422);
+            }
+
+            if ($medicine->stock_quantity < $item['quantity']) {
+                return response()->json([
+                    'message' => "Không đủ tồn kho cho {$medicine->name}.",
+                ], 422);
+            }
+
+            $lineTotal = (float) $medicine->price * (int) $item['quantity'];
+            $total += $lineTotal;
+
+            $items[] = [
+                'medicine_id' => $medicine->id,
+                'quantity' => (int) $item['quantity'],
+                'unit_price' => $medicine->price,
+                'line_total' => $lineTotal,
+            ];
+        }
+
+        $order = DB::transaction(function () use ($request, $validated, $pet, $items, $total, $medicines) {
+            // Giảm tồn kho
+            foreach ($items as $item) {
+                $medicine = $medicines->get($item['medicine_id']);
+                $medicine->decrement('stock_quantity', $item['quantity']);
+            }
+
+            $order = MedicineOrder::query()->create([
+                'owner_id' => $validated['owner_id'],
+                'pet_id' => $pet->id,
+                'status' => 'confirmed',
+                'total_amount' => $total,
+                'notes' => $validated['notes'] ?? 'Đơn tạo tại quầy bởi lễ tân',
+                'confirmed_by' => $request->user()->id,
+                'confirmed_at' => Carbon::now(),
+            ]);
+
+            $order->items()->createMany($items);
+
+            $order->payment()->create([
+                'owner_id' => $order->owner_id,
+                'amount' => $order->total_amount,
+                'payment_method' => 'cash',
+                'status' => 'pending',
+                'notes' => 'Đơn tạo tại quầy, chờ thanh toán.',
+            ]);
+
+            return $order->load([
+                'owner:id,name,phone,email',
+                'pet:id,name',
+                'items.medicine:id,name,unit,stock_quantity',
+                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+            ]);
+        });
+
+        return response()->json([
+            'message' => 'Đã tạo đơn thuốc tại quầy thành công.',
+            'data' => $order,
+        ], 201);
+    }
+
     public function confirm(Request $request, MedicineOrder $order): JsonResponse
     {
         if ($order->status !== 'pending') {
