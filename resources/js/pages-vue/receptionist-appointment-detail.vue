@@ -1,62 +1,46 @@
-<script setup lang="ts">
-import { onMounted } from 'vue';
+<template>
+  <template v-if="!isLoading">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Chi tiết lịch hẹn</h1>
+            <p class="text-sm text-gray-500">Xem đầy đủ thông tin của lịch hẹn đã chọn.</p>
+        </div>
+        <a href="/receptionist/appointments" class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
+            Quay lại lịch hẹn
+        </a>
+    </div>
+
+    <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div v-if="error" class="rounded-xl bg-red-50 p-4 text-center text-red-600">{{ error }}</div>
+        
+        <div v-else-if="appointment" class="grid grid-cols-1 gap-4 sm:grid-cols-2 text-sm text-gray-700">
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Pet:</span> {{ appointment.pet?.name || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Species:</span> {{ appointment.pet?.species?.name || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Owner:</span> {{ appointment.owner?.name || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Phone:</span> {{ appointment.owner?.phone || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Email:</span> {{ appointment.owner?.email || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Date time:</span> {{ formatDateTime(appointment.appointment_at) }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Status:</span> {{ appointment.status || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Queue number:</span> {{ appointment.queue_number ? String(appointment.queue_number) : 'Not in queue yet' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Doctor:</span> {{ appointment.doctor?.user?.name || 'Unassigned' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Service:</span> {{ appointment.service?.name || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4 sm:col-span-2"><span class="font-semibold text-gray-900">Reason:</span> {{ appointment.reason || 'N/A' }}</div>
+        </div>
+    </article>
+  </template>
+  <LoadingSpinner v-else />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 
-type AppointmentDetail = {
-    id: number;
-    appointment_at: string;
-    status: string;
-    queue_number?: number | null;
-    reason?: string | null;
-    is_emergency?: boolean;
-    pet?: { name?: string; species?: { name?: string } };
-    owner?: { name?: string; phone?: string; email?: string };
-    doctor?: { user?: { name?: string } };
-    service?: { name?: string; price?: number };
-};
+const isLoading = ref(true);
+const appointment = ref(null);
+const error = ref('');
 
-async function loadAppointmentDetail() {
-    const root = document.getElementById('appointment-detail-root');
-    const content = document.getElementById('appointment-detail-content');
-
-    if (!root || !content) return;
-
-    const id = Number(root.getAttribute('data-appointment-id'));
-    if (!id) {
-        content.innerHTML = '<div class="rounded-xl bg-red-50 p-4 text-center text-red-600">Invalid appointment id.</div>';
-        return;
-    }
-
-    try {
-        const res = await callApi<{ data: AppointmentDetail }>(`/api/receptionist/appointments/${id}`, 'GET');
-        const app = res?.data;
-
-        if (!app) {
-            content.innerHTML = '<div class="rounded-xl bg-red-50 p-4 text-center text-red-600">Appointment not found.</div>';
-            return;
-        }
-
-        content.innerHTML = `
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Pet:</span> ${app.pet?.name || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Species:</span> ${app.pet?.species?.name || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Owner:</span> ${app.owner?.name || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Phone:</span> ${app.owner?.phone || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Email:</span> ${app.owner?.email || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Date time:</span> ${formatDateTime(app.appointment_at)}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Status:</span> ${app.status || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Queue number:</span> ${app.queue_number ? String(app.queue_number) : 'Not in queue yet'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Doctor:</span> ${app.doctor?.user?.name || 'Unassigned'}</div>
-                <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Service:</span> ${app.service?.name || 'N/A'}</div>
-                <div class="rounded-xl bg-gray-50 p-4 sm:col-span-2"><span class="font-semibold text-gray-900">Reason:</span> ${app.reason || 'N/A'}</div>
-            </div>
-        `;
-    } catch (e) {
-        content.innerHTML = '<div class="rounded-xl bg-red-50 p-4 text-center text-red-600">Failed to load appointment details.</div>';
-    }
-}
-
-function formatDateTime(dateTime: string): string {
+function formatDateTime(dateTime) {
     if (!dateTime) return 'N/A';
 
     const date = new Date(dateTime);
@@ -71,11 +55,27 @@ function formatDateTime(dateTime: string): string {
     });
 }
 
-onMounted(() => {
-    loadAppointmentDetail();
+onMounted(async () => {
+    const root = document.querySelector('[data-page="receptionist-appointment-detail"]');
+    if (root) {
+        const id = Number(root.getAttribute('data-appointment-id'));
+        if (!id) {
+            error.value = 'Invalid appointment id.';
+            isLoading.value = false;
+            return;
+        }
+
+        try {
+            const res = await callApi(`/api/receptionist/appointments/${id}`, 'GET');
+            if (res && res.data) {
+                appointment.value = res.data;
+            } else {
+                error.value = 'Appointment not found.';
+            }
+        } catch (e) {
+            error.value = 'Failed to load appointment details.';
+        }
+    }
+    isLoading.value = false;
 });
 </script>
-
-<template>
-    <div class="hidden"></div>
-</template>

@@ -1,52 +1,110 @@
-<script setup lang="ts">
-import { onMounted } from 'vue';
+<template>
+  <template v-if="!isLoading">
+    <header class="mb-6 rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.22em] text-[#4A4A4A]">Không gian chủ nuôi</p>
+                <h1 class="mt-2 text-2xl font-extrabold tracking-tight text-[#333333] md:text-3xl">Chỉnh sửa thú cưng</h1>
+                <p class="mt-1 text-sm text-[#4A4A4A]">Cập nhật thông tin chi tiết cho thú cưng của bạn.</p>
+            </div>
+            <a href="/owner/pets" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Quay lại danh sách</a>
+        </div>
+        <p class="mt-3 text-sm text-[#4A4A4A]">{{ statusMessage }}</p>
+    </header>
+
+    <section class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur">
+        <form @submit.prevent="updatePet" class="space-y-3">
+            <div>
+                <label for="pet-name" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Tên</label>
+                <input v-model="form.name" id="pet-name" name="name" required type="text" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+            </div>
+
+            <div>
+                <label for="pet-species" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Loài</label>
+                <select v-model="form.species_id" id="pet-species" name="species_id" required class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20">
+                    <option v-for="s in speciesList" :key="s.id" :value="s.id">{{ translateSpeciesName(s.name) }}</option>
+                </select>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+                <div>
+                    <label for="pet-gender" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Giới tính</label>
+                    <select v-model="form.gender" id="pet-gender" name="gender" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20">
+                        <option value="unknown">Không rõ</option>
+                        <option value="male">Đực</option>
+                        <option value="female">Cái</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pet-weight" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Cân nặng (kg)</label>
+                    <input v-model="form.weight" id="pet-weight" name="weight" type="number" min="0" step="0.01" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+                </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+                <div>
+                    <label for="pet-breed" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Giống</label>
+                    <input v-model="form.breed" id="pet-breed" name="breed" type="text" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+                </div>
+                <div>
+                    <label for="pet-birth-date" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Ngày sinh</label>
+                    <input v-model="form.birth_date" id="pet-birth-date" name="birth_date" type="date" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+                </div>
+            </div>
+
+            <div>
+                <label for="pet-color" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Màu sắc</label>
+                <input v-model="form.color" id="pet-color" name="color" type="text" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+            </div>
+
+            <div>
+                <label for="pet-allergies" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Dị ứng</label>
+                <textarea v-model="form.allergies" id="pet-allergies" name="allergies" rows="2" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20"></textarea>
+            </div>
+
+            <div>
+                <label for="pet-notes" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Ghi chú</label>
+                <textarea v-model="form.notes" id="pet-notes" name="notes" rows="3" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20"></textarea>
+            </div>
+
+            <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] focus:outline-none focus:ring-2 focus:ring-[#2A6496]/35 disabled:opacity-50">
+                {{ isSaving ? 'Đang lưu...' : 'Lưu thay đổi' }}
+            </button>
+        </form>
+    </section>
+  </template>
+  <LoadingSpinner v-else />
+</template>
+
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
+import { useNotification } from '../composables/useNotification';
 
-type Species = {
-    id: number;
-    name: string;
-};
+const { notifySuccess, handleApiError } = useNotification();
 
-type Pet = {
-    id: number;
-    name: string;
-    species_id: number;
-    species?: { id: number; name: string } | null;
-    gender: 'male' | 'female' | 'unknown';
-    breed: string | null;
-    birth_date: string | null;
-    weight: string | null;
-    color: string | null;
-    allergies: string | null;
-    notes: string | null;
-};
+const isLoading = ref(true);
+const isSaving = ref(false);
+const statusMessage = ref('Đang tải...');
+const speciesList = ref([]);
+const petId = ref(null);
 
-type AuthMeResponse = {
-    authenticated?: boolean;
-    user?: { role?: string | null } | null;
-};
+const form = reactive({
+    name: '',
+    species_id: '',
+    gender: 'unknown',
+    breed: '',
+    birth_date: '',
+    weight: '',
+    color: '',
+    allergies: '',
+    notes: ''
+});
 
-const rootEl = document.getElementById('owner-pet-edit-root') as HTMLDivElement | null;
-const statusEl = document.getElementById('owner-pet-edit-status');
-const formEl = document.getElementById('owner-pet-edit-form') as HTMLFormElement | null;
-const speciesSelect = document.getElementById('pet-species') as HTMLSelectElement | null;
-
-function setStatus(message: string, kind: 'neutral' | 'success' | 'error' = 'neutral'): void {
-    if (!statusEl) return;
-
-    const classMap = {
-        neutral: 'mt-3 text-sm text-[#4A4A4A]',
-        success: 'mt-3 text-sm text-emerald-700',
-        error: 'mt-3 text-sm text-rose-700',
-    };
-
-    statusEl.className = classMap[kind];
-    statusEl.textContent = message;
-}
-
-function translateSpeciesName(name: string): string {
+function translateSpeciesName(name) {
     const normalized = name.trim().toLowerCase();
-    const mapping: Record<string, string> = {
+    const mapping = {
         bird: 'Chim',
         cat: 'Mèo',
         dog: 'Chó',
@@ -54,119 +112,64 @@ function translateSpeciesName(name: string): string {
         rabbit: 'Thỏ',
         hamster: 'Chuột hamster',
     };
-
     return mapping[normalized] || name;
 }
 
-function getPetId(): number {
-    const petId = Number(rootEl?.dataset.petId ?? '');
-
-    if (!Number.isInteger(petId) || petId <= 0) {
-        throw new Error('Mã thú cưng không hợp lệ.');
-    }
-
-    return petId;
-}
-
-function setInputValue(id: string, value: string | null): void {
-    const input = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
-    if (!input) return;
-
-    input.value = value ?? '';
-}
-
-function normalizeFormPayload(form: HTMLFormElement): Record<string, unknown> {
-    const formData = new FormData(form);
-    const get = (key: string): string => String(formData.get(key) ?? '').trim();
-    const weightText = get('weight');
-
-    return {
-        name: get('name'),
-        species_id: Number(get('species_id')),
-        gender: get('gender') || 'unknown',
-        breed: get('breed') || null,
-        birth_date: get('birth_date') || null,
-        weight: weightText ? Number(weightText) : null,
-        color: get('color') || null,
-        allergies: get('allergies') || null,
-        notes: get('notes') || null,
-    };
-}
-
-async function ensureOwner(): Promise<void> {
-    const me = await callApi<AuthMeResponse>('/api/auth/me', 'GET');
-
-    if (!me.authenticated || me.user?.role !== 'owner') {
-        throw new Error('Cần tài khoản chủ nuôi để chỉnh sửa thú cưng.');
-    }
-}
-
-async function loadSpecies(): Promise<void> {
-    if (!speciesSelect) return;
-
-    const response = await callApi<{ data: Species[] }>('/api/owner/species', 'GET');
-
-    if (response.data.length === 0) {
-        speciesSelect.innerHTML = '<option value="">Không có dữ liệu loài</option>';
+async function loadData() {
+    const mountNode = document.querySelector('[data-page="owner-pet-edit"]');
+    petId.value = Number(mountNode?.dataset?.petId);
+    
+    if (!petId.value) {
+        statusMessage.value = 'Mã thú cưng không hợp lệ.';
         return;
     }
-
-    speciesSelect.innerHTML = response.data
-        .map((species) => `<option value="${species.id}">${translateSpeciesName(species.name)}</option>`)
-        .join('');
-}
-
-async function loadPet(petId: number): Promise<Pet> {
-    const response = await callApi<{ data: Pet }>(`/api/owner/pets/${petId}`, 'GET');
-    const pet = response.data;
-
-    setInputValue('pet-name', pet.name);
-    setInputValue('pet-species', String(pet.species_id));
-    setInputValue('pet-gender', pet.gender);
-    setInputValue('pet-breed', pet.breed);
-    setInputValue('pet-birth-date', pet.birth_date);
-    setInputValue('pet-weight', pet.weight);
-    setInputValue('pet-color', pet.color);
-    setInputValue('pet-allergies', pet.allergies);
-    setInputValue('pet-notes', pet.notes);
-
-    return pet;
-}
-
-async function bootstrap(): Promise<void> {
-    if (!rootEl || !formEl || !speciesSelect) return;
-
-    const petId = getPetId();
 
     try {
-        await ensureOwner();
-        await loadSpecies();
-        const pet = await loadPet(petId);
-        setStatus(`Đang chỉnh sửa: ${pet.name}`, 'neutral');
+        const [speciesRes, petRes] = await Promise.all([
+            callApi('/api/owner/species', 'GET'),
+            callApi(`/api/owner/pets/${petId.value}`, 'GET')
+        ]);
+        
+        speciesList.value = speciesRes.data || [];
+        const pet = petRes.data;
+        
+        form.name = pet.name ?? '';
+        form.species_id = pet.species_id ?? '';
+        form.gender = pet.gender ?? 'unknown';
+        form.breed = pet.breed ?? '';
+        form.birth_date = pet.birth_date ?? '';
+        form.weight = pet.weight ?? '';
+        form.color = pet.color ?? '';
+        form.allergies = pet.allergies ?? '';
+        form.notes = pet.notes ?? '';
+
+        statusMessage.value = `Đang chỉnh sửa: ${pet.name}`;
     } catch (error) {
-        setStatus((error as Error).message, 'error');
-        return;
+        handleApiError(error);
+        statusMessage.value = 'Lỗi khi tải dữ liệu.';
+    } finally {
+        isLoading.value = false;
     }
+}
 
-    formEl.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        try {
-            const payload = normalizeFormPayload(formEl);
-            await callApi(`/api/owner/pets/${petId}`, 'PUT', payload);
-            const updatedPet = await loadPet(petId);
-            setStatus(`Đã lưu thành công: ${updatedPet.name}`, 'success');
-        } catch (error) {
-            setStatus((error as Error).message, 'error');
-        }
-    });
+async function updatePet() {
+    isSaving.value = true;
+    try {
+        const payload = { ...form };
+        if (payload.weight) payload.weight = Number(payload.weight);
+        else payload.weight = null;
+        
+        await callApi(`/api/owner/pets/${petId.value}`, 'PUT', payload);
+        notifySuccess('Lưu thành công!');
+        statusMessage.value = `Đã lưu thành công: ${form.name}`;
+    } catch (error) {
+        handleApiError(error);
+    } finally {
+        isSaving.value = false;
+    }
 }
 
 onMounted(() => {
-    bootstrap();
+    loadData();
 });
 </script>
-
-<template>
-    <div class="hidden"></div>
-</template>

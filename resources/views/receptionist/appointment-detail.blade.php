@@ -1,22 +1,7 @@
 <x-layout.app
     title="Chi tiết lịch hẹn | {{ config('app.name', 'PetCare') }}"
     :vite="['resources/css/app.css', 'resources/js/app.js']"
-    page="receptionist-appointment-detail"
     :showSidebar="true"
 >
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Chi tiết lịch hẹn</h1>
-            <p class="text-sm text-gray-500">Xem đầy đủ thông tin của lịch hẹn đã chọn.</p>
-        </div>
-        <a href="{{ route('receptionist.appointments') }}" class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
-            Quay lại lịch hẹn
-        </a>
-    </div>
-
-    <article id="appointment-detail-root" data-appointment-id="{{ $appointmentId }}" class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div id="appointment-detail-content" class="space-y-3 text-sm text-gray-700">
-            <div class="rounded-xl bg-gray-50 p-4 text-center text-gray-500">Đang tải chi tiết lịch hẹn...</div>
-        </div>
-    </article>
+    <div data-page="receptionist-appointment-detail" data-appointment-id="{{ $appointmentId }}"></div>
 </x-layout.app>

@@ -1,112 +1,117 @@
-<script setup lang="ts">
-import { onMounted, ref } from 'vue';
+<template>
+  <template v-if="!isLoading">
+    <section class="rounded-3xl border border-[#DDE1E6] bg-white p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)]">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-[#333333]">Giỏ hàng của tôi</h1>
+                <p class="mt-1 text-sm text-[#4A4A4A]">Xem lại sản phẩm và thanh toán trực tuyến.</p>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <div v-if="items.length === 0" class="p-6 text-center text-sm text-[#4A4A4A]">Giỏ hàng của bạn đang trống.</div>
+            
+            <div v-else class="space-y-4">
+                <div class="grid gap-4 lg:grid-cols-[1fr_320px]">
+                    <div class="space-y-3">
+                        <div v-for="item in items" :key="item.medicine.id" class="rounded-2xl border p-3 flex items-center justify-between bg-[#F9FBFD]">
+                            <div>
+                                <p class="font-semibold text-[#333333]">{{ item.medicine.name }}</p>
+                                <p class="text-xs text-[#64748B]">{{ formatCurrency(item.medicine.price) }} {{ item.medicine.unit ? '/ ' + item.medicine.unit : '' }}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="1" v-model.number="item.quantity" @change="updateQuantity(item)" class="w-20 rounded-xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none focus:border-[#2A6496]">
+                                <button @click="removeItem(item.medicine.id)" class="rounded-lg bg-[#FEF3F2] px-3 py-2 text-sm text-[#B42318] transition hover:bg-[#FEE4E2]">Xóa</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <aside class="rounded-2xl border border-[#DDE1E6] p-4 bg-[#F9FBFD]">
+                        <p class="text-sm font-semibold text-[#4A4A4A]">Chọn thú cưng</p>
+                        <select v-model="selectedPet" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none focus:border-[#2A6496]">
+                            <option value="">-- Vui lòng chọn thú cưng --</option>
+                            <option v-for="pet in pets" :key="pet.id" :value="pet.id">{{ pet.name }}</option>
+                        </select>
+                        
+                        <p class="mt-4 text-sm font-semibold text-[#4A4A4A]">Phương thức thanh toán</p>
+                        <select v-model="paymentMethod" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none focus:border-[#2A6496]">
+                            <option value="vnpay">Thanh toán trực tuyến (VNPay)</option>
+                            <option value="cash">Thanh toán tại phòng khám</option>
+                        </select>
+                        
+                        <p class="mt-4 text-sm font-semibold text-[#4A4A4A]">Ghi chú</p>
+                        <textarea v-model="notes" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none focus:border-[#2A6496]"></textarea>
+                        
+                        <div class="mt-6 flex items-center justify-between border-t border-[#DDE1E6] pt-4">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Tổng cộng</p>
+                                <p class="text-2xl font-extrabold text-[#2A6496]">{{ formatCurrency(total) }}</p>
+                            </div>
+                            <div>
+                                <button @click="checkoutFlow" :disabled="isCheckingOut" class="rounded-xl bg-[#2A6496] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:opacity-50">
+                                    {{ isCheckingOut ? 'Đang xử lý...' : 'Thanh toán' }}
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </section>
+  </template>
+  <LoadingSpinner v-else />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, notifyError, handleApiError } = useNotification();
 
-type CartItem = { medicine: { id: number; name: string; price: number | string; unit?: string | null }; quantity: number };
+const isLoading = ref(true);
+const isCheckingOut = ref(false);
+const items = ref([]);
+const total = ref(0);
+const pets = ref([]);
+const selectedPet = ref('');
+const paymentMethod = ref('vnpay');
+const notes = ref('');
 
-const rootEl = document.getElementById('owner-cart-root');
-const items = ref<CartItem[]>((window as any).cartStore?.getItems() || []);
-const total = ref<number>((window as any).cartStore?.getTotal() || 0);
-const pets = ref<any[]>([]);
-const selectedPet = ref<number | null>(null);
-const paymentMethod = ref<string>('vnpay');
-const notes = ref<string>('');
-
-function formatCurrency(value: number | string): string {
+function formatCurrency(value) {
     return `${Number(value || 0).toLocaleString('vi-VN')} VND`;
 }
 
-function render() {
-    if (!rootEl) return;
-    if (items.value.length === 0) {
-        rootEl.innerHTML = '<div class="p-6 text-center text-sm text-[#4A4A4A]">Your cart is empty.</div>';
-        return;
+function updateStoreState() {
+    const cart = window.cartStore;
+    if (cart) {
+        items.value = cart.getItems();
+        total.value = cart.getTotal();
     }
+}
 
-    rootEl.innerHTML = `
-        <div class="space-y-4">
-            <div class="grid gap-4 lg:grid-cols-[1fr_320px]">
-                <div class="space-y-3">
-                    ${items.value.map(i => `
-                        <div class="rounded-2xl border p-3 flex items-center justify-between">
-                            <div>
-                                <p class="font-semibold text-[#333333]">${i.medicine.name}</p>
-                                <p class="text-xs text-[#64748B]">${formatCurrency(i.medicine.price)} ${i.medicine.unit ? '/ ' + i.medicine.unit : ''}</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input data-id="${i.medicine.id}" type="number" min="0" value="${i.quantity}" class="w-20 rounded-xl border px-3 py-2 text-sm">
-                                <button data-remove="${i.medicine.id}" class="rounded-lg bg-[#FEF3F2] px-3 py-2 text-sm text-[#B42318]">Remove</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <aside class="rounded-2xl border p-4">
-                    <p class="text-sm text-[#64748B]">Select pet</p>
-                    <select id="cart-pet-select" class="mt-2 w-full rounded-2xl border px-3 py-2">
-                        <option value="">Choose a pet</option>
-                        ${pets.value.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
-                    </select>
-                    <p class="mt-4 text-sm text-[#64748B]">Payment method</p>
-                    <select id="cart-payment-method" class="mt-2 w-full rounded-2xl border px-3 py-2">
-                        <option value="vnpay">VNPay (online)</option>
-                        <option value="cash">Cash (pay at clinic)</option>
-                    </select>
-                    <p class="mt-4 text-sm text-[#64748B]">Notes</p>
-                    <textarea id="cart-notes" rows="3" class="mt-2 w-full rounded-2xl border px-3 py-2"></textarea>
-                    <div class="mt-4 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-[#64748B]">Total</p>
-                            <p class="text-2xl font-extrabold text-[#2A6496]">${formatCurrency(total.value)}</p>
-                        </div>
-                        <div>
-                            <button id="cart-checkout" class="rounded-lg bg-[#0055A6] px-4 py-2 text-sm font-semibold text-white">Checkout</button>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-        </div>
-    `;
+function updateQuantity(item) {
+    const val = Math.max(1, Number(item.quantity) || 1);
+    const cart = window.cartStore;
+    if (cart) {
+        cart.setItemQty(item.medicine.id, val);
+        updateStoreState();
+    }
+}
 
-    // attach listeners
-    items.value.forEach((it) => {
-        const input = rootEl.querySelector(`input[data-id="${it.medicine.id}"]`) as HTMLInputElement | null;
-        const remove = rootEl.querySelector(`button[data-remove="${it.medicine.id}"]`) as HTMLButtonElement | null;
-        if (input) {
-            input.addEventListener('change', (e) => {
-                const val = Math.max(0, Number((e.target as HTMLInputElement).value || 0));
-                (window as any).cartStore.setItemQty(it.medicine.id, val);
-                items.value = (window as any).cartStore.getItems();
-                total.value = (window as any).cartStore.getTotal();
-                render();
-            });
-        }
-        if (remove) {
-            remove.addEventListener('click', () => {
-                (window as any).cartStore.removeItem(it.medicine.id);
-                items.value = (window as any).cartStore.getItems();
-                total.value = (window as any).cartStore.getTotal();
-                render();
-            });
-        }
-    });
-
-    const petSelect = rootEl.querySelector('#cart-pet-select') as HTMLSelectElement | null;
-    const pmSelect = rootEl.querySelector('#cart-payment-method') as HTMLSelectElement | null;
-    const notesEl = rootEl.querySelector('#cart-notes') as HTMLTextAreaElement | null;
-    const checkout = rootEl.querySelector('#cart-checkout') as HTMLButtonElement | null;
-
-    if (petSelect) petSelect.addEventListener('change', () => { selectedPet.value = Number(petSelect.value) || null; });
-    if (pmSelect) pmSelect.addEventListener('change', () => { paymentMethod.value = pmSelect.value; });
-    if (notesEl) notesEl.addEventListener('input', () => { notes.value = notesEl.value; });
-    if (checkout) checkout.addEventListener('click', () => { void checkoutFlow(); });
+function removeItem(id) {
+    const cart = window.cartStore;
+    if (cart) {
+        cart.removeItem(id);
+        updateStoreState();
+        notifySuccess('Đã xóa sản phẩm khỏi giỏ hàng.');
+    }
 }
 
 async function loadPets() {
     try {
-        const resp = await callApi<{ data: any[] }>('/api/owner/pets', 'GET');
+        const resp = await callApi('/api/owner/pets', 'GET');
         pets.value = resp.data || [];
     } catch (e) {
         pets.value = [];
@@ -115,15 +120,17 @@ async function loadPets() {
 
 async function checkoutFlow() {
     if (!selectedPet.value) {
-        notifyError('Please choose a pet before checkout.');
+        notifyError('Vui lòng chọn thú cưng trước khi thanh toán.');
         return;
     }
 
     if (items.value.length === 0) {
-        notifyError('Your cart is empty.');
+        notifyError('Giỏ hàng của bạn đang trống.');
         return;
     }
 
+    isCheckingOut.value = true;
+    
     const payload = {
         pet_id: selectedPet.value,
         notes: notes.value,
@@ -131,34 +138,38 @@ async function checkoutFlow() {
     };
 
     try {
-        const created = await callApi<{ data: any }>('/api/owner/medicine-orders', 'POST', payload);
+        const created = await callApi('/api/owner/medicine-orders', 'POST', payload);
         const order = created.data;
+        
         // immediately attempt payment (owner flow)
-        const payResp = await callApi<any>(`/api/owner/medicine-orders/${order.id}/pay`, 'PATCH', { payment_method: paymentMethod.value, notes: notes.value });
+        const payResp = await callApi(`/api/owner/medicine-orders/${order.id}/pay`, 'PATCH', { 
+            payment_method: paymentMethod.value, 
+            notes: notes.value 
+        });
+        
         if (payResp?.payment_url) {
             window.location.href = payResp.payment_url;
             return;
         }
 
         // otherwise clear cart and show success
-        (window as any).cartStore.clear();
+        const cart = window.cartStore;
+        if (cart) cart.clear();
         items.value = [];
         total.value = 0;
-        render();
-        notifySuccess('Order created successfully.');
-    } catch (err: any) {
+        
+        notifySuccess('Đã tạo đơn hàng thành công.');
+        window.location.href = '/owner/orders'; // Redirect to orders page
+    } catch (err) {
         handleApiError(err);
+    } finally {
+        isCheckingOut.value = false;
     }
 }
 
 onMounted(async () => {
-    items.value = (window as any).cartStore?.getItems() || [];
-    total.value = (window as any).cartStore?.getTotal() || 0;
+    updateStoreState();
     await loadPets();
-    render();
+    isLoading.value = false;
 });
 </script>
-
-<template>
-    <div class="hidden"></div>
-</template>
