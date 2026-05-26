@@ -68,7 +68,9 @@ class VnpayController extends Controller
     {
         $params = $this->normalizeParams($request);
         $txnRef = $params['vnp_TxnRef'] ?? '';
-        $routeName = str_contains($txnRef, 'MED') ? 'owner.orders' : 'receptionist.billing';
+        
+        $isReceptionist = auth('sanctum')->check() && auth('sanctum')->user()->hasRole('receptionist');
+        $routeName = $isReceptionist ? 'receptionist.billing' : 'owner.orders';
 
         if (! $this->vnpay->verifySignature($params)) {
             return redirect()->route($routeName, [
@@ -93,8 +95,6 @@ class VnpayController extends Controller
         }
 
         $successful = $this->vnpay->isSuccessful($params);
-
-        $routeName = $payment->medicine_order_id ? 'owner.orders' : 'receptionist.billing';
 
         return redirect()->route($routeName, [
             'paymentStatus' => $successful ? 'success' : 'failed',
