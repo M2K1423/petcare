@@ -12,70 +12,74 @@
       </select>
     </div>
 
-    <!-- Payment Stats -->
-    <div class="grid grid-cols-4 gap-4">
-      <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
-        <div class="text-sm text-gray-600">Chờ Xác Nhận</div>
-        <div class="text-2xl font-bold text-yellow-600">{{ pendingCount }}</div>
-        <div class="text-xs text-gray-500">{{ formatCurrency(pendingTotal) }}</div>
+    <template v-if="!isLoading">
+      <!-- Payment Stats -->
+      <div class="grid grid-cols-4 gap-4">
+        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+          <div class="text-sm text-gray-600">Chờ Xác Nhận</div>
+          <div class="text-2xl font-bold text-yellow-600">{{ pendingCount }}</div>
+          <div class="text-xs text-gray-500">{{ formatCurrency(pendingTotal) }}</div>
+        </div>
+        <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+          <div class="text-sm text-gray-600">Hoàn Tất</div>
+          <div class="text-2xl font-bold text-green-600">{{ completedCount }}</div>
+          <div class="text-xs text-gray-500">{{ formatCurrency(completedTotal) }}</div>
+        </div>
+        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+          <div class="text-sm text-gray-600">Thất Bại</div>
+          <div class="text-2xl font-bold text-red-600">{{ failedCount }}</div>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+          <div class="text-sm text-gray-600">Hoàn Tiền</div>
+          <div class="text-2xl font-bold text-blue-600">{{ refundedCount }}</div>
+          <div class="text-xs text-gray-500">{{ formatCurrency(refundedTotal) }}</div>
+        </div>
       </div>
-      <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-        <div class="text-sm text-gray-600">Hoàn Tất</div>
-        <div class="text-2xl font-bold text-green-600">{{ completedCount }}</div>
-        <div class="text-xs text-gray-500">{{ formatCurrency(completedTotal) }}</div>
-      </div>
-      <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
-        <div class="text-sm text-gray-600">Thất Bại</div>
-        <div class="text-2xl font-bold text-red-600">{{ failedCount }}</div>
-      </div>
-      <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
-        <div class="text-sm text-gray-600">Hoàn Tiền</div>
-        <div class="text-2xl font-bold text-blue-600">{{ refundedCount }}</div>
-        <div class="text-xs text-gray-500">{{ formatCurrency(refundedTotal) }}</div>
-      </div>
-    </div>
 
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <table class="w-full text-sm">
-        <thead class="bg-gray-100 border-b">
-          <tr>
-            <th class="px-6 py-3 text-left">Mã Thanh Toán</th>
-            <th class="px-6 py-3 text-left">Người Dùng</th>
-            <th class="px-6 py-3 text-left">Phương Thức</th>
-            <th class="px-6 py-3 text-right">Số Tiền</th>
-            <th class="px-6 py-3 text-left">Ngày</th>
-            <th class="px-6 py-3 text-left">Trạng Thái</th>
-            <th class="px-6 py-3 text-left">Hành Động</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y">
-          <tr v-for="payment in filteredPayments" :key="payment.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 font-medium">{{ payment.transaction_id || payment.id }}</td>
-            <td class="px-6 py-4">{{ payment.user?.name || 'N/A' }}</td>
-            <td class="px-6 py-4">{{ payment.payment_method }}</td>
-            <td class="px-6 py-4 text-right font-semibold text-blue-600">{{ formatCurrency(payment.amount) }}</td>
-            <td class="px-6 py-4">{{ formatDate(payment.created_at) }}</td>
-            <td class="px-6 py-4">
-              <span :class="[
-                'px-2 py-1 rounded text-xs font-semibold',
-                payment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                payment.status === 'failed' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-              ]">
-                {{ statusLabel(payment.status) }}
-              </span>
-            </td>
-            <td class="px-6 py-4 space-x-2 text-sm">
-              <button v-if="payment.status === 'pending'" @click="confirmPayment(payment)" class="text-green-600 hover:text-green-800">✓</button>
-              <button v-if="payment.status === 'completed'" @click="refundPayment(payment)" class="text-orange-600 hover:text-orange-800">↩️</button>
-              <button v-if="payment.status === 'completed'" @click="printInvoice(payment)" class="text-indigo-600 hover:text-indigo-800" title="In Hóa Đơn">🖨️</button>
-              <button @click="viewDetails(payment)" class="text-blue-600 hover:text-blue-800">👁️</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-100 border-b">
+            <tr>
+              <th class="px-6 py-3 text-left">Mã Thanh Toán</th>
+              <th class="px-6 py-3 text-left">Người Dùng</th>
+              <th class="px-6 py-3 text-left">Phương Thức</th>
+              <th class="px-6 py-3 text-right">Số Tiền</th>
+              <th class="px-6 py-3 text-left">Ngày</th>
+              <th class="px-6 py-3 text-left">Trạng Thái</th>
+              <th class="px-6 py-3 text-left">Hành Động</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <tr v-for="payment in filteredPayments" :key="payment.id" class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">{{ payment.transaction_id || payment.id }}</td>
+              <td class="px-6 py-4">{{ payment.owner?.name || 'N/A' }}</td>
+              <td class="px-6 py-4">{{ payment.payment_method }}</td>
+              <td class="px-6 py-4 text-right font-semibold text-blue-600">{{ formatCurrency(payment.amount) }}</td>
+              <td class="px-6 py-4">{{ formatDate(payment.created_at) }}</td>
+              <td class="px-6 py-4">
+                <span :class="[
+                  'px-2 py-1 rounded text-xs font-semibold',
+                  ['completed', 'paid'].includes(payment.status) ? 'bg-green-100 text-green-800' :
+                  payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  payment.status === 'failed' ? 'bg-red-100 text-red-800' :
+                  'bg-blue-100 text-blue-800'
+                ]">
+                  {{ statusLabel(payment.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 space-x-2 text-sm">
+                <button v-if="payment.status === 'pending'" @click="confirmPayment(payment)" class="text-green-600 hover:text-green-800">✓</button>
+                <button v-if="payment.status === 'completed'" @click="refundPayment(payment)" class="text-orange-600 hover:text-orange-800">↩️</button>
+                <button v-if="payment.status === 'completed'" @click="printInvoice(payment)" class="text-indigo-600 hover:text-indigo-800" title="In Hóa Đơn">🖨️</button>
+                <button @click="viewDetails(payment)" class="text-blue-600 hover:text-blue-800">👁️</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+    
+    <LoadingSpinner v-else />
 
     <!-- Details Modal -->
     <div v-if="showDetail" class="fixed inset-0 bg-black/50 flex items-center justify-center">
@@ -116,6 +120,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useNotification } from '../composables/useNotification';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const { notifySuccess, handleApiError } = useNotification();
 
@@ -137,6 +142,7 @@ const statusLabel = (status) => {
   const labels = {
     'pending': 'Chờ Xác Nhận',
     'completed': 'Hoàn Tất',
+    'paid': 'Đã Thanh Toán',
     'failed': 'Thất Bại',
     'refunded': 'Hoàn Tiền'
   };
@@ -160,13 +166,16 @@ const filteredPayments = computed(() => {
 
 const pendingCount = computed(() => payments.value.filter(p => p.status === 'pending').length);
 const pendingTotal = computed(() => payments.value.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0));
-const completedCount = computed(() => payments.value.filter(p => p.status === 'completed').length);
-const completedTotal = computed(() => payments.value.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0));
+const completedCount = computed(() => payments.value.filter(p => ['completed', 'paid'].includes(p.status)).length);
+const completedTotal = computed(() => payments.value.filter(p => ['completed', 'paid'].includes(p.status)).reduce((sum, p) => sum + p.amount, 0));
 const failedCount = computed(() => payments.value.filter(p => p.status === 'failed').length);
 const refundedCount = computed(() => payments.value.filter(p => p.status === 'refunded').length);
 const refundedTotal = computed(() => payments.value.filter(p => p.status === 'refunded').reduce((sum, p) => sum + p.amount, 0));
 
+const isLoading = ref(true);
+
 const fetchPayments = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/payments', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -179,6 +188,8 @@ const fetchPayments = async () => {
     payments.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

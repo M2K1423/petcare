@@ -166,7 +166,10 @@ const settings = ref({
   backup_frequency_hours: 24
 });
 
+const isLoading = ref(true);
+
 const fetchSettings = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/settings', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -179,6 +182,8 @@ const fetchSettings = async () => {
     Object.assign(settings.value, data.data);
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

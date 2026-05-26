@@ -1,4 +1,5 @@
 <template>
+  <template v-if="!isLoading">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
     <!-- Summary Cards -->
     <div class="bg-white rounded-lg shadow p-6">
@@ -77,11 +78,14 @@
       </div>
     </div>
   </div>
+  </template>
+  <LoadingSpinner v-else />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useNotification } from '../composables/useNotification';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const { notifySuccess, handleApiError } = useNotification();
 
@@ -99,7 +103,10 @@ const formatDate = (date) => {
   return new Date(date).toLocaleString('vi-VN');
 };
 
+const isLoading = ref(true);
+
 const fetchDashboard = async (showToast = false) => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/dashboard', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -117,6 +124,8 @@ const fetchDashboard = async (showToast = false) => {
     if (showToast) notifySuccess('Làm mới dữ liệu thành công!');
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

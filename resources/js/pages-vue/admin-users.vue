@@ -163,7 +163,10 @@ const filteredUsers = computed(() => {
   return result.slice((currentPage.value - 1) * 10, currentPage.value * 10);
 });
 
+const isLoading = ref(true);
+
 const fetchUsers = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/users', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -176,6 +179,8 @@ const fetchUsers = async () => {
     users.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

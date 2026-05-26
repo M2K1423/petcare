@@ -110,7 +110,10 @@ const filteredPets = computed(() => {
   return result;
 });
 
+const isLoading = ref(true);
+
 const fetchPets = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/pets', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -123,6 +126,8 @@ const fetchPets = async () => {
     pets.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

@@ -224,7 +224,10 @@ const monthActivities = computed(() => {
   return logs.value.filter(log => new Date(log.created_at) > monthAgo).length;
 });
 
+const isLoading = ref(true);
+
 const fetchLogs = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/logs', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -237,6 +240,8 @@ const fetchLogs = async () => {
     logs.value = data.data || [];
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

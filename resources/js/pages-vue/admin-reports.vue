@@ -155,7 +155,10 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
+const isLoading = ref(true);
+
 const generateReport = async () => {
+  isLoading.value = true;
   try {
     let endpoint = '';
     switch (currentReport.value) {
@@ -207,6 +210,8 @@ const generateReport = async () => {
     notifySuccess('Đã tạo báo cáo thành công!');
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>

@@ -133,7 +133,10 @@ const cancelledCount = computed(() =>
   appointments.value.filter(a => a.status === 'cancelled').length
 );
 
+const isLoading = ref(true);
+
 const fetchAppointments = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/appointments', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -146,6 +149,8 @@ const fetchAppointments = async () => {
     appointments.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

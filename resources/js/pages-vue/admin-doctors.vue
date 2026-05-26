@@ -106,7 +106,10 @@ const filteredDoctors = computed(() => {
   );
 });
 
+const isLoading = ref(true);
+
 const fetchDoctors = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/doctors', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -119,6 +122,8 @@ const fetchDoctors = async () => {
     doctors.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

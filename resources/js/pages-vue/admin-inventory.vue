@@ -123,7 +123,10 @@ const expiringCount = computed(() =>
   inventory.value.filter(item => isExpiringSoon(item.expiration_date)).length
 );
 
+const isLoading = ref(true);
+
 const fetchInventory = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/inventory', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -136,6 +139,8 @@ const fetchInventory = async () => {
     inventory.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

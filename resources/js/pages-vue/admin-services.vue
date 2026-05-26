@@ -112,7 +112,10 @@ const filteredServices = computed(() => {
   );
 });
 
+const isLoading = ref(true);
+
 const fetchServices = async () => {
+  isLoading.value = true;
   try {
     const res = await fetch('/api/admin/services', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -125,6 +128,8 @@ const fetchServices = async () => {
     services.value = data.data;
   } catch (err) {
     handleApiError(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 

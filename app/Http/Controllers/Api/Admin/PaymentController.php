@@ -13,7 +13,7 @@ class PaymentController extends Controller
     {
         $this->authorize('viewAny', Payment::class);
 
-        $query = Payment::with(['appointment', 'medicineOrder', 'user']);
+        $query = Payment::with(['appointment', 'medicineOrder', 'owner']);
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -48,7 +48,7 @@ class PaymentController extends Controller
     public function show(Payment $payment)
     {
         $this->authorize('view', $payment);
-        return response()->json($payment->load(['appointment', 'medicineOrder', 'user']));
+        return response()->json($payment->load(['appointment', 'medicineOrder', 'owner']));
     }
 
     public function confirm(Request $request, Payment $payment)
@@ -118,7 +118,7 @@ class PaymentController extends Controller
         $dateTo = $request->input('date_to', now());
 
         $payments = Payment::whereBetween('created_at', [$dateFrom, $dateTo])
-            ->where('status', 'completed')
+            ->whereIn('status', ['completed', 'paid'])
             ->get();
 
         $stats = [
