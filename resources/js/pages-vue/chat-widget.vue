@@ -331,9 +331,11 @@ const sendMessage = async () => {
       body: text
     });
     
-    // Add to local UI instantly
-    messages.value.push(res.data);
-    scrollToBottom();
+    // Only push if the websocket hasn't already added it
+    if (!messages.value.some(m => m.id === res.data.id)) {
+      messages.value.push(res.data);
+      scrollToBottom();
+    }
   } catch (err) {
     newMessage.value = text; // Restore if failed
     notifyError(err, 'Không thể gửi tin nhắn');

@@ -17,7 +17,7 @@ class ChatMessageSent implements ShouldBroadcastNow
     public int $id;
     public int $chat_session_id;
     public int $sender_id;
-    public string $sender_name;
+    public array $sender;
     public string $body;
     public string $created_at;
 
@@ -26,7 +26,10 @@ class ChatMessageSent implements ShouldBroadcastNow
         $this->id = $message->id;
         $this->chat_session_id = $message->chat_session_id;
         $this->sender_id = $message->sender_id;
-        $this->sender_name = $message->sender->name ?? 'Unknown';
+        $this->sender = [
+            'id' => $message->sender_id,
+            'name' => $message->sender->name ?? 'Unknown'
+        ];
         $this->body = $message->body;
         $this->created_at = $message->created_at->toIso8601String();
     }

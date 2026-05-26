@@ -42,15 +42,12 @@ class VnpayService
             'vnp_Amount' => (string) ((int) round((float) $payment->amount * 100)),
             'vnp_CreateDate' => Carbon::now('Asia/Ho_Chi_Minh')->format('YmdHis'),
             'vnp_CurrCode' => 'VND',
-            'vnp_IpAddr' => $request->ip() ?: '127.0.0.1',
+            'vnp_IpAddr' => substr((string) ($request->ip() ?: '127.0.0.1'), 0, 15),
             'vnp_Locale' => config('vnpay.locale', 'vn'),
             'vnp_OrderInfo' => $this->sanitizeOrderInfo($this->buildOrderInfo($payment)),
             'vnp_OrderType' => config('vnpay.order_type', 'other'),
             'vnp_ReturnUrl' => $returnUrl,
             'vnp_TxnRef' => $payment->transaction_code,
-            'vnp_ExpireDate' => Carbon::now('Asia/Ho_Chi_Minh')
-                ->addMinutes((int) config('vnpay.expire_minutes', 15))
-                ->format('YmdHis'),
         ];
 
         $query = $this->buildQuery($payload);
@@ -105,7 +102,7 @@ class VnpayService
         $prefix = $payment->medicine_order_id ? 'MED' : 'APT';
 
         return sprintf(
-            'VNPAY-%s-%d-%s',
+            'VNPAY%s%d%s',
             $prefix,
             $payment->id,
             Carbon::now('Asia/Ho_Chi_Minh')->format('YmdHis')
@@ -115,8 +112,8 @@ class VnpayService
     public function sanitizeOrderInfo(string $value): string
     {
         $ascii = Str::ascii($value);
-        $clean = preg_replace('/[^A-Za-z0-9 .,:\-]/', ' ', $ascii) ?? $ascii;
-        $singleLine = preg_replace('/\s+/', ' ', trim($clean)) ?? trim($clean);
+        $clean = preg_replace('/[^A-Za-z0-9]/', '_', $ascii) ?? $ascii;
+        $singleLine = preg_replace('/_+/', '_', trim($clean, '_')) ?? trim($clean, '_');
 
         return Str::limit($singleLine, 255, '');
     }

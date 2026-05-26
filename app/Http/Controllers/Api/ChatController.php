@@ -50,7 +50,7 @@ class ChatController extends Controller
                 'owner:id,name',
                 'staff:id,name',
                 'staff.role:id,name,slug',
-                'latestMessage:id,chat_session_id,sender_id,body,created_at',
+                'latestMessage',
             ])
             ->orderByDesc('updated_at')
             ->get();

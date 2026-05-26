@@ -67,20 +67,22 @@ class VnpayController extends Controller
     public function handleReturn(Request $request): RedirectResponse
     {
         $params = $this->normalizeParams($request);
+        $txnRef = $params['vnp_TxnRef'] ?? '';
+        $routeName = str_contains($txnRef, 'MED') ? 'owner.orders' : 'receptionist.billing';
 
         if (! $this->vnpay->verifySignature($params)) {
-            return redirect()->route('receptionist.billing', [
+            return redirect()->route($routeName, [
                 'paymentStatus' => 'invalid-signature',
                 'paymentMessage' => 'Chu ky VNPay khong hop le.',
             ]);
         }
 
         $payment = Payment::query()
-            ->where('transaction_code', $params['vnp_TxnRef'] ?? '')
+            ->where('transaction_code', $txnRef)
             ->first();
 
         if (! $payment) {
-            return redirect()->route('receptionist.billing', [
+            return redirect()->route($routeName, [
                 'paymentStatus' => 'not-found',
                 'paymentMessage' => 'Khong tim thay giao dich thanh toan.',
             ]);
@@ -92,7 +94,9 @@ class VnpayController extends Controller
 
         $successful = $this->vnpay->isSuccessful($params);
 
-        return redirect()->route('receptionist.billing', [
+        $routeName = $payment->medicine_order_id ? 'owner.orders' : 'receptionist.billing';
+
+        return redirect()->route($routeName, [
             'paymentStatus' => $successful ? 'success' : 'failed',
             'paymentMessage' => $successful
                 ? 'Thanh toan VNPay thanh cong.'
