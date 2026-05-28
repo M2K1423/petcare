@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Receptionist\MedicineOrderController as Receptionis
 use App\Http\Controllers\Api\Receptionist\PaymentController;
 use App\Http\Controllers\VnpayController;
 use App\Http\Controllers\Api\Auth\SanctumAuthController;
+use App\Http\Controllers\Api\AiDataController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\Api\Admin\ServiceController as AdminServiceController;
@@ -36,6 +37,14 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/register', [SanctumAuthController::class, 'register'])->name('api.auth.register');
 Route::post('/auth/login', [SanctumAuthController::class, 'login'])->name('api.auth.login');
 Route::get('/payments/vnpay/ipn', [VnpayController::class, 'ipn'])->name('api.payments.vnpay.ipn');
+
+// API cho AI Service (Xác thực bằng X-API-Key)
+Route::prefix('ai-tools')->group(function (): void {
+    Route::get('/customer-info/{id}', [AiDataController::class, 'getCustomerInfo']);
+    Route::get('/appointments/{id}', [AiDataController::class, 'getCustomerAppointments']);
+    Route::get('/medicines', [AiDataController::class, 'getMedicines']);
+    Route::get('/services', [AiDataController::class, 'getServices']);
+});
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/broadcasting/auth', function (Request $request) {

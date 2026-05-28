@@ -9,6 +9,7 @@ use App\Models\ChatMessage;
 use App\Models\ChatSession;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\AiIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,7 @@ class ChatController extends Controller
         }
 
         $staff = User::whereHas('role', function ($q) {
-            $q->whereIn('slug', [Role::VET, Role::RECEPTIONIST]);
+            $q->whereIn('slug', [Role::VET, Role::RECEPTIONIST, Role::AI_ASSISTANT]);
         })
         ->where('is_locked', false)
         ->select('id', 'name', 'role_id')
@@ -73,10 +74,10 @@ class ChatController extends Controller
             'staff_id' => 'required|integer|exists:users,id',
         ]);
 
-        // Kiểm tra staff phải là Vet hoặc Receptionist
+        // Kiểm tra staff phải là Vet, Receptionist hoặc AI Assistant
         $staff = User::with('role')->findOrFail($validated['staff_id']);
-        if (!in_array($staff->role->slug, [Role::VET, Role::RECEPTIONIST])) {
-            return response()->json(['message' => 'Bạn chỉ có thể chat với Bác sĩ hoặc Lễ tân.'], 422);
+        if (!in_array($staff->role->slug, [Role::VET, Role::RECEPTIONIST, Role::AI_ASSISTANT])) {
+            return response()->json(['message' => 'Bạn chỉ có thể chat với Bác sĩ, Lễ tân hoặc Trợ lý AI.'], 422);
         }
 
         // Nếu đã có phiên active → trả về phiên cũ
@@ -155,6 +156,28 @@ class ChatController extends Controller
 
         // Broadcast tin nhắn real-time
         broadcast(new ChatMessageSent($message));
+
+        // Kiểm tra nếu người nhận là AI Assistant
+        $staff = User::with('role')->find($chatSession->staff_id);
+        if ($staff && $staff->role->slug === Role::AI_ASSISTANT && $user->id !== $staff->id) {
+            // Chạy Artisan Command bất đồng bộ dưới nền để tránh nghẽn luồng xử lý (deadlock)
+            $sessionId = $chatSession->id;
+            $msgBody = escapeshellarg($message->body);
+            $staffId = $staff->id;
+            $phpBinary = PHP_BINARY;
+            $artisanPath = base_path('artisan');
+
+            
+            if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
+                // start /B require empty quotes "" first if path has quotes
+                pclose(popen("start /B \"\" \"{$phpBinary}\" \"{$artisanPath}\" ai:ask {$sessionId} {$msgBody} {$staffId}", "r"));
+            } else {
+                exec("\"{$phpBinary}\" \"{$artisanPath}\" ai:ask {$sessionId} {$msgBody} {$staffId} > /dev/null 2>&1 &");
+            }
+        }
+
+
+
 
         return response()->json(['data' => $message], 201);
     }

@@ -33,6 +33,11 @@ class RoleSeeder extends Seeder
                 'slug' => Role::ADMIN,
                 'description' => 'Manages users, doctors, and services.',
             ],
+            [
+                'name' => 'AI Assistant',
+                'slug' => Role::AI_ASSISTANT,
+                'description' => 'AI Virtual Assistant for PetCare.',
+            ],
         ];
 
         foreach ($roles as $role) {
