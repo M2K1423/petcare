@@ -15,10 +15,10 @@ class AiDataController extends Controller
      */
     private function verifyApiKey(Request $request)
     {
-        $key = $request->header('X-API-Key');
-        $expectedKey = env('AI_SERVICE_API_KEY', 'petcare-ai-key');
+        $key = (string) $request->header('X-API-Key');
+        $expectedKey = env('AI_SERVICE_API_KEY');
         
-        if ($key !== $expectedKey) {
+        if (!is_string($expectedKey) || $expectedKey === '' || !hash_equals($expectedKey, $key)) {
             abort(403, 'Unauthorized AI Access');
         }
     }
@@ -66,8 +66,8 @@ class AiDataController extends Controller
         
         $ownerId = str_replace('owner_', '', $id);
         $appointments = Appointment::where('owner_id', $ownerId)
-            ->with(['pet:id,name', 'vet:id,name', 'service:id,name'])
-            ->orderBy('appointment_date', 'desc')
+            ->with(['pet:id,name', 'doctor.user:id,name', 'service:id,name'])
+            ->orderByDesc('appointment_at')
             ->take(5)
             ->get();
 

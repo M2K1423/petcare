@@ -9,7 +9,7 @@
           Trợ lý Ảo AI PetCare Đang Hoạt Động
         </span>
         <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl">
-          {{ greeting }}, <span class="text-amber-200">Owner Demo</span>!
+          {{ greeting }}, <span class="text-amber-200">{{ currentUser.name }}</span>!
         </h1>
         <p class="mt-2 text-white/80 max-w-xl text-sm md:text-base">
           Chào mừng bạn quay trở lại với phòng khám thú y thông minh PetCare. Hãy theo dõi sức khỏe và lịch khám của các bé cưng ngay dưới đây nhé!
@@ -178,6 +178,7 @@ import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const pets = ref([]);
 const appointments = ref([]);
+const currentUser = ref({ name: 'Chủ nuôi' });
 const isLoading = ref(true);
 
 const pendingCount = computed(() => appointments.value.filter(a => a.status === 'pending').length);
@@ -227,13 +228,17 @@ function getStatusClass(status) {
 async function bootstrap() {
   isLoading.value = true;
   try {
-    const [petsResponse, appointmentsResponse] = await Promise.all([
+    const [petsResponse, appointmentsResponse, meResponse] = await Promise.all([
       callApi('/api/owner/pets', 'GET'),
       callApi('/api/owner/appointments', 'GET'),
+      callApi('/api/auth/me', 'GET'),
     ]);
 
     pets.value = petsResponse.data || [];
     appointments.value = appointmentsResponse.data || [];
+    if (meResponse) {
+      currentUser.value = meResponse.user || meResponse;
+    }
   } catch (error) {
     console.error(error);
   } finally {

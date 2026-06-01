@@ -40,7 +40,7 @@ class AiAskCommand extends Command
             return Command::FAILURE;
         }
 
-        $result = $aiIntegrationService->askAi($session, $message, $aiUserId);
+        $result = $aiIntegrationService->askAi($session, $message, (int) $aiUserId);
 
         if ($result) {
             Log::info("Artisan Command ai:ask hoàn thành thành công");

@@ -21,10 +21,12 @@ class AiUserSeeder extends Seeder
                 ['email' => 'ai@petcare.local'],
                 [
                     'name' => 'Trợ lý AI PetCare',
-                    'password' => Hash::make('password123'),
+                    'password' => Hash::make(bin2hex(random_bytes(16))),
                     'role_id' => $aiRole->id,
                     'phone' => '0000000000',
                     'email_verified_at' => now(),
+                    'is_locked' => true,
+                    'locked_at' => now(),
                 ]
             );
         }

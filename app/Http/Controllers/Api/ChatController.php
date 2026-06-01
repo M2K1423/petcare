@@ -160,20 +160,12 @@ class ChatController extends Controller
         // Kiểm tra nếu người nhận là AI Assistant
         $staff = User::with('role')->find($chatSession->staff_id);
         if ($staff && $staff->role->slug === Role::AI_ASSISTANT && $user->id !== $staff->id) {
-            // Chạy Artisan Command bất đồng bộ dưới nền để tránh nghẽn luồng xử lý (deadlock)
-            $sessionId = $chatSession->id;
-            $msgBody = escapeshellarg($message->body);
-            $staffId = $staff->id;
-            $phpBinary = PHP_BINARY;
-            $artisanPath = base_path('artisan');
-
-            
-            if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-                // start /B require empty quotes "" first if path has quotes
-                pclose(popen("start /B \"\" \"{$phpBinary}\" \"{$artisanPath}\" ai:ask {$sessionId} {$msgBody} {$staffId}", "r"));
-            } else {
-                exec("\"{$phpBinary}\" \"{$artisanPath}\" ai:ask {$sessionId} {$msgBody} {$staffId} > /dev/null 2>&1 &");
-            }
+            // Queue the command safely instead of popen/exec to avoid shell injection and command execution vulnerabilities
+            \Illuminate\Support\Facades\Artisan::queue('ai:ask', [
+                'session' => $chatSession->id,
+                'message' => $message->body,
+                'aiUserId' => $staff->id,
+            ]);
         }
 
 

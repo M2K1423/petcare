@@ -13,7 +13,7 @@ class AiIntegrationService
     /**
      * Gửi tin nhắn tới AI-service và trả về kết quả
      */
-    public function askAi(ChatSession $session, string $message, string $aiUserId)
+    public function askAi(ChatSession $session, string $message, int $aiUserId): bool
     {
         $owner = $session->owner;
         

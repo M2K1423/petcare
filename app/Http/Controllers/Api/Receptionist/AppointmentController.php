@@ -179,12 +179,15 @@ class AppointmentController extends Controller
         ]);
     }
 
-    /**
-     * Phan cong bac si cho lich hen
-     */
     public function assignDoctor(Request $request, $id)
     {
         $appointment = Appointment::findOrFail($id);
+
+        if (in_array($appointment->status, ['completed', 'cancelled'], true)) {
+            return response()->json([
+                'message' => 'Lịch hẹn đã hoàn thành hoặc đã bị hủy.',
+            ], 400);
+        }
 
         $validated = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',

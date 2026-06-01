@@ -76,7 +76,7 @@
                             <select v-model="selectedMedId" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
                                 <option value="">-- Chọn loại thuốc --</option>
                                 <option v-for="med in allMedicines" :key="med.id" :value="med.id">
-                                    {{ med.name }} {{ med.stock_quantity ? `(Còn ${med.stock_quantity} ${med.unit})` : '' }}
+                                    {{ med.name }} {{ med.stock_quantity != null ? `(Còn ${med.stock_quantity} ${med.unit})` : '' }}
                                 </option>
                             </select>
                         </div>

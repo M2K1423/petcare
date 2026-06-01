@@ -4,6 +4,11 @@ $app = require_once __DIR__ . '/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
+if (!app()->environment(['local', 'testing'])) {
+    fwrite(STDERR, "scratch_db.php is intended for local/testing only.\n");
+    exit(1);
+}
+
 use App\Models\ChatSession;
 use App\Models\ChatMessage;
 
