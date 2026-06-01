@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -216,8 +216,21 @@ async function loadData() {
     }
 }
 
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
+
 onMounted(() => {
     loadData();
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>
 

@@ -122,18 +122,27 @@
 
           <!-- Upcoming appointments sub-panel -->
           <div class="mt-8 pt-6 border-t border-slate-100">
-            <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-slate-400 mb-4 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Danh sách lịch hẹn sắp tới
-            </h3>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-bold uppercase tracking-[0.12em] text-slate-400 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Danh sách lịch hẹn sắp tới
+              </h3>
+              <span class="text-[10px] font-bold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-full text-slate-400">Đã lọc: {{ filteredAppointments.length }}</span>
+            </div>
+
+            <!-- MỚI: Thanh tìm kiếm nhanh lịch hẹn -->
+            <div class="mb-4 relative">
+              <input v-model="searchQuery" type="text" placeholder="Tìm theo tên bé, dịch vụ, triệu chứng khám..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+            </div>
             
             <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-              <div v-if="appointments.length === 0" class="flex flex-col items-center justify-center py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-100">
+              <div v-if="filteredAppointments.length === 0" class="flex flex-col items-center justify-center py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-100">
                 <span class="text-3xl mb-1.5">📅</span>
-                <p class="text-xs font-bold text-slate-500">Bạn chưa có lịch hẹn khám nào.</p>
+                <p class="text-xs font-bold text-slate-500">Không tìm thấy lịch hẹn nào phù hợp.</p>
               </div>
               
-              <div v-for="appointment in appointments" :key="appointment.id" class="appointment-item flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-[#FCFDFE] hover:border-slate-200 transition-all duration-300">
+              <div v-for="appointment in filteredAppointments" :key="appointment.id" class="appointment-item flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-[#FCFDFE] hover:border-slate-200 transition-all duration-300">
                 <div class="flex items-start gap-3">
                   <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center font-extrabold text-slate-500">
                     {{ appointment.pet?.name ? appointment.pet.name.charAt(0).toUpperCase() : '🐈' }}
@@ -168,7 +177,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -180,6 +189,19 @@ const isSaving = ref(false);
 const pets = ref([]);
 const appointments = ref([]);
 const services = ref([]);
+const searchQuery = ref('');
+
+const filteredAppointments = computed(() => {
+    if (!searchQuery.value) return appointments.value;
+    const q = searchQuery.value.toLowerCase().trim();
+    return appointments.value.filter(app => {
+        const petName = (app.pet?.name || '').toLowerCase();
+        const serviceName = (app.service?.name || '').toLowerCase();
+        const reason = (app.reason || '').toLowerCase();
+        const status = (app.status || '').toLowerCase();
+        return petName.includes(q) || serviceName.includes(q) || reason.includes(q) || status.includes(q);
+    });
+});
 
 const statusMessage = ref('Đang tải danh sách...');
 const statusClass = ref('mt-2 text-xs text-slate-400');
@@ -319,8 +341,21 @@ async function cancelAppointment(id) {
     }
 }
 
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
+
 onMounted(() => {
     loadData();
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>
 

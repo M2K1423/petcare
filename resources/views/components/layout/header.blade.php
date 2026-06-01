@@ -17,6 +17,7 @@
                     </svg>
                 </span>
                 <input
+                    id="global-search-input"
                     type="text"
                     placeholder="Tìm kiếm..."
                     class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] py-2 pl-9 pr-3 text-sm text-[#333333] placeholder:text-[#999999] outline-none transition focus:border-[#2A6496]"
@@ -257,6 +258,14 @@
         window.addEventListener('storage', (e) => {
             if (e.key === 'petcare_owner_cart_v1') renderCartBadge();
         });
+
+        // Global search input synchronization event dispatcher
+        const globalSearchInput = document.getElementById('global-search-input');
+        if (globalSearchInput) {
+            globalSearchInput.addEventListener('input', function (e) {
+                window.dispatchEvent(new CustomEvent('petcare-global-search', { detail: e.target.value }));
+            });
+        }
 
 
     })();

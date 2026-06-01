@@ -7,14 +7,19 @@
         <p class="text-sm text-slate-400 mt-1">Theo dõi chi tiết các đơn thuốc được kê, trạng thái xác nhận và lịch sử thanh toán.</p>
       </div>
 
+      <!-- MỚI: Thanh tìm kiếm nhanh đơn hàng -->
+      <div class="mb-4 relative">
+        <input v-model="searchQuery" type="text" placeholder="Tìm theo mã đơn (#12), tên bé cưng, trạng thái đơn..." class="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+      </div>
+
       <div class="space-y-6">
-        <div v-if="orders.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
+        <div v-if="filteredOrders.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
           <span class="text-5xl mb-3">📄</span>
-          <p class="text-sm font-bold text-slate-500">Bạn chưa có đơn mua thuốc nào.</p>
-          <a href="/owner/shop" class="mt-2 text-xs font-bold text-indigo-500 hover:underline">Đi tới cửa hàng thuốc ngay!</a>
+          <p class="text-sm font-bold text-slate-500">Không tìm thấy đơn hàng nào phù hợp.</p>
         </div>
         
-        <article v-for="order in orders" :key="order.id" class="rounded-3xl border border-slate-100 bg-[#FCFDFE] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:border-slate-200 transition-all duration-300">
+        <article v-for="order in filteredOrders" :key="order.id" class="rounded-3xl border border-slate-100 bg-[#FCFDFE] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:border-slate-200 transition-all duration-300">
           <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
             <div>
               <p class="text-base font-extrabold text-slate-700">Đơn hàng #{{ order.id }} - Bé {{ order.pet?.name ?? 'thú cưng không rõ' }}</p>
@@ -103,7 +108,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -113,6 +118,19 @@ const { notifyError } = useNotification();
 const isLoading = ref(true);
 const isPaying = ref(false);
 const orders = ref([]);
+const searchQuery = ref('');
+
+const filteredOrders = computed(() => {
+    if (!searchQuery.value) return orders.value;
+    const q = searchQuery.value.toLowerCase().trim();
+    return orders.value.filter(order => {
+        const orderId = `#${order.id}`;
+        const petName = (order.pet?.name || '').toLowerCase();
+        const status = (order.status || '').toLowerCase();
+        const statusText = getOrderStatusLabel(order.status).toLowerCase();
+        return orderId.includes(q) || petName.includes(q) || status.includes(q) || statusText.includes(q);
+    });
+});
 
 function formatCurrency(value) {
     return `${Number(value || 0).toLocaleString('vi-VN')} đ`;
@@ -199,8 +217,21 @@ async function loadData() {
     }
 }
 
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
+
 onMounted(() => {
     loadData();
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>
 

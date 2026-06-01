@@ -42,9 +42,9 @@
 
     <section class="mt-6 rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)]">
         <div class="space-y-4 text-sm text-[#4A4A4A]">
-            <div v-if="appointments.length === 0" class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5">Không có lịch hẹn phù hợp bộ lọc này.</div>
+            <div v-if="filteredAppointments.length === 0" class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5">Không có lịch hẹn phù hợp bộ lọc này.</div>
             
-            <article v-for="appointment in appointments" :key="appointment.id" class="rounded-3xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 shadow-[0_12px_24px_rgba(0,0,0,0.03)]">
+            <article v-for="appointment in filteredAppointments" :key="appointment.id" class="rounded-3xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 shadow-[0_12px_24px_rgba(0,0,0,0.03)]">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-base font-bold text-[#333333]">{{ appointment.pet?.name ?? 'Thú cưng chưa rõ' }}{{ appointment.pet?.species?.name ? ` • ${appointment.pet.species.name}` : '' }}</p>
@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -87,10 +87,26 @@ const { notifySuccess, handleApiError } = useNotification();
 const isLoading = ref(true);
 const appointments = ref([]);
 const acceptingId = ref(null);
+const searchQuery = ref('');
 
 const filters = reactive({
     date: '',
     workflow_status: ''
+});
+
+const filteredAppointments = computed(() => {
+    if (!searchQuery.value) return appointments.value;
+    const q = searchQuery.value.toLowerCase().trim();
+    return appointments.value.filter(app => {
+        const petName = (app.pet?.name || '').toLowerCase();
+        const petSpecies = (app.pet?.species?.name || '').toLowerCase();
+        const ownerName = (app.owner?.name || '').toLowerCase();
+        const ownerPhone = (app.owner?.phone || '').toLowerCase();
+        const serviceName = (app.service?.name || '').toLowerCase();
+        const reason = (app.reason || '').toLowerCase();
+        const queue = String(app.queue_number || '').toLowerCase();
+        return petName.includes(q) || petSpecies.includes(q) || ownerName.includes(q) || ownerPhone.includes(q) || serviceName.includes(q) || reason.includes(q) || queue.includes(q);
+    });
 });
 
 function toLocalDateString(value) {
@@ -184,7 +200,20 @@ watch(filters, () => {
     loadAppointments();
 }, { deep: true });
 
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
+
 onMounted(() => {
     loadAppointments();
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>

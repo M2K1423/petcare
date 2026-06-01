@@ -21,19 +21,25 @@
             </div>
         </div>
 
+        <!-- MỚI: Thanh tìm kiếm nhanh lịch hẹn -->
+        <div class="mb-4 relative">
+          <input v-model="searchQuery" type="text" placeholder="Tìm theo tên bé cưng, tên chủ nuôi, số điện thoại..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        </div>
+
         <div class="flex flex-col gap-3">
-            <div v-if="appointments.length === 0" class="rounded-xl bg-gray-50 p-4 text-center text-sm text-gray-500">
+            <div v-if="filteredAppointments.length === 0" class="rounded-xl bg-gray-50 p-4 text-center text-sm text-gray-500">
                 Không tìm thấy lịch hẹn nào cho ngày {{ selectedDate }}.
             </div>
             
-            <div v-for="app in appointments" :key="app.id" class="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div v-for="app in filteredAppointments" :key="app.id" class="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <div>
-                    <h3 class="font-bold text-gray-900">{{ app.pet?.name || 'Unknown Pet' }}</h3>
-                    <p class="text-xs text-gray-500">Owner: {{ app.owner?.name }} ({{ app.owner?.phone || 'N/A' }})</p>
-                    <p class="text-xs text-gray-500">Status: <span class="font-medium px-2 py-0.5 rounded-full bg-gray-100">{{ app.status }}</span></p>
+                    <h3 class="font-bold text-gray-900">{{ app.pet?.name || 'Thú cưng chưa rõ' }}</h3>
+                    <p class="text-xs text-gray-500">Chủ nuôi: {{ app.owner?.name }} ({{ app.owner?.phone || 'N/A' }})</p>
+                    <p class="text-xs text-gray-500">Trạng thái: <span class="font-medium px-2 py-0.5 rounded-full bg-gray-100">{{ getStatusLabel(app.status) }}</span></p>
                 </div>
                 <div class="flex flex-col gap-2">
-                    <a :href="`/receptionist/appointments/${app.id}`" class="text-center rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-200">Details</a>
+                    <a :href="`/receptionist/appointments/${app.id}`" class="text-center rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-200">Chi tiết</a>
                     <button v-if="canCheckIn(app)" @click="checkIn(app.id)" :disabled="isCheckingIn === app.id" class="rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-200 disabled:opacity-50">
                         Check-in
                     </button>
@@ -46,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -57,6 +63,29 @@ const isLoading = ref(true);
 const appointments = ref([]);
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 const isCheckingIn = ref(null);
+const searchQuery = ref('');
+
+const filteredAppointments = computed(() => {
+    if (!searchQuery.value) return appointments.value;
+    const q = searchQuery.value.toLowerCase().trim();
+    return appointments.value.filter(app => {
+        const petName = (app.pet?.name || '').toLowerCase();
+        const ownerName = (app.owner?.name || '').toLowerCase();
+        const ownerPhone = (app.owner?.phone || '').toLowerCase();
+        const status = (app.status || '').toLowerCase();
+        return petName.includes(q) || ownerName.includes(q) || ownerPhone.includes(q) || status.includes(q);
+    });
+});
+
+function getStatusLabel(status) {
+  switch (status) {
+    case 'pending': return 'Chờ duyệt';
+    case 'confirmed': return 'Đã xác nhận';
+    case 'completed': return 'Đã xong';
+    case 'cancelled': return 'Đã hủy';
+    default: return status;
+  }
+}
 
 function canCheckIn(app) {
     return app.status === 'pending' || (app.status === 'confirmed' && !app.queue_number);
@@ -94,9 +123,22 @@ watch(selectedDate, () => {
     loadAppointments();
 });
 
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
+
 onMounted(() => {
     loadAppointments().finally(() => {
         isLoading.value = false;
     });
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>

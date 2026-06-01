@@ -78,22 +78,28 @@
 
         <!-- Pets List Panel (3/5 columns) -->
         <article class="lg:col-span-3 rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] backdrop-blur">
-          <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
               Danh sách bé cưng của bạn
             </h2>
-            <span class="text-xs font-bold px-2.5 py-1 bg-slate-50 text-slate-500 rounded-full border border-slate-100">{{ pets.length }} Bé</span>
+            <span class="text-xs font-bold px-2.5 py-1 bg-slate-50 text-slate-500 rounded-full border border-slate-100">{{ filteredPets.length }} Bé</span>
+          </div>
+
+          <!-- MỚI: Thanh tìm kiếm nhanh thú cưng -->
+          <div class="mb-4 relative">
+            <input v-model="searchQuery" type="text" placeholder="Tìm nhanh theo tên bé cưng, giống loại, ghi chú..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
           </div>
 
           <div class="space-y-4 max-h-[750px] overflow-y-auto pr-1">
-            <div v-if="pets.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
+            <div v-if="filteredPets.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
               <span class="text-5xl mb-3">🐱🐶</span>
-              <p class="text-sm font-bold text-slate-500">Bạn chưa đăng ký bé cưng nào.</p>
-              <p class="text-xs text-slate-400 mt-1">Hãy nhập thông tin ở biểu mẫu bên trái để tạo ngay nhé!</p>
+              <p class="text-sm font-bold text-slate-500">Không tìm thấy bé cưng nào phù hợp.</p>
+              <p class="text-xs text-slate-400 mt-1">Vui lòng kiểm tra lại từ khóa tìm kiếm của bạn.</p>
             </div>
             
-            <div v-for="pet in pets" :key="pet.id" class="pet-card group rounded-2xl border border-slate-100 bg-slate-50/20 p-5 shadow-sm hover:shadow-[0_12px_24px_rgba(0,0,0,0.03)] hover:border-slate-200 transition-all duration-300 relative overflow-hidden">
+            <div v-for="pet in filteredPets" :key="pet.id" class="pet-card group rounded-2xl border border-slate-100 bg-slate-50/20 p-5 shadow-sm hover:shadow-[0_12px_24px_rgba(0,0,0,0.03)] hover:border-slate-200 transition-all duration-300 relative overflow-hidden">
               <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/[0.02] rounded-bl-full pointer-events-none"></div>
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
@@ -154,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -165,6 +171,19 @@ const isLoading = ref(true);
 const isSaving = ref(false);
 const pets = ref([]);
 const speciesList = ref([]);
+const searchQuery = ref('');
+
+const filteredPets = computed(() => {
+    if (!searchQuery.value) return pets.value;
+    const q = searchQuery.value.toLowerCase().trim();
+    return pets.value.filter(pet => {
+        const petName = (pet.name || '').toLowerCase();
+        const petBreed = (pet.breed || '').toLowerCase();
+        const petNotes = (pet.notes || '').toLowerCase();
+        const petSpecies = (pet.species?.name || '').toLowerCase();
+        return petName.includes(q) || petBreed.includes(q) || petNotes.includes(q) || petSpecies.includes(q);
+    });
+});
 
 const form = reactive({
     name: '',
@@ -290,8 +309,21 @@ async function deletePet(id) {
     }
 }
 
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
+
 onMounted(() => {
     loadData();
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>
 
