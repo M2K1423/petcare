@@ -61,76 +61,40 @@
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)]">
             <h2 class="text-lg font-bold text-[#333333]">Lưu bệnh án</h2>
             <form @submit.prevent="saveMedicalRecord" class="mt-5 space-y-4">
-                <div class="grid gap-4 sm:grid-cols-3">
-                    <div>
-                        <label for="record-temperature" class="text-sm font-semibold text-[#333333]">Nhiệt độ (C)</label>
-                        <input v-model.number="form.temperature_c" id="record-temperature" type="number" step="0.1" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
-                    </div>
-                    <div>
-                        <label for="record-weight" class="text-sm font-semibold text-[#333333]">Cân nặng (kg)</label>
-                        <input v-model.number="form.weight_kg" id="record-weight" type="number" step="0.01" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
-                    </div>
-                    <div>
-                        <label for="record-heart-rate" class="text-sm font-semibold text-[#333333]">Nhịp tim (bpm)</label>
-                        <input v-model.number="form.heart_rate_bpm" id="record-heart-rate" type="number" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
-                    </div>
-                </div>
+                <!-- Diagnosis & Exam Details Combined -->
                 <div>
-                    <label for="record-date" class="text-sm font-semibold text-[#333333]">Ngày ghi nhận</label>
-                    <input v-model="form.record_date" id="record-date" type="date" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
+                    <label for="record-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán & Nội dung khám</label>
+                    <textarea v-model="form.diagnosis" id="record-diagnosis" rows="5" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Nhập chi tiết chẩn đoán và nội dung khám bệnh..." required></textarea>
                 </div>
-                <div>
-                    <label for="record-symptoms" class="text-sm font-semibold text-[#333333]">Triệu chứng</label>
-                    <textarea v-model="form.symptoms" id="record-symptoms" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
-                <div>
-                    <label for="record-abnormal-signs" class="text-sm font-semibold text-[#333333]">Dấu hiệu bất thường</label>
-                    <textarea v-model="form.abnormal_signs" id="record-abnormal-signs" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
-                <div>
-                    <label for="record-preliminary-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán sơ bộ</label>
-                    <textarea v-model="form.preliminary_diagnosis" id="record-preliminary-diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
-                <div>
-                    <label for="record-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán</label>
-                    <textarea v-model="form.diagnosis" id="record-diagnosis" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" required></textarea>
-                </div>
-                <div>
-                    <label for="record-final-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán cuối cùng</label>
-                    <textarea v-model="form.final_diagnosis" id="record-final-diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="record-pathology" class="text-sm font-semibold text-[#333333]">Bệnh lý</label>
-                        <input v-model="form.pathology" id="record-pathology" type="text" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Viêm da, Parvo, nhiễm khuẩn...">
-                    </div>
-                    <div>
-                        <label for="record-severity" class="text-sm font-semibold text-[#333333]">Mức độ bệnh</label>
-                        <select v-model="form.severity_level" id="record-severity" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
-                            <option value="">Chọn mức độ</option>
-                            <option value="mild">Nhẹ</option>
-                            <option value="moderate">Trung bình</option>
-                            <option value="severe">Nặng</option>
-                            <option value="critical">Nguy kịch</option>
-                        </select>
+
+                <!-- Prescription -->
+                <!-- Quick Medicine Selector -->
+                <div class="rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
+                    <label class="text-xs font-bold uppercase tracking-[0.08em] text-blue-800">Chọn thuốc & Ghi chú nhanh</label>
+                    <div class="mt-2 grid gap-3 sm:grid-cols-[1.2fr_1.2fr_0.6fr]">
+                        <div>
+                            <select v-model="selectedMedId" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
+                                <option value="">-- Chọn loại thuốc --</option>
+                                <option v-for="med in allMedicines" :key="med.id" :value="med.id">
+                                    {{ med.name }} {{ med.stock_quantity ? `(Còn ${med.stock_quantity} ${med.unit})` : '' }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <input v-model="medDosage" type="text" placeholder="Liều lượng (VD: 2 viên/ngày, sau ăn)..." class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
+                        </div>
+                        <button @click.prevent="addMedicine" type="button" class="rounded-xl border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
+                            Thêm vào đơn
+                        </button>
                     </div>
                 </div>
+
                 <div>
-                    <label for="record-prescription" class="text-sm font-semibold text-[#333333]">Đơn thuốc</label>
-                    <textarea v-model="form.prescription" id="record-prescription" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" required></textarea>
+                    <label for="record-prescription" class="text-sm font-semibold text-[#333333]">Đơn thuốc & Điều trị</label>
+                    <textarea v-model="form.prescription" id="record-prescription" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Danh sách đơn thuốc..." required></textarea>
                 </div>
-                <div>
-                    <label for="record-treatment-protocol" class="text-sm font-semibold text-[#333333]">Phác đồ điều trị</label>
-                    <textarea v-model="form.treatment_protocol" id="record-treatment-protocol" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
-                <div>
-                    <label for="record-disease-progress" class="text-sm font-semibold text-[#333333]">Tiến triển bệnh</label>
-                    <textarea v-model="form.disease_progress" id="record-disease-progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
-                <div>
-                    <label for="record-follow-up-plan" class="text-sm font-semibold text-[#333333]">Kế hoạch tái khám / theo dõi</label>
-                    <textarea v-model="form.follow_up_plan" id="record-follow-up-plan" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
+
+                <!-- Workflow status & Follow-up Date Row -->
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label for="record-workflow-status" class="text-sm font-semibold text-[#333333]">Trạng thái ca khám</label>
@@ -148,30 +112,7 @@
                         <input v-model="form.follow_up_at" id="record-follow-up-at" type="date" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
                     </div>
                 </div>
-                <div>
-                    <label for="record-service-orders" class="text-sm font-semibold text-[#333333]">Chỉ định dịch vụ / xét nghiệm (JSON)</label>
-                    <textarea v-model="form.service_orders" id="record-service-orders" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder='[{"name":"Xét nghiệm máu","status":"ordered","result":null}]'></textarea>
-                </div>
-                <div>
-                    <label for="record-prescriptions-list" class="text-sm font-semibold text-[#333333]">Đơn thuốc chi tiết (JSON)</label>
-                    <textarea v-model="form.prescriptions" id="record-prescriptions-list" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder='[{"medicine_name":"Amoxicillin","dosage":"2 lần/ngày","days":5,"instructions":"Sau ăn"}]'></textarea>
-                </div>
-                <div>
-                    <label for="record-procedures" class="text-sm font-semibold text-[#333333]">Thủ thuật / điều trị (JSON)</label>
-                    <textarea v-model="form.procedures" id="record-procedures" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder='[{"name":"Truyền dịch","status":"done","notes":"500ml"}]'></textarea>
-                </div>
-                <div>
-                    <label for="record-progress-logs" class="text-sm font-semibold text-[#333333]">Theo dõi nội trú / tiến triển (JSON)</label>
-                    <textarea v-model="form.progress_logs" id="record-progress-logs" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder='[{"noted_at":"2026-04-27 09:00:00","note":"Ổn định","vitals":"T=38.5"}]'></textarea>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input v-model="form.sign_off" id="record-sign-off" type="checkbox" class="h-4 w-4 rounded border-[#C1C4C9] text-[#2A6496] focus:ring-[#2A6496]">
-                    <label for="record-sign-off" class="text-sm font-semibold text-[#333333]">Ký xác nhận chuyên môn</label>
-                </div>
-                <div>
-                    <label for="record-notes" class="text-sm font-semibold text-[#333333]">Ghi chú</label>
-                    <textarea v-model="form.notes" id="record-notes" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]"></textarea>
-                </div>
+
                 <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-2xl border border-[#2A6496] bg-[#2A6496] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:opacity-50">
                     {{ isSaving ? 'Đang lưu...' : 'Lưu bệnh án' }}
                 </button>
@@ -198,6 +139,44 @@ const appointmentId = ref(null);
 const appointment = ref(null);
 const vaccinations = ref([]);
 const previousRecords = ref([]);
+
+const allMedicines = ref([]);
+const selectedMedId = ref('');
+const medDosage = ref('');
+
+function addMedicine() {
+    if (!selectedMedId.value) {
+        alert('Vui lòng chọn thuốc.');
+        return;
+    }
+    const med = allMedicines.value.find(m => m.id === Number(selectedMedId.value));
+    if (!med) return;
+
+    const line = `- ${med.name} (${med.unit}): ${medDosage.value ? medDosage.value : 'Theo chỉ dẫn của bác sĩ'}\n`;
+    form.prescription = (form.prescription ?? '') + line;
+    
+    // Auto-update prescriptions JSON
+    try {
+        let list = [];
+        if (form.prescriptions && form.prescriptions.trim()) {
+            list = JSON.parse(form.prescriptions);
+        }
+        if (!Array.isArray(list)) list = [];
+        list.push({
+            medicine_name: med.name,
+            dosage: medDosage.value || '1 viên/ngày',
+            days: 5,
+            instructions: medDosage.value || 'Sau ăn'
+        });
+        form.prescriptions = JSON.stringify(list, null, 2);
+    } catch (err) {
+        console.error('Error updating prescriptions JSON:', err);
+    }
+
+    selectedMedId.value = '';
+    medDosage.value = '';
+    notifySuccess('Đã thêm thuốc vào đơn thuốc!');
+}
 
 const form = reactive({
     record_date: '',
@@ -310,7 +289,7 @@ async function saveMedicalRecord() {
     isSaving.value = true;
     try {
         const payload = {
-            record_date: form.record_date || null,
+            record_date: form.record_date || new Date().toISOString().slice(0, 10),
             temperature_c: form.temperature_c,
             weight_kg: form.weight_kg,
             heart_rate_bpm: form.heart_rate_bpm,
@@ -318,7 +297,7 @@ async function saveMedicalRecord() {
             abnormal_signs: form.abnormal_signs || null,
             preliminary_diagnosis: form.preliminary_diagnosis || null,
             diagnosis: form.diagnosis || '',
-            final_diagnosis: form.final_diagnosis || null,
+            final_diagnosis: form.final_diagnosis || form.diagnosis || null,
             pathology: form.pathology || null,
             severity_level: form.severity_level || null,
             prescription: form.prescription || '',
@@ -331,12 +310,16 @@ async function saveMedicalRecord() {
             progress_logs: parseJsonArray(form.progress_logs),
             workflow_status: form.workflow_status || 'completed',
             follow_up_at: form.follow_up_at || null,
-            sign_off: form.sign_off,
+            sign_off: true,
             notes: form.notes || null,
         };
 
         await callApi(`/api/vet/appointments/${appointmentId.value}/medical-record`, 'PUT', payload);
         notifySuccess('Đã lưu bệnh án thành công.');
+        
+        // Tự động in đơn thuốc ra file PDF trong tab mới
+        window.open(`/api/vet/appointments/${appointmentId.value}/prescription/pdf`, '_blank');
+        
         await loadAppointment();
     } catch (error) {
         if (error.message.includes('Trường JSON')) {
@@ -363,12 +346,24 @@ async function loadAppointment() {
     }
 }
 
+async function loadMedicines() {
+    try {
+        const response = await callApi('/api/medicines', 'GET');
+        allMedicines.value = response.data || [];
+    } catch (e) {
+        console.error('Failed to load medicines:', e);
+    }
+}
+
 onMounted(() => {
     const root = document.querySelector('[data-page="vet-appointment-detail"]');
     if (root) {
         appointmentId.value = Number(root.getAttribute('data-appointment-id'));
         if (appointmentId.value) {
-            loadAppointment().finally(() => {
+            Promise.all([
+                loadAppointment(),
+                loadMedicines()
+            ]).finally(() => {
                 isLoading.value = false;
             });
         } else {

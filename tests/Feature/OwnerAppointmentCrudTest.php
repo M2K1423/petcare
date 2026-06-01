@@ -28,6 +28,13 @@ class OwnerAppointmentCrudTest extends TestCase
 
         $species = Species::query()->create(['name' => 'Dog']);
 
+        $service = \App\Models\Service::query()->create([
+            'name' => 'Khám tổng quát',
+            'price' => 100000,
+            'duration_minutes' => 30,
+            'is_active' => true,
+        ]);
+
         $pet = Pet::query()->create([
             'owner_id' => $owner->id,
             'species_id' => $species->id,
@@ -39,6 +46,7 @@ class OwnerAppointmentCrudTest extends TestCase
 
         $createResponse = $this->postJson('/api/owner/appointments', [
             'pet_id' => $pet->id,
+            'service_id' => $service->id,
             'appointment_date' => now()->addDay()->toDateString(),
             'appointment_time' => '09:30',
             'reason' => 'Routine check',
@@ -71,6 +79,13 @@ class OwnerAppointmentCrudTest extends TestCase
         $ownerB = User::factory()->create(['role_id' => $ownerRole->id]);
         $species = Species::query()->create(['name' => 'Cat']);
 
+        $service = \App\Models\Service::query()->create([
+            'name' => 'Khám tổng quát',
+            'price' => 100000,
+            'duration_minutes' => 30,
+            'is_active' => true,
+        ]);
+
         $otherPet = Pet::query()->create([
             'owner_id' => $ownerB->id,
             'species_id' => $species->id,
@@ -82,6 +97,7 @@ class OwnerAppointmentCrudTest extends TestCase
 
         $this->postJson('/api/owner/appointments', [
             'pet_id' => $otherPet->id,
+            'service_id' => $service->id,
             'appointment_date' => now()->addDay()->toDateString(),
             'appointment_time' => '14:00',
         ])->assertForbidden();

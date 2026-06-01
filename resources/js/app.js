@@ -29,7 +29,7 @@ const pageLoaders = {
 	'receptionist-appointment-detail': () => import('./pages-vue/receptionist-appointment-detail.vue'),
 	'receptionist-shop': () => import('./pages-vue/receptionist-shop.vue'),
 	'receptionist-billing': () => import('./pages-vue/receptionist-billing.vue'),
-	'receptionist-walkins': () => import('./pages-vue/receptionist-appointments.vue'),
+	'receptionist-walkins': () => import('./pages-vue/receptionist-walkins.vue'),
 
 	// Admin Pages
 	'admin-layout': () => import('./pages-vue/admin-layout.vue'),

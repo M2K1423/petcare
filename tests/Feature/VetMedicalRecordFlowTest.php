@@ -118,6 +118,9 @@ class VetMedicalRecordFlowTest extends TestCase
             'id' => $myAppointment->id,
             'status' => 'completed',
         ]);
+
+        $this->getJson("/api/vet/appointments/{$myAppointment->id}/prescription/pdf")
+            ->assertOk();
     }
 
     public function test_non_vet_role_cannot_access_vet_medical_record_endpoints(): void

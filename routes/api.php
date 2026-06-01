@@ -58,6 +58,24 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('api.notifications.index');
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('api.notifications.read');
 
+    // Get active services for everyone authenticated
+    Route::get('/services', function () {
+        return response()->json([
+            'data' => \App\Models\Service::where('is_active', true)->orderBy('name')->get()
+        ]);
+    })->name('api.services.index');
+
+    // Get active medicines for everyone authenticated
+    Route::get('/medicines', function (Request $request) {
+        $query = \App\Models\Medicine::query();
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        return response()->json([
+            'data' => $query->orderBy('name')->get()
+        ]);
+    })->name('api.medicines.index');
+
     // Chat (Owner ↔ Vet/Receptionist)
     Route::prefix('chat')->group(function (): void {
         Route::get('/staff', [\App\Http\Controllers\Api\ChatController::class, 'getStaffList'])->name('api.chat.staff');
@@ -133,6 +151,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/receptionist/appointments/{id}', [ReceptionistAppointmentController::class, 'show'])->name('api.receptionist.appointments.show');
         Route::post('/receptionist/appointments', [ReceptionistAppointmentController::class, 'store'])->name('api.receptionist.appointments.store');
         Route::patch('/receptionist/appointments/{id}/check-in', [ReceptionistAppointmentController::class, 'checkIn'])->name('api.receptionist.appointments.check_in');
+        Route::post('/receptionist/appointments/{id}/assign-doctor', [ReceptionistAppointmentController::class, 'assignDoctor'])->name('api.receptionist.appointments.assign-doctor');
 
         // Queue (Bảng điện tử phòng chờ & Ưu tiên)
         Route::get('/receptionist/queue', [ReceptionistAppointmentController::class, 'queue'])->name('api.receptionist.queue.index');

@@ -23,7 +23,7 @@ class AppointmentController extends Controller
     public function index(Request $request): JsonResponse
     {
         $appointments = Appointment::query()
-            ->with(['pet:id,name,species_id', 'pet.species:id,name'])
+            ->with(['pet:id,name,species_id', 'pet.species:id,name', 'service:id,name,price'])
             ->where('owner_id', $request->user()->id)
             ->latest('appointment_at')
             ->get();
@@ -49,6 +49,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::query()->create([
             'pet_id' => $pet->id,
             'owner_id' => $request->user()->id,
+            'service_id' => (int) $request->input('service_id'),
             'appointment_at' => $appointmentAt,
             'status' => 'pending',
             'reason' => $request->input('reason'),
@@ -70,7 +71,7 @@ class AppointmentController extends Controller
 
         return response()->json([
             'message' => 'Đã tạo lịch hẹn thành công.',
-            'data' => $appointment->load(['pet:id,name,species_id', 'pet.species:id,name']),
+            'data' => $appointment->load(['pet:id,name,species_id', 'pet.species:id,name', 'service:id,name,price']),
         ], 201);
     }
 

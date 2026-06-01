@@ -31,6 +31,16 @@
                     </select>
                 </div>
 
+                <div class="md:col-span-2">
+                    <label class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Dịch vụ khám</label>
+                    <select v-model="form.service_id" required class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none">
+                        <option value="">Chọn dịch vụ khám thú cưng</option>
+                        <option v-for="service in services" :key="service.id" :value="service.id">
+                            {{ service.name }} - {{ Number(service.price).toLocaleString('vi-VN') }}đ ({{ service.duration_minutes }} phút)
+                        </option>
+                    </select>
+                </div>
+
                 <div>
                     <label class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Ngày hẹn</label>
                     <input v-model="form.appointment_date" required type="date" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none" />
@@ -84,7 +94,8 @@
                             <div>
                                 <p class="font-semibold text-[#333333]">{{ appointment.pet?.name ?? 'Unknown pet' }}{{ appointment.pet?.species?.name ? ` (${appointment.pet.species.name})` : '' }}</p>
                                 <p class="text-xs uppercase tracking-[0.08em] text-[#6B7280]">{{ formatAppointmentDate(appointment.appointment_at) }} | {{ appointment.status }}</p>
-                                <p v-if="appointment.reason" class="text-xs text-[#4A4A4A]">Reason: {{ appointment.reason }}</p>
+                                <p class="text-xs text-[#2A6496] font-medium mt-1">Dịch vụ: {{ appointment.service?.name || 'Khám tổng quát' }}</p>
+                                <p v-if="appointment.reason" class="text-xs text-[#4A4A4A] mt-0.5">Lý do: {{ appointment.reason }}</p>
                             </div>
                             <button v-if="appointment.status === 'pending' || appointment.status === 'confirmed'" @click="cancelAppointment(appointment.id)" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#B42318] hover:text-[#B42318]">Cancel</button>
                         </div>
@@ -109,12 +120,14 @@ const isLoading = ref(true);
 const isSaving = ref(false);
 const pets = ref([]);
 const appointments = ref([]);
+const services = ref([]);
 
 const statusMessage = ref('Đang tải...');
 const statusClass = ref('mt-2 text-sm text-[#4A4A4A]');
 
 const form = reactive({
     pet_id: '',
+    service_id: '',
     appointment_date: '',
     appointment_hour: '09',
     appointment_minute: '00',
@@ -140,13 +153,15 @@ function formatAppointmentDate(value) {
 async function loadData() {
     isLoading.value = true;
     try {
-        const [petsRes, appointmentsRes] = await Promise.all([
+        const [petsRes, appointmentsRes, servicesRes] = await Promise.all([
             callApi('/api/owner/pets', 'GET'),
-            callApi('/api/owner/appointments', 'GET')
+            callApi('/api/owner/appointments', 'GET'),
+            callApi('/api/services', 'GET')
         ]);
         
         pets.value = petsRes.data || [];
         appointments.value = appointmentsRes.data || [];
+        services.value = servicesRes.data || [];
         
         if (pets.value.length === 0) {
             setStatus('No pet profile found. Please create a pet first.', 'error');
@@ -166,6 +181,7 @@ async function createAppointment() {
     try {
         const payload = {
             pet_id: Number(form.pet_id),
+            service_id: Number(form.service_id),
             appointment_date: form.appointment_date,
             appointment_time: `${form.appointment_hour}:${form.appointment_minute}`,
             reason: form.reason || null,
@@ -175,6 +191,7 @@ async function createAppointment() {
         
         // Reset form but keep hour/minute defaults
         form.pet_id = '';
+        form.service_id = '';
         form.appointment_date = '';
         form.reason = '';
         

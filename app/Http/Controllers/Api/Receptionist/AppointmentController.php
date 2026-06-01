@@ -178,4 +178,36 @@ class AppointmentController extends Controller
             'message' => "Bạn vừa được phân công lịch hẹn cho {$appointment->pet?->name} vào " . $appointment->appointment_at?->format('H:i d/m/Y') . '.',
         ]);
     }
+
+    /**
+     * Phan cong bac si cho lich hen
+     */
+    public function assignDoctor(Request $request, $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        $validated = $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+        ]);
+
+        $appointment->doctor_id = $validated['doctor_id'];
+        $appointment->save();
+
+        $appointment->load(['doctor.user', 'pet']);
+
+        if ($appointment->doctor?->user_id) {
+            $this->notifications->create([
+                'user_id' => $appointment->doctor->user_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_assigned',
+                'title' => 'Có lịch hẹn mới được phân công',
+                'message' => "Bạn vừa được phân công lịch hẹn cho {$appointment->pet?->name} vào " . $appointment->appointment_at?->format('H:i d/m/Y') . '.',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Phân công bác sĩ thành công.',
+            'data' => $appointment->load(['doctor.user', 'pet', 'owner', 'service']),
+        ]);
+    }
 }

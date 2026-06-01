@@ -22,8 +22,24 @@
             <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Date time:</span> {{ formatDateTime(appointment.appointment_at) }}</div>
             <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Status:</span> {{ appointment.status || 'N/A' }}</div>
             <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Queue number:</span> {{ appointment.queue_number ? String(appointment.queue_number) : 'Not in queue yet' }}</div>
-            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Doctor:</span> {{ appointment.doctor?.user?.name || 'Unassigned' }}</div>
-            <div class="rounded-xl bg-gray-50 p-4"><span class="font-semibold text-gray-900">Service:</span> {{ appointment.service?.name || 'N/A' }}</div>
+            <div class="rounded-xl bg-gray-50 p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:col-span-2">
+                <div>
+                    <span class="font-semibold text-gray-900">Bác sĩ khám:</span>
+                    <span class="ml-1 text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200">
+                        {{ appointment.doctor?.user?.name || 'Chưa phân công' }}
+                    </span>
+                </div>
+                <div v-if="appointment.status !== 'completed' && appointment.status !== 'cancelled'" class="flex items-center gap-2">
+                    <select v-model="selectedDoctorId" class="rounded-xl border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-blue-500">
+                        <option value="">-- Chọn bác sĩ --</option>
+                        <option v-for="doc in doctors" :key="doc.id" :value="doc.id">BS. {{ doc.user?.name }}</option>
+                    </select>
+                    <button @click="assignDoctor" :disabled="isAssigning" class="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition">
+                        {{ isAssigning ? 'Đang lưu...' : 'Phân công' }}
+                    </button>
+                </div>
+            </div>
+            <div class="rounded-xl bg-gray-50 p-4 sm:col-span-2"><span class="font-semibold text-gray-900">Service:</span> {{ appointment.service?.name || 'N/A' }}</div>
             <div class="rounded-xl bg-gray-50 p-4 sm:col-span-2"><span class="font-semibold text-gray-900">Reason:</span> {{ appointment.reason || 'N/A' }}</div>
         </div>
     </article>
@@ -35,10 +51,16 @@
 import { ref, onMounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
+import { useNotification } from '../composables/useNotification';
+
+const { notifySuccess, handleApiError } = useNotification();
 
 const isLoading = ref(true);
 const appointment = ref(null);
 const error = ref('');
+const doctors = ref([]);
+const selectedDoctorId = ref('');
+const isAssigning = ref(false);
 
 function formatDateTime(dateTime) {
     if (!dateTime) return 'N/A';
@@ -55,6 +77,31 @@ function formatDateTime(dateTime) {
     });
 }
 
+async function assignDoctor() {
+    if (!selectedDoctorId.value) {
+        alert('Vui lòng chọn bác sĩ để phân công.');
+        return;
+    }
+    isAssigning.value = true;
+    try {
+        const root = document.querySelector('[data-page="receptionist-appointment-detail"]');
+        const id = Number(root.getAttribute('data-appointment-id'));
+        
+        const res = await callApi(`/api/receptionist/appointments/${id}/assign-doctor`, 'POST', {
+            doctor_id: Number(selectedDoctorId.value)
+        });
+        
+        if (res && res.data) {
+            appointment.value = res.data;
+            notifySuccess('Phân công bác sĩ thành công!');
+        }
+    } catch (e) {
+        handleApiError(e);
+    } finally {
+        isAssigning.value = false;
+    }
+}
+
 onMounted(async () => {
     const root = document.querySelector('[data-page="receptionist-appointment-detail"]');
     if (root) {
@@ -66,12 +113,19 @@ onMounted(async () => {
         }
 
         try {
-            const res = await callApi(`/api/receptionist/appointments/${id}`, 'GET');
+            const [res, doctorsRes] = await Promise.all([
+                callApi(`/api/receptionist/appointments/${id}`, 'GET'),
+                callApi('/api/receptionist/doctors/available', 'GET').catch(() => ({ data: [] }))
+            ]);
+            
             if (res && res.data) {
                 appointment.value = res.data;
+                selectedDoctorId.value = res.data.doctor_id || '';
             } else {
                 error.value = 'Appointment not found.';
             }
+            
+            doctors.value = doctorsRes.data || [];
         } catch (e) {
             error.value = 'Failed to load appointment details.';
         }

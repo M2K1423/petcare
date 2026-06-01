@@ -354,6 +354,19 @@ class AppointmentController extends Controller
             ]);
         });
 
+        $workflowStatus = $validated['workflow_status'] ?? Appointment::WORKFLOW_COMPLETED;
+        if (in_array($workflowStatus, [Appointment::WORKFLOW_COMPLETED, Appointment::WORKFLOW_FOLLOW_UP], true)) {
+            $this->notifications->create([
+                'user_id' => $appointment->owner_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_workflow_updated',
+                'title' => $workflowStatus === Appointment::WORKFLOW_COMPLETED ? 'Ca khám đã hoàn tất' : 'Lịch tái khám đã được cập nhật',
+                'message' => $workflowStatus === Appointment::WORKFLOW_COMPLETED
+                    ? "Bác sĩ đã hoàn tất ca khám cho {$appointment->pet?->name}. Bạn có thể xem kết quả bệnh án và hóa đơn thuốc."
+                    : "Bác sĩ đã cập nhật lịch tái khám cho {$appointment->pet?->name}.",
+            ]);
+        }
+
         return response()->json([
             'message' => 'Đã lưu bệnh án thành công.',
             'data' => $appointment,
