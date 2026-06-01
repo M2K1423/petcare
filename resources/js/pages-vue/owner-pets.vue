@@ -1,93 +1,153 @@
 <template>
   <template v-if="!isLoading">
-    <div class="flex flex-col gap-5">
-    <section class="grid gap-6 lg:grid-cols-5">
-        <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur lg:col-span-2">
-            <h2 class="text-lg font-bold text-[#333333]">Thêm thú cưng</h2>
+    <div class="flex flex-col gap-6">
+      <!-- Section header with gradient line -->
+      <div class="border-b border-slate-100 pb-4">
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">🐾 Quản lý Thú cưng</h1>
+        <p class="text-sm text-slate-400 mt-1">Thêm mới, chỉnh sửa thông tin và theo dõi hồ sơ y tế các bé cưng của bạn.</p>
+      </div>
 
-            <form @submit.prevent="createPet" class="mt-4 space-y-3">
-                <div>
-                        <label for="pet-name" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Tên</label>
-                    <input v-model="form.name" id="pet-name" name="name" required type="text" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
-                </div>
+      <section class="grid gap-8 lg:grid-cols-5">
+        <!-- Add Pet Form Panel (2/5 columns) -->
+        <article class="lg:col-span-2 rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] backdrop-blur relative overflow-hidden">
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            Thêm thú cưng mới
+          </h2>
 
-                <div>
-                    <label for="pet-species" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Loài</label>
-                    <select v-model="form.species_id" id="pet-species" name="species_id" required class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20">
-                        <option v-if="speciesList.length === 0" value="">Đang tải...</option>
-                        <option v-for="s in speciesList" :key="s.id" :value="s.id">{{ translateSpeciesName(s.name) }}</option>
-                    </select>
-                </div>
-
-                <div class="grid gap-3 sm:grid-cols-2">
-                    <div>
-                        <label for="pet-gender" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Giới tính</label>
-                        <select v-model="form.gender" id="pet-gender" name="gender" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20">
-                            <option value="unknown">Không rõ</option>
-                            <option value="male">Đực</option>
-                            <option value="female">Cái</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="pet-weight" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Cân nặng (kg)</label>
-                        <input v-model="form.weight" id="pet-weight" name="weight" type="number" min="0" step="0.01" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
-                    </div>
-                </div>
-
-                <div class="grid gap-3 sm:grid-cols-2">
-                    <div>
-                        <label for="pet-breed" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Giống</label>
-                        <input v-model="form.breed" id="pet-breed" name="breed" type="text" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
-                    </div>
-                    <div>
-                        <label for="pet-birth-date" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Ngày sinh</label>
-                        <input v-model="form.birth_date" id="pet-birth-date" name="birth_date" type="date" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
-                    </div>
-                </div>
-
-                <div>
-                    <label for="pet-color" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Màu sắc</label>
-                    <input v-model="form.color" id="pet-color" name="color" type="text" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
-                </div>
-
-                <div>
-                    <label for="pet-allergies" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Dị ứng</label>
-                    <textarea v-model="form.allergies" id="pet-allergies" name="allergies" rows="2" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20"></textarea>
-                </div>
-
-                <div>
-                    <label for="pet-notes" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Ghi chú</label>
-                    <textarea v-model="form.notes" id="pet-notes" name="notes" rows="2" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20"></textarea>
-                </div>
-
-                <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] focus:outline-none focus:ring-2 focus:ring-[#2A6496]/35 disabled:opacity-50">
-                    {{ isSaving ? 'Đang tạo...' : 'Tạo thú cưng' }}
-                </button>
-            </form>
-        </article>
-
-        <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] backdrop-blur lg:col-span-3">
-            <h2 class="text-lg font-bold text-[#333333]">Thú cưng của bạn</h2>
-            <div class="mt-4 space-y-3">
-                <p v-if="pets.length === 0" class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-4 text-sm text-[#4A4A4A]">No pets found. Create your first pet from the form.</p>
-                
-                <div v-for="pet in pets" :key="pet.id" class="rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] p-4 shadow-sm">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="text-base font-semibold text-[#333333]">{{ pet.name }}</p>
-                            <p class="mt-1 text-sm text-[#4A4A4A]">{{ formatPetMeta(pet) }}</p>
-                            <p v-if="pet.notes" class="mt-2 text-sm text-[#4A4A4A]">Notes: {{ pet.notes }}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <a :href="`/owner/pets/${pet.id}/edit`" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Edit</a>
-                            <a :href="`/owner/pets/${pet.id}/health-records`" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Health records</a>
-                            <button @click="deletePet(pet.id)" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Delete</button>
-                        </div>
-                    </div>
-                </div>
+          <form @submit.prevent="createPet" class="space-y-4">
+            <div>
+              <label for="pet-name" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Tên bé cưng</label>
+              <input v-model="form.name" id="pet-name" name="name" required type="text" placeholder="Nhập tên bé..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
             </div>
+
+            <div>
+              <label for="pet-species" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Loài</label>
+              <select v-model="form.species_id" id="pet-species" name="species_id" required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                <option v-if="speciesList.length === 0" value="">Đang tải...</option>
+                <option v-for="s in speciesList" :key="s.id" :value="s.id">{{ translateSpeciesName(s.name) }}</option>
+              </select>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="pet-gender" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Giới tính</label>
+                <select v-model="form.gender" id="pet-gender" name="gender" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                  <option value="unknown">Không rõ</option>
+                  <option value="male">Đực</option>
+                  <option value="female">Cái</option>
+                </select>
+              </div>
+              <div>
+                <label for="pet-weight" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Cân nặng (kg)</label>
+                <input v-model="form.weight" id="pet-weight" name="weight" type="number" min="0" step="0.01" placeholder="Cân nặng..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+              </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="pet-breed" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Giống loại</label>
+                <input v-model="form.breed" id="pet-breed" name="breed" type="text" placeholder="Ví dụ: Poodle, Corgi..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+              </div>
+              <div>
+                <label for="pet-birth-date" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Ngày sinh</label>
+                <input v-model="form.birth_date" id="pet-birth-date" name="birth_date" type="date" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+              </div>
+            </div>
+
+            <div>
+              <label for="pet-color" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Màu sắc</label>
+              <input v-model="form.color" id="pet-color" name="color" type="text" placeholder="Màu lông..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+            </div>
+
+            <div>
+              <label for="pet-allergies" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Dị ứng (nếu có)</label>
+              <textarea v-model="form.allergies" id="pet-allergies" name="allergies" rows="2" placeholder="Ghi chú về dị ứng thức ăn, thuốc..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"></textarea>
+            </div>
+
+            <div>
+              <label for="pet-notes" class="mb-1 block text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Ghi chú sức khỏe</label>
+              <textarea v-model="form.notes" id="pet-notes" name="notes" rows="2" placeholder="Sở thích, lưu ý chăm sóc đặc biệt..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"></textarea>
+            </div>
+
+            <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:bg-indigo-700 hover:shadow-indigo-600/30 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:opacity-50">
+              {{ isSaving ? 'Đang tạo...' : '✨ Tạo hồ sơ thú cưng' }}
+            </button>
+          </form>
         </article>
-    </section>
+
+        <!-- Pets List Panel (3/5 columns) -->
+        <article class="lg:col-span-3 rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] backdrop-blur">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              Danh sách bé cưng của bạn
+            </h2>
+            <span class="text-xs font-bold px-2.5 py-1 bg-slate-50 text-slate-500 rounded-full border border-slate-100">{{ pets.length }} Bé</span>
+          </div>
+
+          <div class="space-y-4 max-h-[750px] overflow-y-auto pr-1">
+            <div v-if="pets.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
+              <span class="text-5xl mb-3">🐱🐶</span>
+              <p class="text-sm font-bold text-slate-500">Bạn chưa đăng ký bé cưng nào.</p>
+              <p class="text-xs text-slate-400 mt-1">Hãy nhập thông tin ở biểu mẫu bên trái để tạo ngay nhé!</p>
+            </div>
+            
+            <div v-for="pet in pets" :key="pet.id" class="pet-card group rounded-2xl border border-slate-100 bg-slate-50/20 p-5 shadow-sm hover:shadow-[0_12px_24px_rgba(0,0,0,0.03)] hover:border-slate-200 transition-all duration-300 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/[0.02] rounded-bl-full pointer-events-none"></div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-start gap-4">
+                  <!-- Custom Avatar depending on species -->
+                  <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-2xl group-hover:scale-105 transition-transform duration-300">
+                    {{ getSpeciesEmoji(pet.species?.name) }}
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <p class="text-base font-extrabold text-slate-700">{{ pet.name }}</p>
+                      <span :class="getGenderClass(pet.gender)" class="text-[10px] font-bold px-2 py-0.5 rounded-full border">
+                        {{ translateGender(pet.gender) }}
+                      </span>
+                    </div>
+                    
+                    <div class="mt-2 grid gap-1 grid-cols-1 sm:grid-cols-2 text-xs text-slate-400">
+                      <p class="flex items-center gap-1">
+                        <span class="font-semibold text-slate-500">Loài:</span> {{ translateSpeciesName(pet.species?.name) }}
+                      </p>
+                      <p v-if="pet.breed" class="flex items-center gap-1">
+                        <span class="font-semibold text-slate-500">Giống:</span> {{ pet.breed }}
+                      </p>
+                      <p v-if="pet.weight" class="flex items-center gap-1">
+                        <span class="font-semibold text-slate-500">Cân nặng:</span> {{ pet.weight }} kg
+                      </p>
+                      <p v-if="pet.birth_date" class="flex items-center gap-1">
+                        <span class="font-semibold text-slate-500">Ngày sinh:</span> {{ toDateOnly(pet.birth_date) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap sm:flex-col justify-end gap-2.5 sm:self-center">
+                  <a :href="`/owner/pets/${pet.id}/edit`" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-indigo-500 hover:text-indigo-600">
+                    ⚙️ Chỉnh sửa
+                  </a>
+                  <a :href="`/owner/pets/${pet.id}/health-records`" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-amber-500 hover:text-amber-600">
+                    🏥 Bệnh án
+                  </a>
+                  <button @click="deletePet(pet.id)" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-rose-500 hover:text-rose-600">
+                    🗑️ Xóa hồ sơ
+                  </button>
+                </div>
+              </div>
+
+              <!-- Notes Callout -->
+              <div v-if="pet.notes || pet.allergies" class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-1.5 text-xs text-slate-500">
+                <p v-if="pet.allergies" class="flex items-start gap-1"><span class="font-bold text-rose-500">⚠️ Dị ứng:</span> {{ pet.allergies }}</p>
+                <p v-if="pet.notes" class="flex items-start gap-1"><span class="font-bold text-slate-600">📝 Ghi chú:</span> {{ pet.notes }}</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
     </div>
   </template>
   <LoadingSpinner v-else />
@@ -125,16 +185,31 @@ function toDateOnly(value) {
 }
 
 function translateSpeciesName(name) {
+    if (!name) return 'Chưa rõ';
     const normalized = name.trim().toLowerCase();
     const mapping = {
-        bird: 'Chim',
-        cat: 'Mèo',
-        dog: 'Chó',
-        fish: 'Cá',
-        rabbit: 'Thỏ',
-        hamster: 'Chuột hamster',
+        bird: 'Chim 🦜',
+        cat: 'Mèo 🐈',
+        dog: 'Chó 🐕',
+        fish: 'Cá 🐠',
+        rabbit: 'Thỏ 🐇',
+        hamster: 'Chuột Hamster 🐹',
     };
     return mapping[normalized] || name;
+}
+
+function getSpeciesEmoji(name) {
+    if (!name) return '🐈';
+    const normalized = name.trim().toLowerCase();
+    const mapping = {
+        bird: '🦜',
+        cat: '🐈',
+        dog: '🐕',
+        fish: '🐠',
+        rabbit: '🐇',
+        hamster: '🐹',
+    };
+    return mapping[normalized] || '🐈';
 }
 
 function translateGender(value) {
@@ -146,13 +221,12 @@ function translateGender(value) {
     return mapping[value] || value;
 }
 
-function formatPetMeta(pet) {
-    const chunks = [];
-    if (pet.species?.name) chunks.push(`Loài: ${translateSpeciesName(pet.species.name)}`);
-    chunks.push(`Giới tính: ${translateGender(pet.gender)}`);
-    if (pet.weight) chunks.push(`Cân nặng: ${pet.weight} kg`);
-    if (pet.birth_date) chunks.push(`Ngày sinh: ${toDateOnly(pet.birth_date)}`);
-    return chunks.join(' | ');
+function getGenderClass(value) {
+  switch (value) {
+    case 'male': return 'bg-sky-50 text-sky-600 border-sky-100';
+    case 'female': return 'bg-rose-50 text-rose-600 border-rose-100';
+    default: return 'bg-slate-50 text-slate-500 border-slate-100';
+  }
 }
 
 async function loadData() {
@@ -196,7 +270,7 @@ async function createPet() {
         form.gender = 'unknown';
         if (speciesList.value.length > 0) form.species_id = speciesList.value[0].id;
         
-        notifySuccess('Tạo thú cưng thành công.');
+        notifySuccess('Tạo hồ sơ thú cưng thành công!');
         await loadData();
     } catch (error) {
         handleApiError(error);
@@ -206,10 +280,10 @@ async function createPet() {
 }
 
 async function deletePet(id) {
-    if (!window.confirm('Delete this pet?')) return;
+    if (!window.confirm('Bạn có chắc chắn muốn xóa hồ sơ bé cưng này không?')) return;
     try {
         await callApi(`/api/owner/pets/${id}`, 'DELETE');
-        notifySuccess('Pet deleted successfully.');
+        notifySuccess('Đã xóa hồ sơ thú cưng thành công!');
         await loadData();
     } catch (error) {
         handleApiError(error);
@@ -220,3 +294,31 @@ onMounted(() => {
     loadData();
 });
 </script>
+
+<style scoped>
+.pet-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.pet-card:hover {
+  transform: translateY(-2px);
+}
+.btn-action {
+  transition: all 0.2s ease-in-out;
+}
+.btn-action:hover {
+  transform: scale(1.02);
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+</style>

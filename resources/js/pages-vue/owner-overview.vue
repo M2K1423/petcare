@@ -6,7 +6,7 @@
       <div class="relative z-10">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md text-white mb-4 animate-pulse-subtle">
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          PetCare AI Virtual Vet Active
+          Trợ lý Ảo AI PetCare Đang Hoạt Động
         </span>
         <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl">
           {{ greeting }}, <span class="text-amber-200">Owner Demo</span>!
@@ -28,9 +28,7 @@
             <p class="mt-4 text-5xl font-extrabold tracking-tight text-slate-800 transition-colors group-hover:text-indigo-600">{{ pets.length }}</p>
           </div>
           <div class="rounded-2xl bg-indigo-50 p-4 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
+            🐾
           </div>
         </div>
         <p class="mt-4 text-xs text-slate-400">Các hồ sơ sức khỏe và lịch sử khám đang hoạt động.</p>
@@ -45,9 +43,7 @@
             <p class="mt-4 text-5xl font-extrabold tracking-tight text-slate-800 transition-colors group-hover:text-amber-500">{{ appointments.length }}</p>
           </div>
           <div class="rounded-2xl bg-amber-50 p-4 text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            📅
           </div>
         </div>
         <p class="mt-4 text-xs text-slate-400">Tổng quan lịch hẹn khám bệnh và chăm sóc.</p>
@@ -66,9 +62,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500 border border-white"></span>
             </span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            ⏳
           </div>
         </div>
         <p class="mt-4 text-xs text-slate-400">Các yêu cầu xếp lịch đang được lễ tân xử lý.</p>
@@ -253,7 +247,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Scoped Custom Aesthetics to make UI absolutely Premium & Alive */
 .welcome-banner {
   background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #4299e1 100%);
   background-size: 200% 200%;
@@ -317,7 +310,6 @@ onMounted(() => {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
 }
 
-/* Custom Scrollbar for better UX */
 ::-webkit-scrollbar {
   width: 5px;
 }

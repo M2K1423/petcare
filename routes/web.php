@@ -119,6 +119,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (): void {
     Route::redirect('/receptionist/appoiintments', '/receptionist/appointments');
     Route::redirect('/receptioniist/appointments', '/receptionist/appointments');
     Route::redirect('/receptioniist/appoiintments', '/receptionist/appointments');
+    Route::redirect('/receptionist/walkins', '/receptionist/walk-ins');
     Route::view('/receptionist/dashboard', 'receptionist.dashboard')->name('receptionist.dashboard');
     Route::view('/receptionist/walk-ins', 'receptionist.walkins')->name('receptionist.walkins');
     Route::view('/receptionist/appointments', 'receptionist.appointments')->name('receptionist.appointments');
