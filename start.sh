@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Ensure storage framework and log directories exist and are writable
+mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs
+chmod -R 777 storage bootstrap/cache
+
 # Copy env example to .env
 cp .env.example .env
 
