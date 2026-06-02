@@ -9,7 +9,14 @@ cp .env.example .env
 
 # Inject system environment variables into .env file
 php -r "
-\$keys = ['DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'APP_KEY', 'APP_URL', 'APP_ENV', 'APP_DEBUG'];
+\$keys = [
+    'DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 
+    'APP_KEY', 'APP_URL', 'APP_ENV', 'APP_DEBUG',
+    'VNPAY_ENABLED', 'VNPAY_TMN_CODE', 'VNPAY_HASH_SECRET', 'VNPAY_PAYMENT_URL', 
+    'VNPAY_RETURN_URL', 'VNPAY_IPN_URL', 'VNPAY_LOCALE', 'VNPAY_ORDER_TYPE', 'VNPAY_EXPIRE_MINUTES',
+    'REVERB_APP_ID', 'REVERB_APP_KEY', 'REVERB_APP_SECRET', 'REVERB_HOST', 'REVERB_PORT', 'REVERB_SCHEME',
+    'VITE_REVERB_APP_KEY', 'VITE_REVERB_HOST', 'VITE_REVERB_PORT', 'VITE_REVERB_SCHEME'
+];
 \$content = file_get_contents('.env') . \"\n\";
 foreach (\$keys as \$k) {
     \$v = getenv(\$k);
