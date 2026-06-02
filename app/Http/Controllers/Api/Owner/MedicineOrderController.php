@@ -132,7 +132,7 @@ class MedicineOrderController extends Controller
                 'amount' => $order->total_amount,
                 'payment_method' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : $validated['payment_method'],
                 'gateway' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : null,
-                'status' => $validated['payment_method'] === 'vnpay' ? 'pending' : 'created',
+                'status' => 'pending',
                 'notes' => $validated['notes'] ?? 'Chủ nuôi khởi tạo thanh toán.',
             ]);
         }
