@@ -42,5 +42,8 @@ RUN npm install && npm run build
 # Expose port
 EXPOSE 8000
 
-# Set entrypoint command to run migrations and start server
-CMD php artisan key:generate && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Grant execution permissions to the startup script
+RUN chmod +x start.sh
+
+# Set entrypoint command to run the startup script
+CMD ["/bin/sh", "start.sh"]
