@@ -4,6 +4,7 @@ namespace App\Services\Auth;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -23,7 +24,9 @@ class SanctumAuthService
             'role_id' => $ownerRoleId,
         ]);
 
-        return $this->createAuthPayload($user, 'Register successful.');
+        Auth::guard('web')->login($user);
+
+        return $this->createAuthPayload($user, 'Đăng ký thành công.');
     }
 
     /**
@@ -35,16 +38,24 @@ class SanctumAuthService
 
         if (! $user || ! Hash::check($payload['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Invalid email or password.'],
+                'email' => ['Email hoặc mật khẩu không đúng.'],
             ]);
         }
 
-        return $this->createAuthPayload($user, 'Login successful.');
+        Auth::guard('web')->login($user);
+
+        return $this->createAuthPayload($user, 'Đăng nhập thành công.');
     }
 
     public function logout(?User $user): void
     {
-        $user?->tokens()->delete();
+        $token = $user?->currentAccessToken();
+
+        if ($token) {
+            \Laravel\Sanctum\PersonalAccessToken::query()->where('id', $token->id)->delete();
+        }
+
+        Auth::guard('web')->logout();
     }
 
     public function me(?User $user): array
@@ -68,7 +79,7 @@ class SanctumAuthService
     {
         if (! $user) {
             throw ValidationException::withMessages([
-                'user' => ['Unauthenticated.'],
+                'user' => ['Chưa xác thực.'],
             ]);
         }
 
@@ -78,7 +89,7 @@ class SanctumAuthService
         ])->save();
 
         return [
-            'message' => 'Profile updated successfully.',
+            'message' => 'Đã cập nhật hồ sơ thành công.',
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -92,9 +103,9 @@ class SanctumAuthService
     {
         return match ($role) {
             Role::ADMIN => '/admin/medicines',
-            Role::VET => '/vet/appointments',
-            Role::RECEPTIONIST => '/api/receptionist/dashboard',
-            Role::OWNER => '/api/owner/dashboard',
+            Role::VET => '/vet/dashboard',
+            Role::RECEPTIONIST => '/receptionist/dashboard',
+            Role::OWNER => '/owner/overview',
             default => null,
         };
     }

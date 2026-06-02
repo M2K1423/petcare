@@ -9,12 +9,14 @@ class Medicine extends Model
 {
     protected $fillable = [
         'name',
+        'category',
         'sku',
         'unit',
         'stock_quantity',
         'price',
         'expiration_date',
         'description',
+        'image_url',
     ];
 
     protected function casts(): array

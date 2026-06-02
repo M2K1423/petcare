@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AppNotification;
 use App\Models\Appointment;
+use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -21,12 +22,12 @@ class SendAppointmentReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Send reminder notifications to pet owners 24 hours before their appointments';
+    protected $description = 'Gửi nhắc nhở cho chủ nuôi 24 giờ trước lịch hẹn';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(NotificationService $notifications)
     {
         $this->info("Bắt đầu quét danh sách lịch hẹn cần nhắc nhở...");
 
@@ -54,7 +55,7 @@ class SendAppointmentReminders extends Command
 
             if (!$exists) {
                 // Tạo Record trong CSDL
-                AppNotification::create([
+                $notifications->create([
                     'user_id' => $owner->id,
                     'appointment_id' => $appointment->id,
                     'type' => 'appointment_reminder',

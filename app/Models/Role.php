@@ -14,6 +14,7 @@ class Role extends Model
     public const VET = 'vet';
     public const RECEPTIONIST = 'receptionist';
     public const ADMIN = 'admin';
+    public const AI_ASSISTANT = 'ai_assistant';
 
     protected $fillable = [
         'name',

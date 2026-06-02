@@ -27,6 +27,9 @@ class User extends Authenticatable
         'phone',
         'role_id',
         'password',
+        'is_locked',
+        'locked_at',
+        'last_login_at',
     ];
 
     /**
@@ -49,6 +52,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_locked' => 'boolean',
+            'locked_at' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 
@@ -65,5 +71,30 @@ class User extends Authenticatable
     public function medicineOrders(): HasMany
     {
         return $this->hasMany(MedicineOrder::class, 'owner_id');
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
+    public function chatSessionsAsOwner(): HasMany
+    {
+        return $this->hasMany(ChatSession::class, 'owner_id');
+    }
+
+    public function chatSessionsAsStaff(): HasMany
+    {
+        return $this->hasMany(ChatSession::class, 'staff_id');
+    }
+
+    public function pets(): HasMany
+    {
+        return $this->hasMany(Pet::class, 'owner_id');
+    }
+
+    public function doctor(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Doctor::class);
     }
 }

@@ -1,166 +1,103 @@
-<script setup lang="ts">
-import { onMounted } from 'vue';
+<template>
+  <template v-if="!isLoading">
+    <section class="grid gap-6 lg:grid-cols-5">
+        <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] lg:col-span-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-[#333333]">Bệnh án & lịch tiêm phòng</h1>
+                    <p class="mt-2 text-sm text-[#4A4A4A]">Theo dõi lịch sử khám và các mũi tiêm của thú cưng.</p>
+                    <p class="mt-3 text-sm font-semibold text-[#2A6496]">Thú cưng: {{ petNameDisplay }}</p>
+                </div>
+                <a href="/owner/pets" class="inline-flex items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-4 py-2 text-sm font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">
+                    Quay lại danh sách thú cưng
+                </a>
+            </div>
+
+            <p class="mt-4 text-sm text-[#4A4A4A]">{{ statusMessage }}</p>
+        </article>
+
+        <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] lg:col-span-3">
+            <h2 class="text-lg font-bold text-[#333333]">Bệnh án</h2>
+            <div class="mt-4 space-y-3 text-sm text-[#4A4A4A]">
+                <p v-if="medicalRecords.length === 0" class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-3">Chưa có bệnh án cho thú cưng này.</p>
+                
+                <article v-for="record in medicalRecords" :key="record.id" class="rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] p-4">
+                    <p class="text-xs uppercase tracking-[0.08em] text-[#6B7280]">Ngày ghi nhận: {{ formatDate(record.record_date) }}</p>
+                    <p class="mt-2"><span class="font-semibold text-[#333333]">Triệu chứng:</span> {{ record.symptoms || '-' }}</p>
+                    <p class="mt-1"><span class="font-semibold text-[#333333]">Chẩn đoán:</span> {{ record.diagnosis || '-' }}</p>
+                    <p class="mt-1"><span class="font-semibold text-[#333333]">Điều trị:</span> {{ record.treatment || '-' }}</p>
+                    <p class="mt-1"><span class="font-semibold text-[#333333]">Ghi chú:</span> {{ record.notes || '-' }}</p>
+                </article>
+            </div>
+        </article>
+
+        <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] lg:col-span-2">
+            <h2 class="text-lg font-bold text-[#333333]">Lịch tiêm phòng</h2>
+            <div class="mt-4 space-y-3 text-sm text-[#4A4A4A]">
+                <p v-if="vaccinations.length === 0" class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-3">Chưa có lịch tiêm phòng.</p>
+                
+                <article v-for="item in vaccinations" :key="item.id" class="rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] p-4">
+                    <p class="font-semibold text-[#333333]">{{ item.vaccine_name }}</p>
+                    <p class="mt-1 text-xs text-[#4A4A4A]">Tiêm ngày: {{ formatDate(item.vaccinated_on) }}</p>
+                    <p class="mt-1 text-xs text-[#4A4A4A]">Mũi tiếp theo: {{ item.next_due_on ? formatDate(item.next_due_on) : '-' }}</p>
+                    <p class="mt-1 text-xs text-[#4A4A4A]">Số lô: {{ item.batch_number || '-' }}</p>
+                    <p class="mt-1 text-xs text-[#4A4A4A]">Ghi chú: {{ item.notes || '-' }}</p>
+                </article>
+            </div>
+        </article>
+    </section>
+  </template>
+  <LoadingSpinner v-else />
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
 import { callApi } from '../auth/http';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 
-type AuthMeResponse = {
-    authenticated?: boolean;
-    user?: { role?: string | null } | null;
-};
+const isLoading = ref(true);
+const statusMessage = ref('Đang tải...');
+const pet = ref(null);
+const medicalRecords = ref([]);
+const vaccinations = ref([]);
 
-type PetSummary = {
-    id: number;
-    name: string;
-    breed: string | null;
-    species?: { id: number; name: string } | null;
-};
+const petNameDisplay = computed(() => {
+    if (!pet.value) return 'Đang tải...';
+    const speciesText = pet.value.species?.name ? ` (${pet.value.species.name})` : '';
+    const breedText = pet.value.breed ? ` - ${pet.value.breed}` : '';
+    return `${pet.value.name}${speciesText}${breedText}`;
+});
 
-type MedicalRecord = {
-    id: number;
-    record_date: string;
-    symptoms: string | null;
-    diagnosis: string | null;
-    treatment: string | null;
-    notes: string | null;
-};
-
-type Vaccination = {
-    id: number;
-    vaccine_name: string;
-    vaccinated_on: string;
-    next_due_on: string | null;
-    batch_number: string | null;
-    notes: string | null;
-};
-
-type HealthRecordsResponse = {
-    data: {
-        pet: PetSummary;
-        medical_records: MedicalRecord[];
-        vaccinations: Vaccination[];
-    };
-};
-
-declare global {
-    interface Window {
-        __OWNER_PET_HEALTH_RECORDS__?: {
-            petId?: number;
-        };
-    }
-}
-
-const statusEl = document.getElementById('pet-health-records-status');
-const petEl = document.getElementById('pet-health-records-pet');
-const medicalListEl = document.getElementById('pet-medical-records-list');
-const vaccinationListEl = document.getElementById('pet-vaccinations-list');
-
-function setStatus(message: string, kind: 'neutral' | 'success' | 'error' = 'neutral'): void {
-    if (!statusEl) return;
-
-    const classMap = {
-        neutral: 'mt-4 text-sm text-[#4A4A4A]',
-        success: 'mt-4 text-sm text-emerald-700',
-        error: 'mt-4 text-sm text-rose-700',
-    };
-
-    statusEl.className = classMap[kind];
-    statusEl.textContent = message;
-}
-
-function formatDate(input: string): string {
+function formatDate(input) {
     const date = new Date(input);
     if (Number.isNaN(date.getTime())) return input;
     return date.toLocaleDateString();
 }
 
-function renderPet(pet: PetSummary): void {
-    if (!petEl) return;
-
-    const speciesText = pet.species?.name ? ` (${pet.species.name})` : '';
-    const breedText = pet.breed ? ` - ${pet.breed}` : '';
-    petEl.textContent = `Pet: ${pet.name}${speciesText}${breedText}`;
-}
-
-function renderMedicalRecords(records: MedicalRecord[]): void {
-    if (!medicalListEl) return;
-
-    if (records.length === 0) {
-        medicalListEl.innerHTML = '<p class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-3">Chua co benh an cho thu cung nay.</p>';
-        return;
-    }
-
-    medicalListEl.innerHTML = records
-        .map((record) => {
-            return `
-                <article class="rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] p-4">
-                    <p class="text-xs uppercase tracking-[0.08em] text-[#6B7280]">Ngay ghi nhan: ${formatDate(record.record_date)}</p>
-                    <p class="mt-2"><span class="font-semibold text-[#333333]">Trieu chung:</span> ${record.symptoms || '-'}</p>
-                    <p class="mt-1"><span class="font-semibold text-[#333333]">Chan doan:</span> ${record.diagnosis || '-'}</p>
-                    <p class="mt-1"><span class="font-semibold text-[#333333]">Dieu tri:</span> ${record.treatment || '-'}</p>
-                    <p class="mt-1"><span class="font-semibold text-[#333333]">Ghi chu:</span> ${record.notes || '-'}</p>
-                </article>
-            `;
-        })
-        .join('');
-}
-
-function renderVaccinations(vaccinations: Vaccination[]): void {
-    if (!vaccinationListEl) return;
-
-    if (vaccinations.length === 0) {
-        vaccinationListEl.innerHTML = '<p class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-3">Chua co lich tiem phong.</p>';
-        return;
-    }
-
-    vaccinationListEl.innerHTML = vaccinations
-        .map((item) => {
-            const nextDue = item.next_due_on ? formatDate(item.next_due_on) : '-';
-            return `
-                <article class="rounded-xl border border-[#DDE1E6] bg-[#FFFFFF] p-4">
-                    <p class="font-semibold text-[#333333]">${item.vaccine_name}</p>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">Tiem ngay: ${formatDate(item.vaccinated_on)}</p>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">Mui tiep theo: ${nextDue}</p>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">So lo: ${item.batch_number || '-'}</p>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">Ghi chu: ${item.notes || '-'}</p>
-                </article>
-            `;
-        })
-        .join('');
-}
-
-async function ensureOwner(): Promise<void> {
-    const me = await callApi<AuthMeResponse>('/api/auth/me', 'GET');
-
-    if (!me.authenticated || me.user?.role !== 'owner') {
-        throw new Error('Owner account is required to use this page.');
-    }
-}
-
-async function bootstrap(): Promise<void> {
-    const petId = Number(window.__OWNER_PET_HEALTH_RECORDS__?.petId ?? 0);
+async function loadData() {
+    const mountNode = document.querySelector('[data-page="owner-pet-health-records"]');
+    const petId = Number(mountNode?.dataset?.petId);
 
     if (!petId) {
-        setStatus('Invalid pet id.', 'error');
+        statusMessage.value = 'Invalid pet id.';
+        isLoading.value = false;
         return;
     }
 
     try {
-        await ensureOwner();
-
-        const response = await callApi<HealthRecordsResponse>(`/api/owner/pets/${petId}/health-records`, 'GET');
-        renderPet(response.data.pet);
-        renderMedicalRecords(response.data.medical_records);
-        renderVaccinations(response.data.vaccinations);
-        setStatus('Loaded medical records and vaccination schedule.', 'success');
+        const response = await callApi(`/api/owner/pets/${petId}/health-records`, 'GET');
+        pet.value = response.data.pet;
+        medicalRecords.value = response.data.medical_records || [];
+        vaccinations.value = response.data.vaccinations || [];
+        statusMessage.value = 'Đã tải hồ sơ bệnh án và lịch tiêm phòng.';
     } catch (error) {
-        setStatus((error as Error).message, 'error');
+        statusMessage.value = error.message;
+    } finally {
+        isLoading.value = false;
     }
 }
 
 onMounted(() => {
-    bootstrap();
+    loadData();
 });
 </script>
-
-<template>
-    <div class="hidden"></div>
-</template>

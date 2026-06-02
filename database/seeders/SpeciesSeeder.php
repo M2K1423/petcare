@@ -30,6 +30,31 @@ class SpeciesSeeder extends Seeder
                 'scientific_name' => 'Aves',
                 'description' => 'Pet bird',
             ],
+            [
+                'name' => 'Hamster',
+                'scientific_name' => 'Cricetinae',
+                'description' => 'Domestic hamster',
+            ],
+            [
+                'name' => 'Fish',
+                'scientific_name' => 'Actinopterygii',
+                'description' => 'Ornamental fish',
+            ],
+            [
+                'name' => 'Reptile',
+                'scientific_name' => 'Reptilia',
+                'description' => 'Pet reptile',
+            ],
+            [
+                'name' => 'Turtle',
+                'scientific_name' => 'Testudines',
+                'description' => 'Pet turtle',
+            ],
+            [
+                'name' => 'Hedgehog',
+                'scientific_name' => 'Erinaceinae',
+                'description' => 'Pet hedgehog',
+            ],
         ];
 
         foreach ($speciesList as $species) {

@@ -1,87 +1,123 @@
-<script setup lang="ts">
-import { onMounted } from 'vue';
+<template>
+  <template v-if="!isLoading">
+    <div class="flex flex-col gap-6">
+      <!-- Section header with gradient line -->
+      <div class="border-b border-slate-100 pb-4">
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">💊 Cửa hàng thuốc y tế PetCare</h1>
+        <p class="text-sm text-slate-400 mt-1">Tìm kiếm và mua trực tuyến các loại thuốc, thực phẩm bổ sung chính hãng được bác sĩ thú y khuyên dùng.</p>
+      </div>
+
+      <section class="rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.015)] backdrop-blur">
+        <!-- Interactive Search & Filtering Controls -->
+        <div class="grid gap-6 md:grid-cols-[1.2fr_0.8fr] mb-6">
+          <div>
+            <label for="shop-medicine-search" class="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Tìm sản phẩm y tế</label>
+            <div class="relative mt-2">
+              <input v-model="searchQuery" id="shop-medicine-search" type="text" placeholder="Tìm theo tên thuốc, danh mục điều trị, mô tả..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </span>
+            </div>
+          </div>
+          <div>
+            <label for="shop-category-filter" class="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Danh mục điều trị</label>
+            <select v-model="selectedCategory" id="shop-category-filter" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+              <option value="all">🧪 Tất cả danh mục</option>
+              <option v-for="category in categories" :key="category" :value="category">📦 {{ category }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-400 mb-6 flex items-center justify-between border-b border-slate-50 pb-3">
+          <span>Đang hiển thị <strong class="text-slate-700">{{ filteredMedicines.length }}</strong> sản phẩm phù hợp.</span>
+          <span class="font-semibold text-indigo-500 bg-indigo-50 px-2.5 py-0.5 rounded-full text-[10px]">Kho thuốc PetCare</span>
+        </div>
+
+        <!-- Medicine Grid -->
+        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div v-if="filteredMedicines.length === 0" class="col-span-full py-16 flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/30">
+            <span class="text-4xl mb-2">🔍</span>
+            <p class="text-sm font-bold text-slate-500">Không tìm thấy sản phẩm thuốc phù hợp.</p>
+            <p class="text-xs text-slate-400 mt-1">Vui lòng kiểm tra lại từ khóa tìm kiếm hoặc đổi danh mục khác.</p>
+          </div>
+          
+          <article v-for="medicine in filteredMedicines" :key="medicine.id" class="medicine-card group bg-white border border-slate-100 rounded-2xl p-4 flex flex-col hover:border-indigo-500/50 hover:shadow-[0_12px_30px_rgba(0,0,0,0.04)] transition-all duration-300 h-full relative overflow-hidden">
+            <!-- Out of stock overlay -->
+            <div v-if="medicine.stock_quantity <= 0" class="absolute inset-0 bg-white/70 flex items-center justify-center font-bold text-rose-500 text-sm z-10 backdrop-blur-[1px]">
+              <span class="px-4 py-2 bg-rose-50 rounded-full border border-rose-200 shadow-sm">❌ Hết hàng</span>
+            </div>
+
+            <!-- Product image -->
+            <div class="aspect-[4/3] bg-slate-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative w-full border border-slate-100/50">
+              <img :src="medicine.image_url || getFallbackImage(medicine)" :alt="medicine.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              
+              <!-- Medicine Warnings badges -->
+              <span v-if="getMedicineWarning(medicine)" :class="getWarningClass(getMedicineWarning(medicine))" class="absolute top-2.5 right-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full border shadow-sm z-10">
+                {{ getMedicineWarning(medicine) }}
+              </span>
+            </div>
+            
+            <div class="flex flex-col flex-1">
+              <p v-if="medicine.category" class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-500 mb-1.5">{{ medicine.category }}</p>
+              <h3 class="font-extrabold text-slate-700 text-sm line-clamp-2 mb-1 group-hover:text-indigo-600 transition-colors">{{ medicine.name }}</h3>
+              <p class="text-xs text-slate-400 line-clamp-2 mb-4 flex-1 leading-relaxed">{{ medicine.description ?? 'Sản phẩm thuốc thú y chuyên dụng có sẵn tại phòng khám.' }}</p>
+              
+              <!-- Info block -->
+              <div class="flex items-end justify-between mb-4 border-t border-slate-100 pt-3">
+                <div>
+                  <span class="text-indigo-600 font-extrabold text-lg block leading-tight">{{ formatCurrency(medicine.price) }}</span>
+                  <span class="text-[10px] text-slate-400 font-medium">ĐVT: {{ medicine.unit || 'hộp' }}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] bg-slate-50 text-slate-500 border border-slate-100 px-2 py-1 rounded-md font-bold whitespace-nowrap">Kho: {{ medicine.stock_quantity }}</span>
+                </div>
+              </div>
+              
+              <!-- Purchase controls -->
+              <div class="flex items-center gap-2 mt-auto">
+                <div class="w-20 shrink-0">
+                  <input v-model.number="cartQuantities[medicine.id]" type="number" min="1" :max="medicine.stock_quantity" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-2 py-2 text-center text-sm outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" :disabled="medicine.stock_quantity <= 0">
+                </div>
+                <button @click="addToCart(medicine)" type="button" class="flex-1 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-bold text-white shadow-md shadow-indigo-600/10 hover:bg-indigo-700 hover:shadow-indigo-600/20 transition-all duration-200 flex items-center justify-center gap-1.5" :disabled="medicine.stock_quantity <= 0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  <span class="whitespace-nowrap">Thêm</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </template>
+  <LoadingSpinner v-else />
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
+import { useNotification } from '../composables/useNotification';
 
-type Pet = { id: number; name: string };
+const { notifySuccess, notifyError, handleApiError } = useNotification();
 
-type Medicine = {
-    id: number;
-    name: string;
-    unit?: string | null;
-    stock_quantity: number;
-    price: number | string;
-    description?: string | null;
-    expiration_date?: string | null;
-};
+const isLoading = ref(true);
+const medicines = ref([]);
+const cartQuantities = ref({});
+const searchQuery = ref('');
+const selectedCategory = ref('all');
 
-type Order = {
-    id: number;
-    status: string;
-    total_amount: number | string;
-    created_at: string;
-    confirmed_at?: string | null;
-    paid_at?: string | null;
-    notes?: string | null;
-    pet?: { name: string } | null;
-    confirmer?: { name: string } | null;
-    items?: Array<{
-        quantity: number;
-        unit_price: number | string;
-        line_total: number | string;
-        medicine?: { name: string; unit?: string | null } | null;
-    }>;
-    payment?: {
-        status: string;
-        amount?: number | string;
-        payment_method?: string | null;
-        paid_at?: string | null;
-        transaction_code?: string | null;
-        notes?: string | null;
-    } | null;
-};
-
-const selectedItems = new Map<number, { medicine: Medicine; quantity: number }>();
-
-const medicineListEl = document.getElementById('shop-medicine-list');
-const petSelectEl = document.getElementById('shop-pet-select') as HTMLSelectElement | null;
-const selectedItemsEl = document.getElementById('shop-selected-items');
-const cartTotalEl = document.getElementById('shop-cart-total');
-const submitButtonEl = document.getElementById('shop-submit-button') as HTMLButtonElement | null;
-const notesEl = document.getElementById('shop-order-notes') as HTMLTextAreaElement | null;
-const statusEl = document.getElementById('shop-status');
-const historyEl = document.getElementById('owner-order-history');
-const pendingCountEl = document.getElementById('owner-orders-pending');
-const confirmedCountEl = document.getElementById('owner-orders-confirmed');
-const paidCountEl = document.getElementById('owner-orders-paid');
-
-function formatCurrency(value: number | string): string {
-    return `${Number(value || 0).toLocaleString('vi-VN')} VND`;
+function formatCurrency(value) {
+    return `${Number(value || 0).toLocaleString('vi-VN')} đ`;
 }
 
-function setStatus(message: string, tone: 'success' | 'error'): void {
-    if (!statusEl) return;
-    statusEl.textContent = message;
-    statusEl.className = `mt-4 rounded-2xl px-4 py-3 text-sm ${tone === 'success' ? 'bg-[#ECFDF3] text-[#027A48]' : 'bg-[#FEF3F2] text-[#B42318]'}`;
-    statusEl.classList.remove('hidden');
+function getFallbackImage(medicine) {
+    const label = encodeURIComponent(medicine.name);
+    return `https://placehold.co/320x220/EEF2F6/4F46E5?text=${label}`;
 }
 
-function formatDateTime(input?: string | null): string {
-    if (!input) return 'N/A';
-    const date = new Date(input);
-    if (Number.isNaN(date.getTime())) return input;
-    return date.toLocaleString();
-}
-
-function getOrderTone(status: string): string {
-    if (status === 'paid') return 'bg-[#ECFDF3] text-[#027A48]';
-    if (status === 'confirmed') return 'bg-[#FFFBEB] text-[#B45309]';
-    if (status === 'cancelled') return 'bg-[#FEF2F2] text-[#B91C1C]';
-    return 'bg-[#EFF6FF] text-[#1D4ED8]';
-}
-
-function getMedicineWarning(medicine: Medicine): string {
-    if (medicine.stock_quantity <= 0) return 'Out of stock';
-    if (medicine.stock_quantity <= 5) return 'Low stock';
+function getMedicineWarning(medicine) {
+    if (medicine.stock_quantity <= 0) return 'Hết hàng';
+    if (medicine.stock_quantity <= 5) return 'Sắp hết';
     if (!medicine.expiration_date) return '';
 
     const today = new Date();
@@ -89,212 +125,120 @@ function getMedicineWarning(medicine: Medicine): string {
     const expiry = new Date(`${medicine.expiration_date}T00:00:00`);
     const diffDays = Math.ceil((expiry.getTime() - current.getTime()) / 86400000);
 
-    if (diffDays < 0) return 'Expired';
-    if (diffDays <= 30) return 'Expiring soon';
+    if (diffDays < 0) return 'Hết hạn';
+    if (diffDays <= 30) return 'Sắp hết hạn';
     return '';
 }
 
-function renderCart(): void {
-    if (!selectedItemsEl || !cartTotalEl) return;
-
-    const items = Array.from(selectedItems.values()).filter((item) => item.quantity > 0);
-    const total = items.reduce((sum, item) => sum + Number(item.medicine.price) * item.quantity, 0);
-    cartTotalEl.textContent = formatCurrency(total);
-
-    if (items.length === 0) {
-        selectedItemsEl.innerHTML = '<p>No items selected yet.</p>';
-        return;
-    }
-
-    selectedItemsEl.innerHTML = items.map((item) => `
-        <div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] px-4 py-3">
-            <div class="flex items-center justify-between gap-3">
-                <div>
-                    <p class="font-semibold text-[#333333]">${item.medicine.name}</p>
-                    <p class="text-xs text-[#4A4A4A]">${item.quantity} x ${formatCurrency(item.medicine.price)}</p>
-                </div>
-                <p class="font-semibold text-[#2A6496]">${formatCurrency(Number(item.medicine.price) * item.quantity)}</p>
-            </div>
-        </div>
-    `).join('');
+function getWarningClass(warning) {
+  switch (warning) {
+    case 'Hết hàng':
+    case 'Hết hạn':
+      return 'bg-rose-50 text-rose-600 border-rose-100';
+    case 'Sắp hết':
+    case 'Sắp hết hạn':
+      return 'bg-amber-50 text-amber-600 border-amber-100';
+    default:
+      return 'bg-slate-50 text-slate-500 border-slate-100';
+  }
 }
 
-function renderPets(pets: Pet[]): void {
-    if (!petSelectEl) return;
-    petSelectEl.innerHTML = `<option value="">Choose a pet</option>${pets.map((pet) => `<option value="${pet.id}">${pet.name}</option>`).join('')}`;
-}
+const categories = computed(() => {
+    return Array.from(
+        new Set(
+            medicines.value
+                .map((m) => m.category?.trim())
+                .filter(Boolean)
+        )
+    ).sort((a, b) => a.localeCompare(b));
+});
 
-function renderMedicines(medicines: Medicine[]): void {
-    if (!medicineListEl) return;
+const filteredMedicines = computed(() => {
+    let filtered = medicines.value;
 
-    if (medicines.length === 0) {
-        medicineListEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 text-sm text-[#666666]">No medicines available right now.</div>';
-        return;
+    if (selectedCategory.value !== 'all') {
+        filtered = filtered.filter(m => (m.category || '') === selectedCategory.value);
     }
 
-    medicineListEl.innerHTML = medicines.map((medicine) => `
-        <article class="rounded-3xl border border-[#DDE1E6] bg-[#F9FBFD] p-5">
-            <div class="flex items-start justify-between gap-3">
-                <div>
-                    <h3 class="text-base font-bold text-[#333333]">${medicine.name}</h3>
-                    <p class="mt-1 text-sm text-[#4A4A4A]">${medicine.description ?? 'Medicine available at the clinic.'}</p>
-                </div>
-                <div class="flex flex-col items-end gap-2">
-                    <span class="rounded-full bg-[#E8F3FF] px-3 py-1 text-xs font-semibold text-[#2A6496]">${medicine.stock_quantity} in stock</span>
-                    ${getMedicineWarning(medicine) ? `<span class="rounded-full bg-[#FFF7ED] px-3 py-1 text-[11px] font-semibold text-[#C2410C]">${getMedicineWarning(medicine)}</span>` : ''}
-                </div>
-            </div>
-            <div class="mt-4 flex items-center justify-between gap-3">
-                <div>
-                    <p class="text-lg font-extrabold text-[#2A6496]">${formatCurrency(medicine.price)}</p>
-                    <p class="text-xs text-[#4A4A4A]">${medicine.unit ? `Unit: ${medicine.unit}` : 'Unit available at reception'}</p>
-                </div>
-                <label class="text-sm text-[#333333]">
-                    Qty
-                    <input data-medicine-id="${medicine.id}" type="number" min="0" max="${medicine.stock_quantity}" value="0" class="ml-2 w-20 rounded-xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none transition focus:border-[#2A6496]">
-                </label>
-            </div>
-        </article>
-    `).join('');
-
-    medicineListEl.querySelectorAll('input[data-medicine-id]').forEach((input) => {
-        input.addEventListener('input', (event) => {
-            const target = event.target as HTMLInputElement;
-            const medicineId = Number(target.dataset.medicineId);
-            const medicine = medicines.find((item) => item.id === medicineId);
-            if (!medicine) return;
-
-            const quantity = Math.max(0, Math.min(Number(target.value || 0), medicine.stock_quantity));
-            target.value = String(quantity);
-            selectedItems.set(medicineId, { medicine, quantity });
-            renderCart();
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter(m => {
+            const haystack = [
+                m.name,
+                m.category || '',
+                m.description || '',
+                m.unit || ''
+            ].join(' ').toLowerCase();
+            return haystack.includes(query);
         });
+    }
+
+    return filtered;
+});
+
+function addToCart(medicine) {
+    let quantity = cartQuantities.value[medicine.id] || 1;
+    quantity = Math.max(1, Math.min(quantity, medicine.stock_quantity || 1));
+    cartQuantities.value[medicine.id] = quantity; // Update input field
+
+    const cart = window.cartStore;
+    if (!cart) {
+        notifyError('Cart store not available.');
+        return;
+    }
+
+    cart.addItem({
+        medicine: {
+            id: medicine.id,
+            name: medicine.name,
+            price: medicine.price,
+            unit: medicine.unit,
+        },
+        quantity,
     });
+
+    notifySuccess(`Đã thêm ${quantity} ${medicine.unit || 'hộp'} ${medicine.name} vào giỏ hàng.`);
 }
 
-function renderHistory(orders: Order[]): void {
-    if (!historyEl) return;
-
-    if (pendingCountEl) pendingCountEl.textContent = String(orders.filter((order) => order.status === 'pending').length);
-    if (confirmedCountEl) confirmedCountEl.textContent = String(orders.filter((order) => order.status === 'confirmed').length);
-    if (paidCountEl) paidCountEl.textContent = String(orders.filter((order) => order.status === 'paid').length);
-
-    if (orders.length === 0) {
-        historyEl.innerHTML = '<p>No medicine orders yet.</p>';
-        return;
-    }
-
-    historyEl.innerHTML = orders.map((order) => `
-        <article class="rounded-3xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 shadow-[0_12px_24px_rgba(0,0,0,0.03)]">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                    <p class="text-base font-bold text-[#333333]">Order #${order.id} for ${order.pet?.name ?? 'Unknown pet'}</p>
-                    <p class="mt-1 text-xs text-[#4A4A4A]">Created: ${formatDateTime(order.created_at)}</p>
-                </div>
-                <div class="flex flex-col items-end gap-2">
-                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getOrderTone(order.status)}">${order.status.toUpperCase()}</span>
-                    <p class="text-lg font-extrabold text-[#2A6496]">${formatCurrency(order.total_amount)}</p>
-                </div>
-            </div>
-
-            <div class="mt-4 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-                <div class="rounded-2xl border border-[#DDE1E6] bg-white px-4 py-4">
-                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Order Items</p>
-                    <div class="mt-3 space-y-2 text-sm text-[#4A4A4A]">
-                        ${(order.items ?? []).map((item) => `
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <p class="font-semibold text-[#333333]">${item.medicine?.name ?? 'Medicine'}</p>
-                                    <p class="text-xs text-[#64748B]">${item.quantity} x ${formatCurrency(item.unit_price)} ${item.medicine?.unit ? `/ ${item.medicine.unit}` : ''}</p>
-                                </div>
-                                <p class="font-semibold text-[#2A6496]">${formatCurrency(item.line_total)}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="rounded-2xl border border-[#DDE1E6] bg-white px-4 py-4">
-                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Payment History</p>
-                    <div class="mt-3 space-y-2 text-sm text-[#4A4A4A]">
-                        <p><span class="font-semibold text-[#333333]">Payment status:</span> ${order.payment?.status?.toUpperCase() ?? 'WAITING FOR RECEPTIONIST'}</p>
-                        <p><span class="font-semibold text-[#333333]">Payment method:</span> ${order.payment?.payment_method ?? 'N/A'}</p>
-                        <p><span class="font-semibold text-[#333333]">Amount:</span> ${order.payment?.amount ? formatCurrency(order.payment.amount) : formatCurrency(order.total_amount)}</p>
-                        <p><span class="font-semibold text-[#333333]">Confirmed at:</span> ${formatDateTime(order.confirmed_at)}</p>
-                        <p><span class="font-semibold text-[#333333]">Confirmed by:</span> ${order.confirmer?.name ?? 'N/A'}</p>
-                        <p><span class="font-semibold text-[#333333]">Paid at:</span> ${formatDateTime(order.payment?.paid_at ?? order.paid_at)}</p>
-                        <p><span class="font-semibold text-[#333333]">Transaction code:</span> ${order.payment?.transaction_code ?? 'N/A'}</p>
-                        <p><span class="font-semibold text-[#333333]">Order notes:</span> ${order.notes ?? 'N/A'}</p>
-                        <p><span class="font-semibold text-[#333333]">Payment notes:</span> ${order.payment?.notes ?? 'N/A'}</p>
-                    </div>
-                </div>
-            </div>
-        </article>
-    `).join('');
-}
-
-async function loadPage(): Promise<void> {
-    const [petsResponse, medicinesResponse, ordersResponse] = await Promise.all([
-        callApi<{ data: Pet[] }>('/api/owner/pets', 'GET'),
-        callApi<{ data: Medicine[] }>('/api/owner/medicines', 'GET'),
-        callApi<{ data: Order[] }>('/api/owner/medicine-orders', 'GET'),
-    ]);
-
-    renderPets(petsResponse.data);
-    renderMedicines(medicinesResponse.data);
-    renderHistory(ordersResponse.data);
-    renderCart();
-}
-
-async function submitOrder(): Promise<void> {
-    if (!petSelectEl?.value) {
-        setStatus('Please choose a pet before placing the order.', 'error');
-        return;
-    }
-
-    const items = Array.from(selectedItems.values())
-        .filter((item) => item.quantity > 0)
-        .map((item) => ({ medicine_id: item.medicine.id, quantity: item.quantity }));
-
-    if (items.length === 0) {
-        setStatus('Please choose at least one medicine.', 'error');
-        return;
-    }
-
-    submitButtonEl?.setAttribute('disabled', 'true');
-
+async function loadData() {
     try {
-        await callApi('/api/owner/medicine-orders', 'POST', {
-            pet_id: Number(petSelectEl.value),
-            notes: notesEl?.value || '',
-            items,
+        const response = await callApi('/api/owner/medicines', 'GET');
+        medicines.value = response.data || [];
+        
+        // Initialize cart quantities to 1
+        medicines.value.forEach(m => {
+            cartQuantities.value[m.id] = 1;
         });
-
-        selectedItems.clear();
-        if (notesEl) notesEl.value = '';
-        medicineListEl?.querySelectorAll('input[data-medicine-id]').forEach((input) => {
-            (input as HTMLInputElement).value = '0';
-        });
-
-        setStatus('Medicine order sent successfully. Receptionist can confirm it now.', 'success');
-        await loadPage();
     } catch (error) {
-        setStatus((error as Error).message || 'Failed to place order.', 'error');
+        handleApiError(error);
     } finally {
-        submitButtonEl?.removeAttribute('disabled');
+        isLoading.value = false;
     }
 }
+
+const onGlobalSearch = (e) => {
+    searchQuery.value = e.detail;
+};
 
 onMounted(() => {
-    loadPage().catch((error) => {
-        setStatus((error as Error).message || 'Failed to load shop data.', 'error');
-    });
+    loadData();
+    window.addEventListener('petcare-global-search', onGlobalSearch);
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+        searchQuery.value = globalSearchInput.value;
+    }
+});
 
-    submitButtonEl?.addEventListener('click', () => {
-        void submitOrder();
-    });
+onUnmounted(() => {
+    window.removeEventListener('petcare-global-search', onGlobalSearch);
 });
 </script>
 
-<template>
-    <div class="hidden"></div>
-</template>
+<style scoped>
+.medicine-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.medicine-card:hover {
+  transform: translateY(-2px);
+}
+</style>

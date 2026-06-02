@@ -21,6 +21,16 @@
     <div class="pc-ember pc-ember-b" aria-hidden="true"></div>
     <div class="pc-ember pc-ember-c" aria-hidden="true"></div>
 
+    <div id="page-loading-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/75 px-4 backdrop-blur-sm">
+        <div class="flex flex-col items-center gap-4 rounded-3xl border border-[#DDE1E6] bg-white px-6 py-5 text-center shadow-[0_16px_40px_rgba(0,0,0,0.08)]">
+            <div class="h-11 w-11 animate-spin rounded-full border-4 border-[#DDE1E6] border-t-[#2A6496]"></div>
+            <div>
+                <p class="text-sm font-semibold text-[#333333]">Đang tải...</p>
+                <p class="mt-1 text-xs text-[#666666]">Vui lòng chờ trong giây lát</p>
+            </div>
+        </div>
+    </div>
+
     @if ($showHeader)
         <x-layout.header />
     @endif
@@ -28,12 +38,43 @@
     <main class="relative z-10 w-full flex-1 px-4 py-6 md:px-8 md:py-8 {{ $showSidebar ? 'max-w-none' : 'mx-auto max-w-6xl' }}">
         @if ($showSidebar)
             <x-layout.sidebar />
-            <div class="min-w-0 flex-1 lg:pl-72">
+            <div class="min-w-0 flex-1 lg:pl-80">
                 {{ $slot }}
             </div>
         @else
             {{ $slot }}
         @endif
     </main>
+
+    <script>
+        (function () {
+            const overlay = document.getElementById('page-loading-overlay');
+
+            const hideOverlay = () => {
+                if (!overlay) return;
+
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                window.setTimeout(() => overlay.remove(), 180);
+            };
+
+            if (document.readyState === 'complete') {
+                hideOverlay();
+            } else {
+                window.addEventListener('load', hideOverlay, { once: true });
+            }
+
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    hideOverlay();
+                }
+            });
+        })();
+    </script>
+    
+    @auth
+        @if(in_array(auth()->user()->role->slug, ['owner', 'vet', 'receptionist']))
+            <div id="chat-widget-root"></div>
+        @endif
+    @endauth
 </body>
 </html>

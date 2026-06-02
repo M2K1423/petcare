@@ -102,7 +102,7 @@ class VetMedicalRecordFlowTest extends TestCase
             'record_date' => now()->toDateString(),
             'symptoms' => 'Dry cough for two days',
             'diagnosis' => 'Mild upper respiratory infection',
-            'treatment' => 'Supportive care and oral medication',
+            'prescription' => 'Supportive care and oral medication',
             'notes' => 'Return if symptoms worsen',
         ])->assertOk()
             ->assertJsonPath('data.status', 'completed')
@@ -118,6 +118,9 @@ class VetMedicalRecordFlowTest extends TestCase
             'id' => $myAppointment->id,
             'status' => 'completed',
         ]);
+
+        $this->getJson("/api/vet/appointments/{$myAppointment->id}/prescription/pdf")
+            ->assertOk();
     }
 
     public function test_non_vet_role_cannot_access_vet_medical_record_endpoints(): void
@@ -173,7 +176,7 @@ class VetMedicalRecordFlowTest extends TestCase
         $this->getJson("/api/vet/appointments/{$appointment->id}")->assertForbidden();
         $this->putJson("/api/vet/appointments/{$appointment->id}/medical-record", [
             'diagnosis' => 'Blocked',
-            'treatment' => 'Blocked',
+            'prescription' => 'Blocked',
         ])->assertForbidden();
     }
 }

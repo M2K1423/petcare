@@ -11,6 +11,13 @@ class Appointment extends Model
 {
     use HasFactory;
 
+    public const WORKFLOW_AWAITING_EXAM = 'awaiting_exam';
+    public const WORKFLOW_EXAMINING = 'examining';
+    public const WORKFLOW_AWAITING_LAB = 'awaiting_lab';
+    public const WORKFLOW_TREATING = 'treating';
+    public const WORKFLOW_COMPLETED = 'completed';
+    public const WORKFLOW_FOLLOW_UP = 'follow_up';
+
     protected $fillable = [
         'pet_id',
         'owner_id',
@@ -18,6 +25,11 @@ class Appointment extends Model
         'service_id',
         'appointment_at',
         'status',
+        'workflow_status',
+        'accepted_at',
+        'started_at',
+        'completed_at',
+        'follow_up_at',
         'queue_number',
         'is_emergency',
         'reason',
@@ -28,6 +40,11 @@ class Appointment extends Model
     {
         return [
             'appointment_at' => 'datetime',
+            'accepted_at' => 'datetime',
+            'started_at' => 'datetime',
+            'completed_at' => 'datetime',
+            'follow_up_at' => 'datetime',
+            'is_emergency' => 'boolean',
         ];
     }
 

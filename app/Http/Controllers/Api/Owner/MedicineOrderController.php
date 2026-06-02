@@ -51,7 +51,7 @@ class MedicineOrderController extends Controller
             ->values();
 
         $medicines = Medicine::query()
-            ->whereIn('id', $medicineIds)
+            ->whereKey($medicineIds)
             ->get()
             ->keyBy('id');
 
@@ -63,13 +63,13 @@ class MedicineOrderController extends Controller
 
             if (! $medicine) {
                 return response()->json([
-                    'message' => 'Medicine not found.',
+                    'message' => 'Không tìm thấy thuốc.',
                 ], 422);
             }
 
             if ($medicine->stock_quantity < $item['quantity']) {
                 return response()->json([
-                    'message' => "Insufficient stock for {$medicine->name}.",
+                    'message' => "Không đủ tồn kho cho {$medicine->name}.",
                 ], 422);
             }
 
@@ -102,8 +102,97 @@ class MedicineOrderController extends Controller
         });
 
         return response()->json([
-            'message' => 'Order created successfully and is waiting for receptionist confirmation.',
+            'message' => 'Đã tạo đơn và đang chờ lễ tân xác nhận.',
             'data' => $order,
         ], 201);
+    }
+
+    public function pay(Request $request, MedicineOrder $order): JsonResponse
+    {
+        $this->authorize('view', $order);
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:cash,credit_card,bank_transfer,vnpay,momo',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        // Allow owner to initiate payment even when order is still 'pending'.
+        if (! in_array($order->status, ['pending', 'confirmed', 'paid'], true)) {
+            return response()->json([
+                'message' => 'Đơn chưa ở trạng thái có thể thanh toán.',
+            ], 422);
+        }
+
+        $payment = $order->payment;
+
+        // If no payment record exists yet (owner paying immediately), create one.
+        if (! $payment) {
+            $payment = $order->payment()->create([
+                'owner_id' => $request->user()->id,
+                'amount' => $order->total_amount,
+                'payment_method' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : $validated['payment_method'],
+                'gateway' => $validated['payment_method'] === 'vnpay' ? 'vnpay' : null,
+                'status' => $validated['payment_method'] === 'vnpay' ? 'pending' : 'created',
+                'notes' => $validated['notes'] ?? 'Chủ nuôi khởi tạo thanh toán.',
+            ]);
+        }
+
+        if ($payment->status === 'paid') {
+            return response()->json([
+                'message' => 'Đơn này đã được thanh toán.',
+                'data' => $order->load([
+                    'pet:id,name',
+                    'items.medicine:id,name,unit',
+                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+                ]),
+            ]);
+        }
+
+        if ($validated['payment_method'] === 'vnpay') {
+            $payment->update([
+                'payment_method' => 'vnpay',
+                'gateway' => 'vnpay',
+                'status' => 'pending',
+                'paid_at' => null,
+                'notes' => $validated['notes'] ?? 'Người dùng khởi tạo thanh toán VNPay.',
+            ]);
+
+            $paymentUrl = app(\App\Services\VnpayService::class)->createPaymentUrl($payment->fresh(), $request);
+
+            return response()->json([
+                'message' => 'Đã tạo thanh toán VNPay thành công.',
+                'data' => $order->fresh([
+                    'pet:id,name',
+                    'items.medicine:id,name,unit',
+                    'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+                ]),
+                'payment_url' => $paymentUrl,
+            ]);
+        }
+
+        // non-VNPay immediate capture
+        $paidAt = now();
+
+        $payment->update([
+            'payment_method' => $validated['payment_method'],
+            'status' => 'paid',
+            'paid_at' => $paidAt,
+            'transaction_code' => $payment->transaction_code ?: 'MED-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            'notes' => $validated['notes'] ?? 'Payment completed by owner.',
+        ]);
+
+        $order->update([
+            'status' => 'paid',
+            'paid_at' => $paidAt,
+        ]);
+
+        return response()->json([
+            'message' => 'Đã thu tiền thành công.',
+            'data' => $order->fresh([
+                'pet:id,name',
+                'items.medicine:id,name,unit',
+                'payment:id,medicine_order_id,amount,status,payment_method,paid_at,transaction_code,gateway_transaction_no,notes',
+            ]),
+        ]);
     }
 }
