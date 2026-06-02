@@ -67,10 +67,20 @@ class ReceptionistDemoSeeder extends Seeder
             ],
         );
 
+        // Translate existing English records to Vietnamese if they exist to preserve relationships
+        Service::query()->where('name', 'General Consultation')->update([
+            'name' => 'Khám Tổng Quát',
+            'description' => 'Khám lâm sàng và kiểm tra sức khỏe định kỳ.',
+        ]);
+        Service::query()->where('name', 'CBC Blood Test')->update([
+            'name' => 'Xét Nghiệm Máu CBC',
+            'description' => 'Gói xét nghiệm công thức máu cơ bản.',
+        ]);
+
         $consultation = Service::query()->updateOrCreate(
-            ['name' => 'General Consultation'],
+            ['name' => 'Khám Tổng Quát'],
             [
-                'description' => 'Routine consultation and physical examination.',
+                'description' => 'Khám lâm sàng và kiểm tra sức khỏe định kỳ.',
                 'price' => 150000,
                 'duration_minutes' => 30,
                 'is_active' => true,
@@ -78,9 +88,9 @@ class ReceptionistDemoSeeder extends Seeder
         );
 
         $labTest = Service::query()->updateOrCreate(
-            ['name' => 'CBC Blood Test'],
+            ['name' => 'Xét Nghiệm Máu CBC'],
             [
-                'description' => 'Basic blood test package.',
+                'description' => 'Gói xét nghiệm công thức máu cơ bản.',
                 'price' => 250000,
                 'duration_minutes' => 20,
                 'is_active' => true,

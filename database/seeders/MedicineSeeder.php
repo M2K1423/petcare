@@ -20,7 +20,7 @@ class MedicineSeeder extends Seeder
                 'price' => 120000,
                 'expiration_date' => Carbon::today()->addMonths(10),
                 'description' => 'Broad-spectrum antibiotic for common bacterial infections.',
-                'image_url' => 'https://placehold.co/320x220/E8F3FF/2A6496?text=Amoxicillin',
+                'image_url' => '/images/medicines/amoxicillin.png',
             ],
             [
                 'name' => 'Deworming Syrup',
@@ -31,7 +31,7 @@ class MedicineSeeder extends Seeder
                 'price' => 95000,
                 'expiration_date' => Carbon::today()->addMonths(8),
                 'description' => 'Digestive parasite control for cats and dogs.',
-                'image_url' => 'https://placehold.co/320x220/FDF2E9/B45309?text=Deworming+Syrup',
+                'image_url' => '/images/medicines/deworming_syrup.png',
             ],
             [
                 'name' => 'Skin Care Spray',
@@ -42,7 +42,7 @@ class MedicineSeeder extends Seeder
                 'price' => 160000,
                 'expiration_date' => Carbon::today()->addMonths(12),
                 'description' => 'Topical spray for itch relief and skin support.',
-                'image_url' => 'https://placehold.co/320x220/ECFDF3/027A48?text=Skin+Care+Spray',
+                'image_url' => '/images/medicines/skin_care_spray.png',
             ],
             [
                 'name' => 'Eye Care Drops',
@@ -53,7 +53,7 @@ class MedicineSeeder extends Seeder
                 'price' => 88000,
                 'expiration_date' => Carbon::today()->addMonths(9),
                 'description' => 'Gentle drops to soothe irritation and keep pet eyes clean.',
-                'image_url' => 'https://placehold.co/320x220/EFF6FF/1D4ED8?text=Eye+Care+Drops',
+                'image_url' => '/images/medicines/eye_care_drops.png',
             ],
             [
                 'name' => 'Joint Support Tablets',
@@ -64,7 +64,7 @@ class MedicineSeeder extends Seeder
                 'price' => 210000,
                 'expiration_date' => Carbon::today()->addMonths(14),
                 'description' => 'Daily joint supplement for senior pets and active breeds.',
-                'image_url' => 'https://placehold.co/320x220/F5FAFF/5078A0?text=Joint+Support',
+                'image_url' => '/images/medicines/joint_support.png',
             ],
             [
                 'name' => 'Calming Chews',
@@ -75,7 +75,7 @@ class MedicineSeeder extends Seeder
                 'price' => 135000,
                 'expiration_date' => Carbon::today()->addMonths(7),
                 'description' => 'Soft chews for travel stress, storms, and separation anxiety.',
-                'image_url' => 'https://placehold.co/320x220/FFF7ED/C2410C?text=Calming+Chews',
+                'image_url' => '/images/medicines/calming_chews.png',
             ],
             [
                 'name' => 'Vitamin Paste',
@@ -86,7 +86,7 @@ class MedicineSeeder extends Seeder
                 'price' => 99000,
                 'expiration_date' => Carbon::today()->addMonths(11),
                 'description' => 'Energy and appetite support paste packed with essential vitamins.',
-                'image_url' => 'https://placehold.co/320x220/FEFCE8/A16207?text=Vitamin+Paste',
+                'image_url' => '/images/medicines/vitamin_paste.png',
             ],
             [
                 'name' => 'Ear Cleaning Solution',
@@ -97,7 +97,7 @@ class MedicineSeeder extends Seeder
                 'price' => 76000,
                 'expiration_date' => Carbon::today()->addMonths(13),
                 'description' => 'Routine ear cleanser that helps remove wax and odor safely.',
-                'image_url' => 'https://placehold.co/320x220/F0FDFA/0F766E?text=Ear+Cleaner',
+                'image_url' => '/images/medicines/ear_cleaner.png',
             ],
             [
                 'name' => 'Probiotic Powder',
@@ -108,7 +108,7 @@ class MedicineSeeder extends Seeder
                 'price' => 145000,
                 'expiration_date' => Carbon::today()->addMonths(10),
                 'description' => 'Supports digestion and recovery after stomach upset or antibiotics.',
-                'image_url' => 'https://placehold.co/320x220/F7FEE7/4D7C0F?text=Probiotic+Powder',
+                'image_url' => '/images/medicines/probiotic_powder.png',
             ],
             [
                 'name' => 'Flea & Tick Spot-On',
@@ -119,7 +119,7 @@ class MedicineSeeder extends Seeder
                 'price' => 185000,
                 'expiration_date' => Carbon::today()->addMonths(15),
                 'description' => 'Monthly topical protection against fleas, ticks, and mites.',
-                'image_url' => 'https://placehold.co/320x220/FEF2F2/B91C1C?text=Flea+%26+Tick',
+                'image_url' => '/images/medicines/flea_tick.png',
             ],
             [
                 'name' => 'Dental Fresh Gel',
@@ -130,7 +130,7 @@ class MedicineSeeder extends Seeder
                 'price' => 112000,
                 'expiration_date' => Carbon::today()->addMonths(6),
                 'description' => 'Freshens breath and helps reduce tartar buildup for dogs and cats.',
-                'image_url' => 'https://placehold.co/320x220/F5F3FF/6D28D9?text=Dental+Gel',
+                'image_url' => '/images/medicines/dental_gel.png',
             ],
             [
                 'name' => 'Wound Healing Cream',
@@ -141,7 +141,7 @@ class MedicineSeeder extends Seeder
                 'price' => 128000,
                 'expiration_date' => Carbon::today()->addMonths(5),
                 'description' => 'Protective cream to support minor wound healing and skin recovery.',
-                'image_url' => 'https://placehold.co/320x220/EEF2FF/4338CA?text=Wound+Cream',
+                'image_url' => '/images/medicines/wound_cream.png',
             ],
         ];
 

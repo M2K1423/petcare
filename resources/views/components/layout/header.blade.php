@@ -1,6 +1,6 @@
 <header class="sticky top-0 z-50 border-b border-[#DDE1E6] bg-gradient-to-r from-[#BFE0FF] via-[#FFFFFF] to-[#FFF7D6] shadow-[0_4px_16px_rgba(0,0,0,0.05)] lg:ml-80 lg:w-[calc(100%-20rem)]">
     <div class="flex w-full flex-wrap items-center gap-4 px-6 py-4 md:px-10">
-        <a href="{{ route('sanctum.auth') }}" class="group inline-flex items-center gap-3">
+        <a id="clinic-logo-link" href="{{ route('sanctum.auth') }}" class="group inline-flex items-center gap-3">
             <span class="grid h-9 w-9 place-content-center rounded-full border border-[#C1C4C9] bg-[#FFFFFF] text-xs font-bold text-[#999999]">PAW</span>
             <span>
                 <span class="block text-sm font-semibold tracking-[0.22em] text-[#333333]">PETWELL</span>
@@ -46,7 +46,7 @@
                 </div>
             </details>
 
-            <a href="{{ route('owner.cart') }}" id="cart-link" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496]">
+            <a href="{{ route('owner.cart') }}" id="cart-link" class="hidden h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496]">
                 <span class="sr-only">Giỏ hàng</span>
                 <div class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
@@ -158,8 +158,34 @@
                 roleProfileLinks.forEach((link) => {
                     link.setAttribute('href', href);
                 });
+
+                // Dynamically update clinic logo link based on user role
+                const logoHref = user?.role === 'admin'
+                    ? '/admin/dashboard'
+                    : user?.role === 'vet'
+                        ? '/vet/dashboard'
+                    : user?.role === 'receptionist'
+                        ? '/receptionist/dashboard'
+                        : '/owner/overview';
+
+                const logoLink = document.getElementById('clinic-logo-link');
+                if (logoLink) {
+                    logoLink.setAttribute('href', logoHref);
+                }
+
+                // Show/hide cart link based on role (only owner uses the cart)
+                const cartLink = document.getElementById('cart-link');
+                if (cartLink) {
+                    if (user?.role === 'owner') {
+                        cartLink.classList.remove('hidden');
+                        cartLink.classList.add('inline-flex');
+                    } else {
+                        cartLink.classList.add('hidden');
+                        cartLink.classList.remove('inline-flex');
+                    }
+                }
             } catch (error) {
-                console.error('Failed to bind profile link by role', error);
+                console.error('Failed to bind profile and logo links by role', error);
             }
         }
 

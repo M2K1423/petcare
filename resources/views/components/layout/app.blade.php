@@ -14,6 +14,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title }}</title>
     @vite($vite)
+    <script>
+        window.Laravel = {
+            broadcastConnection: "{{ config('broadcasting.default') }}",
+            pusherKey: "{{ config('broadcasting.connections.pusher.key') }}",
+            pusherCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}",
+            reverbKey: "{{ config('broadcasting.connections.reverb.key') }}",
+            reverbHost: "{{ config('broadcasting.connections.reverb.options.host') }}",
+            reverbPort: "{{ config('broadcasting.connections.reverb.options.port') }}",
+            reverbScheme: "{{ config('broadcasting.connections.reverb.options.scheme') }}"
+        };
+    </script>
 </head>
 <body data-page="{{ $page }}" class="pc-day relative flex min-h-screen flex-col overflow-x-hidden text-slate-900">
     <div class="pc-haze" aria-hidden="true"></div>

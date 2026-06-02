@@ -8,6 +8,15 @@ declare global {
         Echo?: Echo;
         Pusher?: typeof Pusher;
         __petcareRealtimeBooted?: boolean;
+        Laravel?: {
+            broadcastConnection?: string;
+            pusherKey?: string;
+            pusherCluster?: string;
+            reverbKey?: string;
+            reverbHost?: string;
+            reverbPort?: number;
+            reverbScheme?: string;
+        };
     }
 }
 
@@ -42,13 +51,15 @@ async function bootRealtime(): Promise<void> {
 
     window.Pusher = Pusher;
 
-    const connection = import.meta.env.VITE_BROADCAST_CONNECTION || 'reverb';
+    const connection = window.Laravel?.broadcastConnection || import.meta.env.VITE_BROADCAST_CONNECTION || 'reverb';
+    const pusherKey = window.Laravel?.pusherKey || import.meta.env.VITE_PUSHER_APP_KEY;
+    const pusherCluster = window.Laravel?.pusherCluster || import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1';
 
-    if (connection === 'pusher' || import.meta.env.VITE_PUSHER_APP_KEY) {
+    if (connection === 'pusher' || pusherKey) {
         window.Echo = new Echo({
             broadcaster: 'pusher',
-            key: import.meta.env.VITE_PUSHER_APP_KEY,
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1',
+            key: pusherKey,
+            cluster: pusherCluster,
             forceTLS: true,
             authEndpoint: '/api/broadcasting/auth',
             auth: {
@@ -59,13 +70,14 @@ async function bootRealtime(): Promise<void> {
             },
         });
     } else {
-        const host = import.meta.env.VITE_REVERB_HOST || window.location.hostname;
-        const port = Number(import.meta.env.VITE_REVERB_PORT || 8080);
-        const scheme = import.meta.env.VITE_REVERB_SCHEME || (window.location.protocol === 'https:' ? 'https' : 'http');
+        const host = window.Laravel?.reverbHost || import.meta.env.VITE_REVERB_HOST || window.location.hostname;
+        const port = Number(window.Laravel?.reverbPort || import.meta.env.VITE_REVERB_PORT || 8080);
+        const scheme = window.Laravel?.reverbScheme || import.meta.env.VITE_REVERB_SCHEME || (window.location.protocol === 'https:' ? 'https' : 'http');
+        const reverbKey = window.Laravel?.reverbKey || import.meta.env.VITE_REVERB_APP_KEY;
 
         window.Echo = new Echo({
             broadcaster: 'reverb',
-            key: import.meta.env.VITE_REVERB_APP_KEY,
+            key: reverbKey,
             wsHost: host,
             wsPort: port,
             wssPort: port,
