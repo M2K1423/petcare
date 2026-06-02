@@ -42,26 +42,44 @@ async function bootRealtime(): Promise<void> {
 
     window.Pusher = Pusher;
 
-    const host = import.meta.env.VITE_REVERB_HOST || window.location.hostname;
-    const port = Number(import.meta.env.VITE_REVERB_PORT || 8080);
-    const scheme = import.meta.env.VITE_REVERB_SCHEME || (window.location.protocol === 'https:' ? 'https' : 'http');
+    const connection = import.meta.env.VITE_BROADCAST_CONNECTION || 'reverb';
 
-    window.Echo = new Echo({
-        broadcaster: 'reverb',
-        key: import.meta.env.VITE_REVERB_APP_KEY,
-        wsHost: host,
-        wsPort: port,
-        wssPort: port,
-        forceTLS: scheme === 'https',
-        enabledTransports: ['ws', 'wss'],
-        authEndpoint: '/api/broadcasting/auth',
-        auth: {
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${token}`,
+    if (connection === 'pusher' || import.meta.env.VITE_PUSHER_APP_KEY) {
+        window.Echo = new Echo({
+            broadcaster: 'pusher',
+            key: import.meta.env.VITE_PUSHER_APP_KEY,
+            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1',
+            forceTLS: true,
+            authEndpoint: '/api/broadcasting/auth',
+            auth: {
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
             },
-        },
-    });
+        });
+    } else {
+        const host = import.meta.env.VITE_REVERB_HOST || window.location.hostname;
+        const port = Number(import.meta.env.VITE_REVERB_PORT || 8080);
+        const scheme = import.meta.env.VITE_REVERB_SCHEME || (window.location.protocol === 'https:' ? 'https' : 'http');
+
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            key: import.meta.env.VITE_REVERB_APP_KEY,
+            wsHost: host,
+            wsPort: port,
+            wssPort: port,
+            forceTLS: scheme === 'https',
+            enabledTransports: ['ws', 'wss'],
+            authEndpoint: '/api/broadcasting/auth',
+            auth: {
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        });
+    }
 
     window.Echo.private(`users.${userId}.notifications`).listen('.notification.created', (event: { notification?: unknown }) => {
         window.dispatchEvent(new CustomEvent('petcare-notification-received', {
