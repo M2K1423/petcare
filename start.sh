@@ -10,12 +10,11 @@ cp .env.example .env
 # Inject system environment variables into .env file
 php -r "
 \$keys = ['DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'APP_KEY', 'APP_URL', 'APP_ENV', 'APP_DEBUG'];
-\$content = file_get_contents('.env');
+\$content = file_get_contents('.env') . \"\n\";
 foreach (\$keys as \$k) {
     \$v = getenv(\$k);
     if (\$v !== false) {
-        // Handle values with special characters
-        \$content = preg_replace('/^' . \$k . '=.*/m', \$k . '=' . \$v, \$content);
+        \$content .= \$k . '=' . \$v . \"\n\";
     }
 }
 file_put_contents('.env', \$content);
