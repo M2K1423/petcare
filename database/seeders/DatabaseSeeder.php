@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SpeciesSeeder::class);
         $this->call(MedicineSeeder::class);
         $this->call(ReceptionistDemoSeeder::class);
+        $this->call(AiUserSeeder::class);
 
         $roles = Role::query()->pluck('id', 'slug');
 

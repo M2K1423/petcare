@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-6 right-6 z-[100] flex flex-col items-end pointer-events-none">
+  <div :class="['fixed bottom-6 right-6 z-[100] flex flex-col items-end pointer-events-none', ['admin', 'receptionist'].includes(currentUser?.role) ? 'hidden md:flex' : 'flex']">
     
     <!-- Chat Window -->
     <transition
@@ -20,7 +20,7 @@
             </button>
             <div>
               <h3 class="font-semibold text-base leading-tight">
-                {{ currentSession ? (isOwner ? currentSession.staff.name : currentSession.owner.name) : 'Hỗ trợ trực tuyến' }}
+                {{ currentSession ? chatPartner?.name : 'Hỗ trợ trực tuyến' }}
               </h3>
               <p class="text-xs text-blue-100 mt-0.5">
                 {{ currentSession ? 'Đang kết nối' : (isOwner ? 'Vui lòng chọn người hỗ trợ' : 'Danh sách tin nhắn') }}
@@ -58,39 +58,83 @@
           </div>
         </div>
 
-        <!-- Body: Staff Session List -->
-        <div v-if="isStaff && !currentSession" class="flex-1 overflow-y-auto bg-slate-50">
-          <div v-if="isLoadingSessions" class="flex justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D4ED8]"></div>
-          </div>
-          <div v-else-if="sessions.length === 0" class="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400">
-            <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-            <p>Không có tin nhắn nào</p>
-          </div>
-          <div v-else class="divide-y divide-slate-100">
-            <button 
-              v-for="session in sessions" 
-              :key="session.id"
-              @click="openSession(session)"
-              class="w-full bg-white p-4 flex items-center gap-3 hover:bg-blue-50 transition-colors text-left group"
-            >
-              <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
-                {{ session.owner.name.charAt(0) }}
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex justify-between items-baseline mb-0.5">
-                  <p class="font-medium text-slate-900 truncate">{{ session.owner.name }}</p>
-                  <span class="text-[10px] text-slate-400 whitespace-nowrap ml-2" v-if="session.latest_message">
-                    {{ formatTime(session.latest_message.created_at) }}
-                  </span>
-                </div>
-                <p class="text-sm text-slate-500 truncate" :class="{'text-slate-900 font-medium': hasUnread(session)}">
-                  {{ session.latest_message ? session.latest_message.body : 'Bắt đầu trò chuyện' }}
-                </p>
-              </div>
-              <div v-if="hasUnread(session)" class="w-2.5 h-2.5 bg-red-500 rounded-full shrink-0"></div>
+        <!-- Body: Staff Session List / Owner Selection -->
+        <div v-if="isStaff && !currentSession" class="flex-1 overflow-y-auto bg-slate-50 flex flex-col">
+          <!-- Admin/Receptionist header controls for selecting owners or AI -->
+          <div v-if="['admin', 'receptionist'].includes(currentUser?.role) && !showOwnerSelection" class="p-3 bg-white border-b border-slate-100 flex justify-between items-center shrink-0 pointer-events-auto">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Cuộc trò chuyện</span>
+            <button @click="openOwnerSelection" class="text-xs font-bold text-[#1D4ED8] hover:text-blue-700 flex items-center gap-1">
+              <span>➕ Nhắn tin mới</span>
             </button>
           </div>
+
+          <div v-if="['admin', 'receptionist'].includes(currentUser?.role) && showOwnerSelection" class="p-3 bg-white border-b border-slate-100 flex justify-between items-center shrink-0 pointer-events-auto">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Chọn người nhận</span>
+            <button @click="showOwnerSelection = false" class="text-xs font-bold text-slate-500 hover:text-slate-700">
+              <span>Quay lại</span>
+            </button>
+          </div>
+
+          <!-- If showOwnerSelection is true (for admin or receptionist) -->
+          <div v-if="['admin', 'receptionist'].includes(currentUser?.role) && showOwnerSelection" class="flex-1 overflow-y-auto p-4">
+            <div v-if="isLoadingStaff" class="flex justify-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D4ED8]"></div>
+            </div>
+            <div v-else class="space-y-2 pointer-events-auto">
+              <button 
+                v-for="target in staffList" 
+                :key="target.id"
+                @click="startSession(target.id)"
+                class="w-full bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-3 hover:border-[#1D4ED8] hover:shadow-md transition-all text-left group"
+              >
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
+                  <span v-if="target.role.slug === 'ai_assistant'" class="text-xl">🤖</span>
+                  <span v-else>{{ target.name.charAt(0) }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-slate-900 truncate group-hover:text-[#1D4ED8] transition-colors">{{ target.name }}</p>
+                  <p class="text-xs text-slate-500">{{ target.role.name }}</p>
+                </div>
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-[#1D4ED8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Regular session list -->
+          <template v-else>
+            <div v-if="isLoadingSessions" class="flex justify-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D4ED8]"></div>
+            </div>
+            <div v-else-if="sessions.length === 0" class="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400">
+              <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+              <p>Không có tin nhắn nào</p>
+            </div>
+            <div v-else class="divide-y divide-slate-100 overflow-y-auto pointer-events-auto">
+              <button 
+                v-for="session in sessions" 
+                :key="session.id"
+                @click="openSession(session)"
+                class="w-full bg-white p-4 flex items-center gap-3 hover:bg-blue-50 transition-colors text-left group"
+              >
+                <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
+                  <span v-if="getSessionPartner(session)?.role?.slug === 'ai_assistant'" class="text-2xl">🤖</span>
+                  <span v-else>{{ getSessionPartner(session)?.name.charAt(0) }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-baseline mb-0.5">
+                    <p class="font-medium text-slate-900 truncate">{{ getSessionPartner(session)?.name }}</p>
+                    <span class="text-[10px] text-slate-400 whitespace-nowrap ml-2" v-if="session.latest_message">
+                      {{ formatTime(session.latest_message.created_at) }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-slate-500 truncate" :class="{'text-slate-900 font-medium': hasUnread(session)}">
+                    {{ session.latest_message ? session.latest_message.body : 'Bắt đầu trò chuyện' }}
+                  </p>
+                </div>
+                <div v-if="hasUnread(session)" class="w-2.5 h-2.5 bg-red-500 rounded-full shrink-0"></div>
+              </button>
+            </div>
+          </template>
         </div>
 
         <!-- Body: Chat Interface -->
@@ -186,6 +230,7 @@ const isLoadingStaff = ref(false);
 const staffList = ref([]);
 const sessions = ref([]);
 const isLoadingSessions = ref(false);
+const showOwnerSelection = ref(false);
 
 const currentSession = ref(null);
 const messages = ref([]);
@@ -200,7 +245,7 @@ const unreadMap = ref(new Map());
 
 // Computed
 const isOwner = computed(() => currentUser.value?.role === 'owner');
-const isStaff = computed(() => ['vet', 'receptionist'].includes(currentUser.value?.role));
+const isStaff = computed(() => ['vet', 'receptionist', 'admin'].includes(currentUser.value?.role));
 const totalUnread = computed(() => {
   let count = 0;
   for (let val of unreadMap.value.values()) {
@@ -208,6 +253,18 @@ const totalUnread = computed(() => {
   }
   return count;
 });
+
+const chatPartner = computed(() => {
+  if (!currentSession.value || !currentUser.value) return null;
+  return currentSession.value.owner_id === currentUser.value.id
+    ? currentSession.value.staff
+    : currentSession.value.owner;
+});
+
+const getSessionPartner = (session) => {
+  if (!session || !currentUser.value) return null;
+  return session.owner_id === currentUser.value.id ? session.staff : session.owner;
+};
 
 // Methods
 const toggleOpen = () => {
@@ -279,13 +336,35 @@ const checkActiveSession = async () => {
   }
 };
 
-const startSession = async (staffId) => {
+const startSession = async (targetId) => {
   try {
-    const res = await http.post('/api/chat/sessions', { staff_id: staffId });
+    const targetUser = staffList.value.find(u => u.id === targetId);
+    const isTargetAi = targetUser?.role?.slug === 'ai_assistant';
+    
+    const payload = {};
+    if (['admin', 'receptionist'].includes(currentUser.value?.role)) {
+      if (isTargetAi) {
+        payload.staff_id = targetId;
+      } else {
+        payload.owner_id = targetId;
+      }
+    } else if (isOwner.value) {
+      payload.staff_id = targetId;
+    }
+
+    const res = await http.post('/api/chat/sessions', payload);
+    if (['admin', 'receptionist'].includes(currentUser.value?.role)) {
+      showOwnerSelection.value = false;
+    }
     openSession(res.data);
   } catch (err) {
     notifyError(err, 'Lỗi khởi tạo cuộc trò chuyện');
   }
+};
+
+const openOwnerSelection = () => {
+  showOwnerSelection.value = true;
+  fetchStaffList();
 };
 
 const openSession = async (session) => {
@@ -424,7 +503,7 @@ const handleSessionUpdatedEvent = (e) => {
 onMounted(async () => {
   await fetchCurrentUser();
   
-  if (currentUser.value && ['owner', 'vet', 'receptionist'].includes(currentUser.value.role)) {
+  if (currentUser.value && ['owner', 'vet', 'receptionist', 'admin'].includes(currentUser.value.role)) {
     window.addEventListener('petcare-chat-session-updated', handleSessionUpdatedEvent);
     
     // Fetch initial state for unread badge without opening

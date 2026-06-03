@@ -129,7 +129,7 @@ const fetchInventory = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/inventory', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);

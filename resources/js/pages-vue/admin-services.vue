@@ -83,6 +83,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useNotification } from '../composables/useNotification';
+import { callApi } from '../auth/http';
 
 const { notifySuccess, notifyError, handleApiError } = useNotification();
 
@@ -117,14 +118,7 @@ const isLoading = ref(true);
 const fetchServices = async () => {
   isLoading.value = true;
   try {
-    const res = await fetch('/api/admin/services', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    if (!res.ok) {
-        await handleApiError(null, res);
-        return;
-    }
-    const data = await res.json();
+    const data = await callApi('/api/admin/services', 'GET');
     services.value = data.data;
   } catch (err) {
     handleApiError(err);
@@ -153,24 +147,12 @@ const saveService = async () => {
     const url = editingId.value ? `/api/admin/services/${editingId.value}` : '/api/admin/services';
     const method = editingId.value ? 'PUT' : 'POST';
 
-    const res = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify(form.value)
-    });
-
-    if (res.ok) {
-      showForm.value = false;
-      editingId.value = null;
-      form.value = { name: '', description: '', price: 0, duration_minutes: 30, is_active: true };
-      notifySuccess(method === 'PUT' ? 'Cập nhật dịch vụ thành công!' : 'Đã thêm dịch vụ mới!');
-      fetchServices();
-    } else {
-        errors.value = await handleApiError(null, res);
-    }
+    const data = await callApi(url, method, form.value);
+    showForm.value = false;
+    editingId.value = null;
+    form.value = { name: '', description: '', price: 0, duration_minutes: 30, is_active: true };
+    notifySuccess(method === 'PUT' ? 'Cập nhật dịch vụ thành công!' : 'Đã thêm dịch vụ mới!');
+    fetchServices();
   } catch (err) {
     errors.value = await handleApiError(err);
   }
@@ -178,16 +160,9 @@ const saveService = async () => {
 
 const toggleService = async (service) => {
   try {
-    const res = await fetch(`/api/admin/services/${service.id}/toggle`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    if (res.ok) {
-        notifySuccess(service.is_active ? 'Đã tắt dịch vụ!' : 'Đã bật dịch vụ!');
-        fetchServices();
-    } else {
-        await handleApiError(null, res);
-    }
+    await callApi(`/api/admin/services/${service.id}/toggle`, 'POST');
+    notifySuccess(service.is_active ? 'Đã tắt dịch vụ!' : 'Đã bật dịch vụ!');
+    fetchServices();
   } catch (err) {
     handleApiError(err);
   }
@@ -196,16 +171,9 @@ const toggleService = async (service) => {
 const deleteService = async (service) => {
   if (confirm(`Xác nhận xóa dịch vụ ${service.name}?`)) {
     try {
-      const res = await fetch(`/api/admin/services/${service.id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (res.ok) {
-          notifySuccess('Xóa dịch vụ thành công!');
-          fetchServices();
-      } else {
-          await handleApiError(null, res);
-      }
+      await callApi(`/api/admin/services/${service.id}`, 'DELETE');
+      notifySuccess('Xóa dịch vụ thành công!');
+      fetchServices();
     } catch (err) {
       handleApiError(err);
     }

@@ -1,8 +1,19 @@
-<aside class="fixed inset-y-0 left-0 z-30 hidden h-screen w-80 flex-col border-r border-[#1E2C43] bg-gradient-to-b from-[#0F1E35] to-[#142845] text-[#C8D4E8] shadow-[0_20px_40px_rgba(0,0,0,0.28)] lg:flex">
+<!-- Mobile Sidebar Backdrop -->
+<div id="sidebar-backdrop" class="fixed inset-0 z-[55] bg-slate-900/60 backdrop-blur-sm hidden lg:hidden"></div>
+
+<aside id="main-sidebar" class="fixed inset-y-0 left-0 z-[60] flex h-screen w-80 -translate-x-full flex-col border-r border-[#1E2C43] bg-gradient-to-b from-[#0F1E35] to-[#142845] text-[#C8D4E8] shadow-[0_20px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 ease-in-out lg:translate-x-0">
     <div class="flex-1 overflow-y-auto px-4 py-6">
-    <div class="border border-[#2A3D5E] bg-[#122742]/70 px-3 py-2">
-        <p class="text-[11px] uppercase tracking-[0.18em] text-[#7FA6D9]">Quản lý</p>
-        <p class="mt-1 text-sm font-semibold text-[#EAF2FF]">Bảng điều khiển PetCare</p>
+    <div class="flex items-center justify-between border border-[#2A3D5E] bg-[#122742]/70 px-3 py-2">
+        <div>
+            <p class="text-[11px] uppercase tracking-[0.18em] text-[#7FA6D9]">Quản lý</p>
+            <p class="mt-1 text-sm font-semibold text-[#EAF2FF]">Bảng điều khiển PetCare</p>
+        </div>
+        <!-- Close button for mobile -->
+        <button id="mobile-sidebar-close" class="rounded-lg p-1.5 text-[#88A8D8] hover:bg-[#1E3657] hover:text-white transition lg:hidden" aria-label="Đóng sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-5 w-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
 
     <nav class="mt-4 space-y-1 text-sm" id="sidebar-nav-container">
@@ -310,7 +321,7 @@
             <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Quản trị</div>
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📊</span>
-                <span>Dashboard</span>
+                <span>Bảng điều khiển</span>
             </a>
 
             <div class="mt-2 border-t border-[#163045] pt-2"></div>
@@ -385,7 +396,7 @@
             </div>
             <div class="flex flex-col">
                 <p class="text-sm font-semibold text-white truncate max-w-[150px]" id="sidebar-user-name">Đang tải...</p>
-                <p class="text-xs text-[#88A8D8] uppercase tracking-wide mt-0.5" id="sidebar-user-role">Role</p>
+                <p class="text-xs text-[#88A8D8] uppercase tracking-wide mt-0.5" id="sidebar-user-role">Chức vụ</p>
             </div>
         </div>
         <button onclick="handleLogout()" class="rounded-full p-2 text-[#88A8D8] hover:bg-[#1E3657] hover:text-white transition" title="Đăng xuất">
@@ -396,6 +407,38 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
+        // Mobile sidebar toggle logic
+        const toggleBtn = document.getElementById('mobile-sidebar-toggle');
+        const closeBtn = document.getElementById('mobile-sidebar-close');
+        const sidebar = document.getElementById('main-sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+
+        function openSidebar() {
+            if (sidebar) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+            }
+            if (backdrop) {
+                backdrop.classList.remove('hidden');
+            }
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeSidebar() {
+            if (sidebar) {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+            }
+            if (backdrop) {
+                backdrop.classList.add('hidden');
+            }
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
         const token = localStorage.getItem('petcare_sanctum_token');
         if (token) {
             try {

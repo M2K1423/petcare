@@ -139,7 +139,7 @@ const fetchAppointments = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/appointments', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -162,7 +162,7 @@ const assignDoctor = async (apt) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
         },
         body: JSON.stringify({ doctor_id: parseInt(doctorId) })
       });
@@ -186,7 +186,7 @@ const reschedule = async (apt) => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
         },
         body: JSON.stringify({ new_appointment_time: newTime })
       });
@@ -210,7 +210,7 @@ const cancelAppointment = async (apt) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
         },
         body: JSON.stringify({ reason })
       });

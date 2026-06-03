@@ -102,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/owner/appointments', [AppointmentController::class, 'store'])->name('api.owner.appointments.store');
         Route::delete('/owner/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('api.owner.appointments.destroy');
         Route::get('/owner/medicines', [MedicineController::class, 'index'])->name('api.owner.medicines.index');
+        Route::get('/owner/medicines/{medicine}', [MedicineController::class, 'show'])->name('api.owner.medicines.show');
         Route::get('/owner/medicine-orders', [OwnerMedicineOrderController::class, 'index'])->name('api.owner.medicine-orders.index');
         Route::post('/owner/medicine-orders', [OwnerMedicineOrderController::class, 'store'])->name('api.owner.medicine-orders.store');
         Route::patch('/owner/medicine-orders/{order}/pay', [OwnerMedicineOrderController::class, 'pay'])->name('api.owner.medicine-orders.pay');

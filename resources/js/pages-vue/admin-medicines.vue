@@ -55,7 +55,7 @@ function getToday(): Date {
 function getExpiryMeta(expirationDate?: string | null): { label: string; tone: string; sort: number } {
     if (!expirationDate) {
         return {
-            label: 'No expiry date',
+            label: 'Không có hạn dùng',
             tone: 'bg-slate-100 text-slate-600',
             sort: 3,
         };
@@ -67,7 +67,7 @@ function getExpiryMeta(expirationDate?: string | null): { label: string; tone: s
 
     if (diffDays < 0) {
         return {
-            label: 'Expired',
+            label: 'Đã hết hạn',
             tone: 'bg-[#FEF2F2] text-[#B91C1C]',
             sort: 0,
         };
@@ -75,14 +75,14 @@ function getExpiryMeta(expirationDate?: string | null): { label: string; tone: s
 
     if (diffDays <= 30) {
         return {
-            label: `Expiring in ${diffDays} day${diffDays === 1 ? '' : 's'}`,
+            label: `Sắp hết hạn trong ${diffDays} ngày`,
             tone: 'bg-[#FFFBEB] text-[#B45309]',
             sort: 1,
         };
     }
 
     return {
-        label: 'Expiry OK',
+        label: 'Còn hạn dùng',
         tone: 'bg-[#ECFDF3] text-[#027A48]',
         sort: 2,
     };
@@ -91,20 +91,20 @@ function getExpiryMeta(expirationDate?: string | null): { label: string; tone: s
 function getStockMeta(stockQuantity: number): { label: string; tone: string } {
     if (stockQuantity <= 0) {
         return {
-            label: 'Out of stock',
+            label: 'Hết hàng',
             tone: 'bg-[#FEF2F2] text-[#B91C1C]',
         };
     }
 
     if (stockQuantity <= 5) {
         return {
-            label: 'Low stock',
+            label: 'Sắp hết hàng',
             tone: 'bg-[#FFF7ED] text-[#C2410C]',
         };
     }
 
     return {
-        label: 'In stock',
+        label: 'Còn hàng',
         tone: 'bg-[#ECFDF3] text-[#027A48]',
     };
 }
@@ -129,7 +129,7 @@ function clearStatus(): void {
 function resetForm(): void {
     if (formEl) formEl.reset();
     if (idInput) idInput.value = '';
-    if (formTitleEl) formTitleEl.textContent = 'Add Medicine';
+    if (formTitleEl) formTitleEl.textContent = 'Thêm thuốc';
     clearStatus();
 }
 
@@ -144,7 +144,7 @@ function fillForm(medicine: Medicine): void {
     if (stockInput) stockInput.value = String(medicine.stock_quantity ?? 0);
     if (expirationInput) expirationInput.value = medicine.expiration_date ?? '';
     if (descriptionInput) descriptionInput.value = medicine.description ?? '';
-    if (formTitleEl) formTitleEl.textContent = `Edit Medicine #${medicine.id}`;
+    if (formTitleEl) formTitleEl.textContent = `Cập nhật thuốc #${medicine.id}`;
 }
 
 function updateSummary(medicines: Medicine[]): void {
@@ -153,7 +153,7 @@ function updateSummary(medicines: Medicine[]): void {
     const lowStock = medicines.filter((medicine) => medicine.stock_quantity <= 5).length;
     const expired = medicines.filter((medicine) => getExpiryMeta(medicine.expiration_date).sort === 0).length;
     const expiringSoon = medicines.filter((medicine) => getExpiryMeta(medicine.expiration_date).sort === 1).length;
-    summaryEl.textContent = `${totalProducts} products, ${lowStock} low stock, ${expired} expired`;
+    summaryEl.textContent = `${totalProducts} sản phẩm, ${lowStock} sắp hết hàng, ${expired} hết hạn`;
     if (lowStockEl) lowStockEl.textContent = String(lowStock);
     if (expiredEl) expiredEl.textContent = String(expired);
     if (expiringEl) expiringEl.textContent = String(expiringSoon);
@@ -163,7 +163,7 @@ function renderTable(medicines: Medicine[]): void {
     if (!tableEl) return;
 
     if (medicines.length === 0) {
-        tableEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 text-sm text-[#666666]">No medicines found.</div>';
+        tableEl.innerHTML = '<div class="rounded-2xl border border-[#DDE1E6] bg-[#F9FBFD] p-5 text-sm text-[#666666]">Không tìm thấy thuốc.</div>';
         return;
     }
 
@@ -172,11 +172,11 @@ function renderTable(medicines: Medicine[]): void {
             <table class="min-w-full divide-y divide-[#E5E7EB] bg-white text-sm">
                 <thead class="bg-[#F8FAFC] text-left text-xs uppercase tracking-[0.14em] text-[#64748B]">
                     <tr>
-                        <th class="px-4 py-3">Medicine</th>
-                        <th class="px-4 py-3">Price</th>
-                        <th class="px-4 py-3">Stock</th>
-                        <th class="px-4 py-3">Expiry</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th class="px-4 py-3">Thuốc / Sản phẩm</th>
+                        <th class="px-4 py-3">Giá bán</th>
+                        <th class="px-4 py-3">Tồn kho</th>
+                        <th class="px-4 py-3">Hạn sử dụng</th>
+                        <th class="px-4 py-3 text-right">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#E5E7EB]">
@@ -188,8 +188,8 @@ function renderTable(medicines: Medicine[]): void {
                         <tr>
                             <td class="px-4 py-4 align-top">
                                 <p class="font-semibold text-[#333333]">${medicine.name}</p>
-                                <p class="mt-1 text-xs text-[#64748B]">${medicine.category ? `Category: ${medicine.category} | ` : ''}SKU: ${medicine.sku || 'N/A'}${medicine.unit ? ` | Unit: ${medicine.unit}` : ''}</p>
-                                <p class="mt-1 text-xs text-[#4A4A4A]">${medicine.description || 'No description.'}</p>
+                                <p class="mt-1 text-xs text-[#64748B]">${medicine.category ? `Danh mục: ${medicine.category} | ` : ''}SKU: ${medicine.sku || 'Chưa cập nhật'}${medicine.unit ? ` | Đơn vị: ${medicine.unit}` : ''}</p>
+                                <p class="mt-1 text-xs text-[#4A4A4A]">${medicine.description || 'Không có mô tả.'}</p>
                                 <div class="mt-2 flex flex-wrap gap-2">
                                     <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${stockMeta.tone}">${stockMeta.label}</span>
                                     <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${expiryMeta.tone}">${expiryMeta.label}</span>
@@ -199,11 +199,11 @@ function renderTable(medicines: Medicine[]): void {
                             <td class="px-4 py-4">
                                 <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${stockMeta.tone}">${medicine.stock_quantity}</span>
                             </td>
-                            <td class="px-4 py-4 text-[#4A4A4A]">${medicine.expiration_date || 'N/A'}</td>
+                            <td class="px-4 py-4 text-[#4A4A4A]">${medicine.expiration_date || 'Chưa cập nhật'}</td>
                             <td class="px-4 py-4">
                                 <div class="flex justify-end gap-2">
-                                    <button type="button" data-action="edit" data-id="${medicine.id}" class="rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-2 text-xs font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">Edit</button>
-                                    <button type="button" data-action="delete" data-id="${medicine.id}" class="rounded-xl border border-[#F5C2C7] bg-[#FEF3F2] px-3 py-2 text-xs font-semibold text-[#B42318] transition hover:bg-[#FDECEC]">Delete</button>
+                                    <button type="button" data-action="edit" data-id="${medicine.id}" class="rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-2 text-xs font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">Sửa</button>
+                                    <button type="button" data-action="delete" data-id="${medicine.id}" class="rounded-xl border border-[#F5C2C7] bg-[#FEF3F2] px-3 py-2 text-xs font-semibold text-[#B42318] transition hover:bg-[#FDECEC]">Xóa</button>
                                 </div>
                             </td>
                         </tr>
@@ -226,15 +226,15 @@ function renderTable(medicines: Medicine[]): void {
         button.addEventListener('click', async () => {
             const id = Number((button as HTMLButtonElement).dataset.id);
             const medicine = medicinesCache.find((item) => item.id === id);
-            if (!medicine || !window.confirm(`Delete ${medicine.name}?`)) return;
+            if (!medicine || !window.confirm(`Bạn có chắc chắn muốn xóa thuốc ${medicine.name}?`)) return;
 
             try {
                 await callApi(`/api/admin/medicines/${id}`, 'DELETE');
-                notifySuccess('Medicine deleted successfully.');
+                notifySuccess('Đã xóa thuốc thành công.');
                 await loadMedicines();
                 if (idInput?.value === String(id)) resetForm();
             } catch (error) {
-                notifyError((error as Error).message || 'Failed to delete medicine.');
+                notifyError((error as Error).message || 'Xóa thuốc thất bại.');
             }
         });
     });
@@ -294,7 +294,7 @@ function applyFilters(): void {
     renderTable(filtered);
 
     if (filterResultEl) {
-        filterResultEl.textContent = `Showing ${filtered.length} of ${medicinesCache.length} medicines.`;
+        filterResultEl.textContent = `Hiển thị ${filtered.length} trên ${medicinesCache.length} sản phẩm.`;
     }
 }
 
@@ -327,16 +327,16 @@ async function saveMedicine(): Promise<void> {
     try {
         if (editingId) {
             await callApi(`/api/admin/medicines/${editingId}`, 'PUT', payload);
-            notifySuccess('Medicine updated successfully.');
+            notifySuccess('Cập nhật thuốc thành công.');
         } else {
             await callApi('/api/admin/medicines', 'POST', payload);
-            notifySuccess('Medicine created successfully.');
+            notifySuccess('Thêm thuốc thành công.');
         }
 
         resetForm();
         await loadMedicines();
     } catch (error) {
-        notifyError((error as Error).message || 'Failed to save medicine.');
+        notifyError((error as Error).message || 'Lưu thuốc thất bại.');
     } finally {
         submitButtonEl?.removeAttribute('disabled');
     }
@@ -344,7 +344,7 @@ async function saveMedicine(): Promise<void> {
 
 onMounted(() => {
     loadMedicines().catch((error) => {
-        notifyError((error as Error).message || 'Failed to load medicines.');
+        notifyError((error as Error).message || 'Tải danh sách thuốc thất bại.');
     });
 
     formEl?.addEventListener('submit', (event) => {

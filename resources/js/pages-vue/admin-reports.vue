@@ -180,7 +180,7 @@ const generateReport = async () => {
     }
 
     const res = await fetch(endpoint, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     
     if (!res.ok) {

@@ -19,4 +19,11 @@ class MedicineController extends Controller
             'data' => $medicines,
         ]);
     }
+
+    public function show(Medicine $medicine): JsonResponse
+    {
+        return response()->json([
+            'data' => $medicine,
+        ]);
+    }
 }

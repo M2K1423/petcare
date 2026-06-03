@@ -169,7 +169,7 @@ const fetchUsers = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/users', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -187,7 +187,7 @@ const fetchUsers = async () => {
 const fetchRoles = async () => {
   try {
     const res = await fetch('/api/admin/users?role=admin', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     // Fetch roles from another endpoint or hardcode them
     roles.value = [
@@ -230,7 +230,7 @@ const saveUser = async () => {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
       },
       body: JSON.stringify(form.value)
     });
@@ -252,7 +252,7 @@ const toggleLock = async (user) => {
     const endpoint = user.is_locked ? 'unlock' : 'lock';
     const res = await fetch(`/api/admin/users/${user.id}/${endpoint}`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (res.ok) {
         notifySuccess(user.is_locked ? 'Đã mở khóa tài khoản!' : 'Đã khóa tài khoản!');
@@ -273,7 +273,7 @@ const resetPassword = async (user) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
         },
         body: JSON.stringify({ password: newPassword })
       });
@@ -293,7 +293,7 @@ const deleteUser = async (user) => {
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
       });
       if (res.ok) {
           notifySuccess('Xóa người dùng thành công!');

@@ -230,7 +230,7 @@ const fetchLogs = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/logs', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -256,7 +256,7 @@ const clearOldLogs = async () => {
     try {
       const res = await fetch(`/api/admin/logs/clear-old?days=${days}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
       });
       if (res.ok) {
           notifySuccess('Xóa nhật ký cũ thành công!');

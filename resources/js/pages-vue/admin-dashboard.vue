@@ -109,7 +109,7 @@ const fetchDashboard = async (showToast = false) => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/dashboard', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);

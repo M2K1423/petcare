@@ -21,6 +21,12 @@ Route::middleware(['auth', 'role:owner'])->group(function (): void {
     Route::view('/owner/cart', 'owner.cart')->name('owner.cart');
     Route::view('/owner/orders', 'owner.orders')->name('owner.orders');
     
+    Route::get('/owner/shop/medicines/{medicine}', function (int $medicine) {
+        return view('owner.medicine-detail', [
+            'medicineId' => $medicine,
+        ]);
+    })->whereNumber('medicine')->name('owner.shop.medicines.detail');
+    
     Route::get('/owner/pets/{pet}/edit', function (int $pet) {
         return view('owner.pet-edit', [
             'petId' => $pet,

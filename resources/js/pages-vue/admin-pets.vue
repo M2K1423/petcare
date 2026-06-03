@@ -116,7 +116,7 @@ const fetchPets = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/pets', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);

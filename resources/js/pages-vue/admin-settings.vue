@@ -172,7 +172,7 @@ const fetchSettings = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/settings', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -193,7 +193,7 @@ const saveSettings = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
       },
       body: JSON.stringify(settings.value)
     });

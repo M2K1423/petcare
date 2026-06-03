@@ -1,5 +1,12 @@
 <header class="sticky top-0 z-50 border-b border-[#DDE1E6] bg-gradient-to-r from-[#BFE0FF] via-[#FFFFFF] to-[#FFF7D6] shadow-[0_4px_16px_rgba(0,0,0,0.05)] lg:ml-80 lg:w-[calc(100%-20rem)]">
     <div class="flex w-full flex-wrap items-center gap-4 px-6 py-4 md:px-10">
+        <!-- Button Toggle Sidebar for Mobile -->
+        <button id="mobile-sidebar-toggle" class="mr-1 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#666666] shadow-sm hover:border-[#2A6496] hover:text-[#2A6496] transition lg:hidden" aria-label="Mở sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-6 w-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12.75 17.25h7.5" />
+            </svg>
+        </button>
+
         <a id="clinic-logo-link" href="{{ route('sanctum.auth') }}" class="group inline-flex items-center gap-3">
             <span class="grid h-9 w-9 place-content-center rounded-full border border-[#C1C4C9] bg-[#FFFFFF] text-xs font-bold text-[#999999]">PAW</span>
             <span>
@@ -203,7 +210,7 @@
             }
 
             if (items.length === 0) {
-                notificationList.innerHTML = '<div class="px-4 py-8 text-center text-sm text-[#999999]">You have no new notifications.</div>';
+                notificationList.innerHTML = '<div class="px-4 py-8 text-center text-sm text-[#999999]">Bạn không có thông báo mới.</div>';
                 return;
             }
 

@@ -178,7 +178,7 @@ const fetchPayments = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/payments', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -197,7 +197,7 @@ const confirmPayment = async (payment) => {
   try {
     const res = await fetch(`/api/admin/payments/${payment.id}/confirm`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (res.ok) {
         notifySuccess('Xác nhận thanh toán thành công!');
@@ -218,7 +218,7 @@ const refundPayment = async (payment) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
         },
         body: JSON.stringify({ reason })
       });

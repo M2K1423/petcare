@@ -103,7 +103,7 @@ const pageTitle = computed(() => {
 onMounted(async () => {
   try {
     const res = await fetch('/api/auth/me', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -119,9 +119,9 @@ onMounted(async () => {
 const logout = async () => {
   await fetch('/api/auth/logout', {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
   });
-  localStorage.removeItem('token');
+  localStorage.removeItem('petcare_sanctum_token');
   router.push('/auth/login');
 };
 </script>

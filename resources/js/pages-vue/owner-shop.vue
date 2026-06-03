@@ -48,18 +48,20 @@
             </div>
 
             <!-- Product image -->
-            <div class="aspect-[4/3] bg-slate-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative w-full border border-slate-100/50">
+            <a :href="`/owner/shop/medicines/${medicine.id}`" class="aspect-[4/3] bg-slate-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative w-full border border-slate-100/50 block">
               <img :src="medicine.image_url || getFallbackImage(medicine)" :alt="medicine.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
               
               <!-- Medicine Warnings badges -->
               <span v-if="getMedicineWarning(medicine)" :class="getWarningClass(getMedicineWarning(medicine))" class="absolute top-2.5 right-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full border shadow-sm z-10">
                 {{ getMedicineWarning(medicine) }}
               </span>
-            </div>
+            </a>
             
             <div class="flex flex-col flex-1">
               <p v-if="medicine.category" class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-500 mb-1.5">{{ medicine.category }}</p>
-              <h3 class="font-extrabold text-slate-700 text-sm line-clamp-2 mb-1 group-hover:text-indigo-600 transition-colors">{{ medicine.name }}</h3>
+              <a :href="`/owner/shop/medicines/${medicine.id}`" class="block group/title">
+                <h3 class="font-extrabold text-slate-700 text-sm line-clamp-2 mb-1 group-hover:text-indigo-600 transition-colors">{{ medicine.name }}</h3>
+              </a>
               <p class="text-xs text-slate-400 line-clamp-2 mb-4 flex-1 leading-relaxed">{{ medicine.description ?? 'Sản phẩm thuốc thú y chuyên dụng có sẵn tại phòng khám.' }}</p>
               
               <!-- Info block -->

@@ -22,15 +22,38 @@ class ChatController extends Controller
     {
         $user = $request->user();
 
+        // Nếu admin hoặc lễ tân → trả về danh sách chủ nuôi (Owners) và Trợ lý AI (AI Assistant)
+        if ($user->hasRole(Role::ADMIN) || $user->hasRole(Role::RECEPTIONIST)) {
+            $recipients = User::whereHas('role', function ($q) {
+                $q->whereIn('slug', [Role::OWNER, Role::AI_ASSISTANT]);
+            })
+            ->where(function ($query) {
+                $query->where('is_locked', false)
+                      ->orWhereHas('role', function ($q) {
+                          $q->where('slug', Role::AI_ASSISTANT);
+                      });
+            })
+            ->select('id', 'name', 'role_id')
+            ->with('role:id,name,slug')
+            ->get();
+
+            return response()->json(['data' => $recipients], 200);
+        }
+
         // Chỉ Owner mới cần lấy danh sách staff
         if (!$user->hasRole(Role::OWNER)) {
             return response()->json(['data' => []], 200);
         }
 
         $staff = User::whereHas('role', function ($q) {
-            $q->whereIn('slug', [Role::VET, Role::RECEPTIONIST, Role::AI_ASSISTANT]);
+            $q->whereIn('slug', [Role::VET, Role::RECEPTIONIST, Role::AI_ASSISTANT, Role::ADMIN]);
         })
-        ->where('is_locked', false)
+        ->where(function ($query) {
+            $query->where('is_locked', false)
+                  ->orWhereHas('role', function ($q) {
+                      $q->where('slug', Role::AI_ASSISTANT);
+                  });
+        })
         ->select('id', 'name', 'role_id')
         ->with('role:id,name,slug')
         ->get();
@@ -66,24 +89,51 @@ class ChatController extends Controller
     {
         $user = $request->user();
 
-        if (!$user->hasRole(Role::OWNER)) {
-            return response()->json(['message' => 'Chỉ chủ nuôi mới có thể khởi tạo phiên chat.'], 403);
+        if (!$user->hasRole(Role::OWNER) && !$user->hasRole(Role::ADMIN) && !$user->hasRole(Role::RECEPTIONIST)) {
+            return response()->json(['message' => 'Bạn không có quyền khởi tạo phiên chat.'], 403);
         }
 
         $validated = $request->validate([
-            'staff_id' => 'required|integer|exists:users,id',
+            'staff_id' => 'nullable|integer|exists:users,id',
+            'owner_id' => 'nullable|integer|exists:users,id',
         ]);
 
-        // Kiểm tra staff phải là Vet, Receptionist hoặc AI Assistant
-        $staff = User::with('role')->findOrFail($validated['staff_id']);
-        if (!in_array($staff->role->slug, [Role::VET, Role::RECEPTIONIST, Role::AI_ASSISTANT])) {
-            return response()->json(['message' => 'Bạn chỉ có thể chat với Bác sĩ, Lễ tân hoặc Trợ lý AI.'], 422);
+        if ($user->hasRole(Role::OWNER)) {
+            $staffId = $validated['staff_id'] ?? null;
+            if (!$staffId) {
+                return response()->json(['message' => 'staff_id là bắt buộc đối với chủ nuôi.'], 422);
+            }
+            $staff = User::with('role')->findOrFail($staffId);
+            if (!in_array($staff->role->slug, [Role::VET, Role::RECEPTIONIST, Role::AI_ASSISTANT, Role::ADMIN])) {
+                return response()->json(['message' => 'Bạn chỉ có thể chat với Bác sĩ, Lễ tân, Quản trị viên hoặc Trợ lý AI.'], 422);
+            }
+            $ownerId = $user->id;
+        } else {
+            // Admin hoặc Lễ tân khởi tạo phiên chat
+            if (!empty($validated['staff_id'])) {
+                $staffId = $validated['staff_id'];
+                $staff = User::with('role')->findOrFail($staffId);
+                if ($staff->role->slug !== Role::AI_ASSISTANT) {
+                    return response()->json(['message' => 'Bạn chỉ có thể khởi tạo chat với Trợ lý AI hoặc Chủ nuôi.'], 422);
+                }
+                $ownerId = $user->id;
+            } else {
+                $ownerId = $validated['owner_id'] ?? null;
+                if (!$ownerId) {
+                    return response()->json(['message' => 'owner_id hoặc staff_id là bắt buộc.'], 422);
+                }
+                $owner = User::with('role')->findOrFail($ownerId);
+                if ($owner->role->slug !== Role::OWNER) {
+                    return response()->json(['message' => 'Bạn chỉ có thể khởi tạo chat với Chủ nuôi.'], 422);
+                }
+                $staffId = $user->id;
+            }
         }
 
         // Nếu đã có phiên active → trả về phiên cũ
         $existing = ChatSession::active()
-            ->where('owner_id', $user->id)
-            ->where('staff_id', $staff->id)
+            ->where('owner_id', $ownerId)
+            ->where('staff_id', $staffId)
             ->first();
 
         if ($existing) {
@@ -92,15 +142,16 @@ class ChatController extends Controller
         }
 
         $session = ChatSession::create([
-            'owner_id' => $user->id,
-            'staff_id' => $staff->id,
+            'owner_id' => $ownerId,
+            'staff_id' => $staffId,
             'status' => 'active',
         ]);
 
         $session->load(['owner:id,name', 'staff:id,name', 'staff.role:id,name,slug']);
 
-        // Thông báo cho staff có phiên chat mới
-        broadcast(new ChatSessionEvent($session, $staff->id));
+        // Thông báo cho người nhận tin
+        $targetId = $user->id === $ownerId ? $staffId : $ownerId;
+        broadcast(new ChatSessionEvent($session, $targetId));
 
         return response()->json(['data' => $session], 201);
     }

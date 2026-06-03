@@ -112,7 +112,7 @@ const fetchDoctors = async () => {
   isLoading.value = true;
   try {
     const res = await fetch('/api/admin/doctors', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
         await handleApiError(null, res);
@@ -151,7 +151,7 @@ const saveDoctor = async () => {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}`
       },
       body: JSON.stringify(form.value)
     });
@@ -175,7 +175,7 @@ const deleteDoctor = async (doctor) => {
     try {
       const res = await fetch(`/api/admin/doctors/${doctor.id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
       });
       if (res.ok) {
           notifySuccess('Xóa bác sĩ thành công!');

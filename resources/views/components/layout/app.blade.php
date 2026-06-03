@@ -46,9 +46,12 @@
         <x-layout.header />
     @endif
 
+    @if ($showSidebar)
+        <x-layout.sidebar />
+    @endif
+
     <main class="relative z-10 w-full flex-1 px-4 py-6 md:px-8 md:py-8 {{ $showSidebar ? 'max-w-none' : 'mx-auto max-w-6xl' }}">
         @if ($showSidebar)
-            <x-layout.sidebar />
             <div class="min-w-0 flex-1 lg:pl-80">
                 {{ $slot }}
             </div>
@@ -83,7 +86,7 @@
     </script>
     
     @auth
-        @if(in_array(auth()->user()->role->slug, ['owner', 'vet', 'receptionist']))
+        @if(in_array(auth()->user()->role->slug, ['owner', 'vet', 'receptionist', 'admin']) && !request()->routeIs('sanctum.auth') && !request()->routeIs('sanctum.auth.register'))
             <div id="chat-widget-root"></div>
         @endif
     @endauth
