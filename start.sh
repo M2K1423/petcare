@@ -30,6 +30,12 @@ foreach (\$keys as \$k) {
 file_put_contents('.env', \$content);
 "
 
+# Clear configuration, route, view, and application cache from build step
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+
 # Run migrations
 php artisan migrate --force
 
