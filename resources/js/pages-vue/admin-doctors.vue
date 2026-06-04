@@ -3,8 +3,9 @@
     <div class="flex gap-4">
       <input v-model="search" type="text" placeholder="Tìm kiếm bác sĩ..." 
         class="flex-1 px-4 py-2 border rounded-lg">
-      <button @click="openCreateForm" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
-        ➕ Thêm Bác Sĩ
+      <button @click="openCreateForm" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+        <Plus class="w-4 h-4" />
+        Thêm Bác Sĩ
       </button>
     </div>
 
@@ -16,10 +17,12 @@
             <p class="text-sm text-gray-600">{{ doctor.specialty }}</p>
           </div>
           <span :class="[
-            'px-2 py-1 rounded text-xs font-semibold',
+            'inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold',
             doctor.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
           ]">
-            {{ doctor.is_active ? '✓ Hoạt Động' : '❌ Không Hoạt Động' }}
+            <Check v-if="doctor.is_active" class="w-3.5 h-3.5" />
+            <XCircle v-else class="w-3.5 h-3.5" />
+            {{ doctor.is_active ? 'Hoạt Động' : 'Không Hoạt Động' }}
           </span>
         </div>
 
@@ -30,8 +33,14 @@
         </div>
 
         <div class="flex gap-2">
-          <button @click="editDoctor(doctor)" class="flex-1 text-blue-600 hover:text-blue-800">✏️ Sửa</button>
-          <button @click="deleteDoctor(doctor)" class="flex-1 text-red-600 hover:text-red-800">🗑️ Xóa</button>
+          <button @click="editDoctor(doctor)" class="flex-1 inline-flex items-center justify-center gap-1 text-blue-600 hover:text-blue-800">
+            <Pencil class="w-3.5 h-3.5" />
+            Sửa
+          </button>
+          <button @click="deleteDoctor(doctor)" class="flex-1 inline-flex items-center justify-center gap-1 text-red-600 hover:text-red-800">
+            <Trash2 class="w-3.5 h-3.5" />
+            Xóa
+          </button>
         </div>
       </div>
     </div>
@@ -64,8 +73,9 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="saveDoctor" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-              💾 Lưu
+            <button @click="saveDoctor" class="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              <Save class="w-4 h-4" />
+              Lưu
             </button>
             <button @click="showForm = false" class="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">
               Hủy
@@ -79,6 +89,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Plus, Check, XCircle, Pencil, Trash2, Save } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, notifyError, handleApiError } = useNotification();

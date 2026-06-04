@@ -9,8 +9,9 @@
         <option value="completed">Hoàn Thành</option>
         <option value="cancelled">Đã Hủy</option>
       </select>
-      <button @click="refreshAppointments" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
-        🔄 Làm Mới
+      <button @click="refreshAppointments" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-6 py-2 rounded-lg">
+        <RefreshCw class="w-4 h-4" />
+        Làm Mới
       </button>
     </div>
 
@@ -65,9 +66,15 @@
               </span>
             </td>
             <td class="px-6 py-4 space-x-2 text-sm">
-              <button v-if="!apt.doctor" @click="assignDoctor(apt)" class="text-blue-600 hover:text-blue-800">👨‍⚕️</button>
-              <button @click="reschedule(apt)" class="text-orange-600 hover:text-orange-800">📅</button>
-              <button v-if="apt.status !== 'cancelled'" @click="cancelAppointment(apt)" class="text-red-600 hover:text-red-800">❌</button>
+              <button v-if="!apt.doctor" @click="assignDoctor(apt)" class="text-blue-600 hover:text-blue-800" title="Gán Bác Sĩ">
+                <UserCheck class="w-4 h-4" />
+              </button>
+              <button @click="reschedule(apt)" class="text-orange-600 hover:text-orange-800" title="Đổi Lịch">
+                <Calendar class="w-4 h-4" />
+              </button>
+              <button v-if="apt.status !== 'cancelled'" @click="cancelAppointment(apt)" class="text-red-600 hover:text-red-800" title="Hủy Lịch">
+                <XCircle class="w-4 h-4" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -78,6 +85,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { RefreshCw, UserCheck, Calendar, XCircle } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, handleApiError } = useNotification();

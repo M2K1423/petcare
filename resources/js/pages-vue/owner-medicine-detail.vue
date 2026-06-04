@@ -18,8 +18,8 @@
       <!-- Main Product Detail Section -->
       <section class="rounded-3xl border border-slate-100 bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.015)] backdrop-blur">
         <div v-if="!medicine" class="py-16 text-center">
-          <span class="text-4xl">⚠️</span>
-          <p class="text-sm font-bold text-slate-500 mt-2">Không tìm thấy thông tin sản phẩm.</p>
+          <AlertTriangle class="w-12 h-12 text-amber-500 mx-auto mb-2" />
+          <p class="text-sm font-bold text-slate-500">Không tìm thấy thông tin sản phẩm.</p>
         </div>
 
         <div v-else class="grid gap-8 md:grid-cols-12">
@@ -118,7 +118,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { ArrowLeft, Minus, Plus, ShoppingCart } from '@lucide/vue';
+import { ArrowLeft, Minus, Plus, ShoppingCart, AlertTriangle } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

@@ -5,7 +5,8 @@
             <h1 class="text-2xl font-bold text-[#333333]">Khám và bệnh án</h1>
             <p class="text-sm text-[#4A4A4A]">Xem hồ sơ ca bệnh và lưu bệnh án sau khi khám.</p>
         </div>
-        <a href="/vet/appointments" class="inline-flex items-center rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm hover:border-[#2A6496] hover:text-[#2A6496]">
+        <a href="/vet/appointments" class="inline-flex items-center rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm hover:border-[#2A6496] hover:text-[#2A6496] gap-1.5">
+            <ArrowLeft class="w-4 h-4" />
             Quay lại lịch hẹn
         </a>
     </div>
@@ -83,7 +84,8 @@
                         <div>
                             <input v-model="medDosage" type="text" placeholder="Liều lượng (VD: 2 viên/ngày, sau ăn)..." class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500">
                         </div>
-                        <button @click.prevent="addMedicine" type="button" class="rounded-xl border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
+                        <button @click.prevent="addMedicine" type="button" class="inline-flex items-center rounded-xl border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition gap-1">
+                            <Plus class="w-4 h-4" />
                             Thêm vào đơn
                         </button>
                     </div>
@@ -113,7 +115,8 @@
                     </div>
                 </div>
 
-                <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-2xl border border-[#2A6496] bg-[#2A6496] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:opacity-50">
+                <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-2xl border border-[#2A6496] bg-[#2A6496] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:opacity-50 gap-1.5">
+                    <Save v-if="!isSaving" class="w-4 h-4" />
                     {{ isSaving ? 'Đang lưu...' : 'Lưu bệnh án' }}
                 </button>
             </form>
@@ -125,6 +128,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { ArrowLeft, Plus, Save } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

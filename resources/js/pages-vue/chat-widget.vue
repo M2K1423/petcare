@@ -46,7 +46,7 @@
               class="w-full bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-3 hover:border-[#1D4ED8] hover:shadow-md transition-all text-left group"
             >
               <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
-                <span v-if="staff.role.slug === 'ai_assistant'" class="text-xl">🤖</span>
+                <Bot v-if="staff.role.slug === 'ai_assistant'" class="w-5 h-5" />
                 <span v-else>{{ staff.name.charAt(0) }}</span>
               </div>
               <div class="flex-1 min-w-0">
@@ -64,7 +64,8 @@
           <div v-if="['admin', 'receptionist'].includes(currentUser?.role) && !showOwnerSelection" class="p-3 bg-white border-b border-slate-100 flex justify-between items-center shrink-0 pointer-events-auto">
             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Cuộc trò chuyện</span>
             <button @click="openOwnerSelection" class="text-xs font-bold text-[#1D4ED8] hover:text-blue-700 flex items-center gap-1">
-              <span>➕ Nhắn tin mới</span>
+              <Plus class="w-3.5 h-3.5" />
+              <span>Nhắn tin mới</span>
             </button>
           </div>
 
@@ -88,7 +89,7 @@
                 class="w-full bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-3 hover:border-[#1D4ED8] hover:shadow-md transition-all text-left group"
               >
                 <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
-                  <span v-if="target.role.slug === 'ai_assistant'" class="text-xl">🤖</span>
+                  <Bot v-if="target.role.slug === 'ai_assistant'" class="w-5 h-5" />
                   <span v-else>{{ target.name.charAt(0) }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -117,7 +118,7 @@
                 class="w-full bg-white p-4 flex items-center gap-3 hover:bg-blue-50 transition-colors text-left group"
               >
                 <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
-                  <span v-if="getSessionPartner(session)?.role?.slug === 'ai_assistant'" class="text-2xl">🤖</span>
+                  <Bot v-if="getSessionPartner(session)?.role?.slug === 'ai_assistant'" class="w-6 h-6" />
                   <span v-else>{{ getSessionPartner(session)?.name.charAt(0) }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -212,7 +213,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
-import { ChevronLeft, X, ChevronRight, MessageSquare, SendHorizontal, MessageSquareMore } from '@lucide/vue';
+import { ChevronLeft, X, ChevronRight, MessageSquare, SendHorizontal, MessageSquareMore, Plus, Bot } from '@lucide/vue';
 import { callApi } from '../auth/http';
 
 const http = {

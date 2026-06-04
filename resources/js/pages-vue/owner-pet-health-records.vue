@@ -4,11 +4,15 @@
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] lg:col-span-5">
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <h1 class="text-2xl font-bold text-[#333333]">Bệnh án & lịch tiêm phòng</h1>
+                    <h1 class="text-2xl font-bold text-[#333333] flex items-center gap-2">
+                        <Activity class="w-5 h-5 text-indigo-500" />
+                        Bệnh án & lịch tiêm phòng
+                    </h1>
                     <p class="mt-2 text-sm text-[#4A4A4A]">Theo dõi lịch sử khám và các mũi tiêm của thú cưng.</p>
                     <p class="mt-3 text-sm font-semibold text-[#2A6496]">Thú cưng: {{ petNameDisplay }}</p>
                 </div>
                 <a href="/owner/pets" class="inline-flex items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-4 py-2 text-sm font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">
+                    <ArrowLeft class="w-4 h-4 mr-1.5" />
                     Quay lại danh sách thú cưng
                 </a>
             </div>
@@ -17,7 +21,10 @@
         </article>
 
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] lg:col-span-3">
-            <h2 class="text-lg font-bold text-[#333333]">Bệnh án</h2>
+            <h2 class="text-lg font-bold text-[#333333] flex items-center gap-2">
+                <FileText class="w-4 h-4 text-indigo-500" />
+                Bệnh án
+            </h2>
             <div class="mt-4 space-y-3 text-sm text-[#4A4A4A]">
                 <p v-if="medicalRecords.length === 0" class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-3">Chưa có bệnh án cho thú cưng này.</p>
                 
@@ -32,7 +39,10 @@
         </article>
 
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)] lg:col-span-2">
-            <h2 class="text-lg font-bold text-[#333333]">Lịch tiêm phòng</h2>
+            <h2 class="text-lg font-bold text-[#333333] flex items-center gap-2">
+                <FileText class="w-4 h-4 text-emerald-500" />
+                Lịch tiêm phòng
+            </h2>
             <div class="mt-4 space-y-3 text-sm text-[#4A4A4A]">
                 <p v-if="vaccinations.length === 0" class="rounded-xl border border-dashed border-[#DDE1E6] bg-[#F9F9FB] p-3">Chưa có lịch tiêm phòng.</p>
                 
@@ -52,6 +62,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { ArrowLeft, Activity, FileText } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 

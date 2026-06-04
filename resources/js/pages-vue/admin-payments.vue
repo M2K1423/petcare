@@ -68,10 +68,18 @@
                 </span>
               </td>
               <td class="px-6 py-4 space-x-2 text-sm">
-                <button v-if="payment.status === 'pending'" @click="confirmPayment(payment)" class="text-green-600 hover:text-green-800">✓</button>
-                <button v-if="payment.status === 'completed'" @click="refundPayment(payment)" class="text-orange-600 hover:text-orange-800">↩️</button>
-                <button v-if="payment.status === 'completed'" @click="printInvoice(payment)" class="text-indigo-600 hover:text-indigo-800" title="In Hóa Đơn">🖨️</button>
-                <button @click="viewDetails(payment)" class="text-blue-600 hover:text-blue-800">👁️</button>
+                <button v-if="payment.status === 'pending'" @click="confirmPayment(payment)" class="text-green-600 hover:text-green-800" title="Xác Nhận">
+                  <Check class="w-4 h-4 inline" />
+                </button>
+                <button v-if="payment.status === 'completed'" @click="refundPayment(payment)" class="text-orange-600 hover:text-orange-800" title="Hoàn Tiền">
+                  <RotateCcw class="w-4 h-4 inline" />
+                </button>
+                <button v-if="payment.status === 'completed'" @click="printInvoice(payment)" class="text-indigo-600 hover:text-indigo-800" title="In Hóa Đơn">
+                  <Printer class="w-4 h-4 inline" />
+                </button>
+                <button @click="viewDetails(payment)" class="text-blue-600 hover:text-blue-800" title="Chi Tiết">
+                  <Eye class="w-4 h-4 inline" />
+                </button>
               </td>
             </tr>
           </tbody>
@@ -119,6 +127,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Check, RotateCcw, Printer, Eye } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 

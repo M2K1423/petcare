@@ -21,7 +21,7 @@
         
         <!-- DÀNH CHO CHỦ THÚ CƯNG -->
         <div id="nav-owner" class="{{ request()->routeIs('owner.*') ? '' : 'hidden' }}">
-            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">📝 Dành cho chủ thú cưng</div>
+            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Dành cho chủ thú cưng</div>
             <a href="{{ route('owner.overview') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.overview') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
@@ -104,7 +104,7 @@
         
         <!-- DÀNH CHO LỄ TÂN -->
         <div id="nav-receptionist" class="{{ request()->routeIs('receptionist.*') ? '' : 'hidden' }}">
-            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">🏥 Dành cho lễ tân</div>
+            <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Dành cho lễ tân</div>
             
             <a href="{{ route('receptionist.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('receptionist.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
@@ -350,68 +350,141 @@
         <div id="nav-admin" class="{{ request()->routeIs('admin.*') ? '' : 'hidden' }}">
             <div class="mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Quản trị</div>
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📊</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+                        <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+                        <rect width="7" height="9" x="14" y="10" rx="1"></rect>
+                        <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+                    </svg>
+                </span>
                 <span>Bảng điều khiển</span>
             </a>
 
             <div class="mt-2 border-t border-[#163045] pt-2"></div>
 
             <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.users*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">👥</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
                 <span>Quản lý nhân sự</span>
             </a>
 
             <a href="{{ route('admin.doctors') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.doctors*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">🏥</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M4.8 2.8A2.4 2.4 0 0 0 2.4 5.2v2.4a8.4 8.4 0 0 0 16.8 0V5.2a2.4 2.4 0 0 0-2.4-2.4Z"></path>
+                        <path d="M12 16v6"></path>
+                        <path d="M12 22a3 3 0 0 0 3-3"></path>
+                    </svg>
+                </span>
                 <span>Bác sĩ</span>
             </a>
 
             <a href="{{ route('admin.services') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.services*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">⚕️</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </span>
                 <span>Dịch vụ</span>
             </a>
 
             <a href="{{ route('admin.pets') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.pets*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">🐾</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <circle cx="11" cy="4" r="2"></circle>
+                        <circle cx="18" cy="8" r="2"></circle>
+                        <circle cx="20" cy="12" r="2"></circle>
+                        <path d="M12 10a4 4 0 0 0-4 4c0 3 3 3 3 6h2c0-3 3-3 3-6a4 4 0 0 0-4-4z"></path>
+                    </svg>
+                </span>
                 <span>Thú cưng</span>
             </a>
 
             <a href="{{ route('admin.appointments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.appointments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📅</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                        <path d="M16 2v4"></path>
+                        <path d="M8 2v4"></path>
+                        <path d="M3 10h18"></path>
+                    </svg>
+                </span>
                 <span>Lịch Hẹn</span>
             </a>
 
             <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Kho & tài chính</div>
 
             <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.medicines*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">💊</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path>
+                        <path d="m8.5 8.5 7 7"></path>
+                    </svg>
+                </span>
                 <span>Thuốc</span>
             </a>
 
             <a href="{{ route('admin.inventory') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.inventory*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📦</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+                        <path d="m3.3 7 8.7 5 8.7-5"></path>
+                        <path d="M12 22V12"></path>
+                    </svg>
+                </span>
                 <span>Quản lý kho</span>
             </a>
 
             <a href="{{ route('admin.payments') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.payments*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">💰</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
+                        <path d="M12 6v12"></path>
+                    </svg>
+                </span>
                 <span>Doanh thu</span>
             </a>
 
             <div class="mt-3 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Báo cáo & hệ thống</div>
 
             <a href="{{ route('admin.reports') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.reports*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📈</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                        <polyline points="16 7 22 7 22 13"></polyline>
+                    </svg>
+                </span>
                 <span>Báo cáo</span>
             </a>
 
             <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.settings*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">⚙️</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </span>
                 <span>Thiết lập hệ thống</span>
             </a>
 
             <a href="{{ route('admin.logs') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('admin.logs*') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
-                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">📋</span>
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <path d="M9 14h6"></path>
+                        <path d="M9 18h6"></path>
+                        <path d="M9 10h6"></path>
+                    </svg>
+                </span>
                 <span>Nhật ký vận hành</span>
             </a>
         </div>

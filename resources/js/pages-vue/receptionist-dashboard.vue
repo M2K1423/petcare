@@ -7,22 +7,28 @@
           <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
           Hệ thống điều phối phòng khám PetCare
         </span>
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">💼 Bảng điều khiển Lễ tân</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
+          <Briefcase class="w-6 h-6 text-indigo-600" />
+          Bảng điều khiển Lễ tân
+        </h1>
         <p class="text-sm text-slate-400 mt-0.5">Giám sát hàng chờ trực tiếp, phân bổ bác sĩ và điều phối hoạt động tại sảnh phòng khám.</p>
       </div>
       
       <div class="flex flex-wrap items-center gap-3">
         <!-- Sync button -->
-        <button @click="fetchDashboardData" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50">
-          🔄 Đồng bộ hàng chờ
+        <button @click="fetchDashboardData" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 gap-1.5">
+          <RefreshCw class="w-4 h-4" />
+          Đồng bộ hàng chờ
         </button>
         <!-- Walkin checkin button -->
-        <a href="/receptionist/walk-ins" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-indigo-600/10 transition duration-200 hover:bg-indigo-700 hover:shadow-indigo-600/20">
-          ➕ Tiếp nhận khám vãng lai
+        <a href="/receptionist/walk-ins" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-indigo-600/10 transition duration-200 hover:bg-indigo-700 hover:shadow-indigo-600/20 gap-1.5">
+          <Plus class="w-4 h-4" />
+          Tiếp nhận khám vãng lai
         </a>
         <!-- Today list button -->
-        <a href="/receptionist/appointments" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50">
-          📅 Lịch hẹn hôm nay
+        <a href="/receptionist/appointments" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 gap-1.5">
+          <Calendar class="w-4 h-4" />
+          Lịch hẹn hôm nay
         </a>
       </div>
     </header>
@@ -38,7 +44,7 @@
             <p class="mt-3 text-4xl font-extrabold text-slate-800 transition-colors group-hover:text-emerald-500">{{ doctors.length }}</p>
           </div>
           <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-            👨‍⚕️
+            <Stethoscope class="w-6 h-6" />
           </div>
         </div>
         <p class="mt-3 text-xs text-slate-400">Đội ngũ y bác sĩ đang trong ca trực hiện tại.</p>
@@ -53,7 +59,7 @@
             <p class="mt-3 text-4xl font-extrabold text-slate-800 transition-colors group-hover:text-indigo-500">{{ queue.length }}</p>
           </div>
           <div class="rounded-2xl bg-indigo-50 p-4 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-            ⏳
+            <Clock class="w-6 h-6" />
           </div>
         </div>
         <p class="mt-3 text-xs text-slate-400">Số lượng thú cưng đang xếp hàng chờ khám.</p>
@@ -72,7 +78,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
             </span>
-            💳
+            <CreditCard class="w-6 h-6" />
           </div>
         </div>
         <p class="mt-3 text-xs text-slate-400">Các ca khám đã xong đang chờ thanh toán dịch vụ.</p>
@@ -96,7 +102,7 @@
 
         <div class="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-1">
           <div v-if="queue.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
-            <span class="text-4xl mb-2">🎈</span>
+            <Inbox class="w-12 h-12 text-slate-300 mb-3" />
             <p class="text-sm font-bold text-slate-500">Hàng chờ hiện đang trống.</p>
             <p class="text-xs text-slate-400 mt-1">Không có thú cưng nào đang xếp hàng chờ khám lúc này.</p>
           </div>
@@ -121,8 +127,8 @@
                   <h3 class="font-extrabold text-slate-700 text-base">
                     {{ app.pet?.name || 'Thú cưng chưa rõ' }}
                   </h3>
-                  <span v-if="app.is_emergency" class="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-[9px] font-extrabold text-rose-800 border border-rose-200 animate-pulse">
-                    🚨 CẤP CỨU KHẨN CẤP
+                  <span v-if="app.is_emergency" class="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-[9px] font-extrabold text-rose-800 border border-rose-200 animate-pulse gap-1">
+                    <AlertTriangle class="w-3 h-3" /> CẤP CỨU KHẨN CẤP
                   </span>
                 </div>
                 
@@ -138,8 +144,8 @@
             </div>
             
             <div class="flex items-center gap-2 mt-4 sm:mt-0 justify-end">
-              <button v-if="!app.is_emergency" @click="markEmergency(app.id)" :disabled="isAlerting === app.id" class="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100 hover:text-amber-800 transition duration-200 disabled:opacity-50">
-                🚨 Báo Cấp Cứu
+              <button v-if="!app.is_emergency" @click="markEmergency(app.id)" :disabled="isAlerting === app.id" class="inline-flex items-center rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100 hover:text-amber-800 transition duration-200 disabled:opacity-50 gap-1">
+                <AlertTriangle class="w-3.5 h-3.5" /> Báo Cấp Cứu
               </button>
               <a :href="`/receptionist/appointments/${app.id}`" class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 transition duration-200 shadow-sm">
                 Chi tiết
@@ -161,14 +167,14 @@
 
         <div class="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-1">
           <div v-if="doctors.length === 0" class="flex flex-col items-center justify-center py-12 text-center border border-dashed border-slate-100 rounded-2xl bg-slate-50/20">
-            <span class="text-3xl mb-1.5">👨‍⚕️</span>
+            <Stethoscope class="w-8 h-8 text-slate-300 mb-2" />
             <p class="text-xs font-bold text-slate-500">Không có bác sĩ trong ca trực.</p>
           </div>
           
           <div v-for="doc in doctors" :key="doc.id" class="doc-card flex items-center justify-between rounded-2xl border border-slate-50 bg-[#FCFDFE] p-4 hover:border-slate-200 transition-all duration-300">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-lg">
-                👨‍⚕️
+                <Stethoscope class="w-5 h-5 text-indigo-500" />
               </div>
               <div>
                 <p class="text-sm font-bold text-slate-700">BS. {{ doc.user?.name }}</p>
@@ -189,6 +195,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Briefcase, RefreshCw, Plus, Calendar, Stethoscope, Clock, CreditCard, Inbox, AlertTriangle } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

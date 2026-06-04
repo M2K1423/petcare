@@ -15,8 +15,9 @@
         <option value="owner">Chủ nuôi</option>
       </select>
 
-      <button @click="openCreateModal" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-        ➕ Thêm Người Dùng
+      <button @click="openCreateModal" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+        <Plus class="w-4 h-4" />
+        Thêm Người Dùng
       </button>
     </div>
 
@@ -51,22 +52,35 @@
             </td>
             <td class="px-6 py-4">
               <span :class="[
-                'px-3 py-1 rounded-full text-xs font-semibold',
+                'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold',
                 user.is_locked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
               ]">
-                {{ user.is_locked ? '🔒 Khóa' : '✓ Hoạt Động' }}
+                <Lock v-if="user.is_locked" class="w-3 h-3" />
+                <Check v-else class="w-3 h-3" />
+                {{ user.is_locked ? 'Khóa' : 'Hoạt Động' }}
               </span>
             </td>
             <td class="px-6 py-4 space-x-2">
-              <button @click="editUser(user)" class="text-blue-600 hover:text-blue-800 text-sm">✏️ Sửa</button>
+              <button @click="editUser(user)" class="inline-flex items-center gap-0.5 text-blue-600 hover:text-blue-800 text-sm">
+                <Pencil class="w-3.5 h-3.5" />
+                Sửa
+              </button>
               <button @click="toggleLock(user)" :class="[
-                'text-sm',
+                'inline-flex items-center gap-0.5 text-sm',
                 user.is_locked ? 'text-green-600 hover:text-green-800' : 'text-red-600 hover:text-red-800'
               ]">
-                {{ user.is_locked ? '🔓 Mở' : '🔒 Khóa' }}
+                <Unlock v-if="user.is_locked" class="w-3.5 h-3.5" />
+                <Lock v-else class="w-3.5 h-3.5" />
+                {{ user.is_locked ? 'Mở' : 'Khóa' }}
               </button>
-              <button @click="resetPassword(user)" class="text-orange-600 hover:text-orange-800 text-sm">🔑 Reset MK</button>
-              <button @click="deleteUser(user)" class="text-red-600 hover:text-red-800 text-sm">🗑️ Xóa</button>
+              <button @click="resetPassword(user)" class="inline-flex items-center gap-0.5 text-orange-600 hover:text-orange-800 text-sm">
+                <Key class="w-3.5 h-3.5" />
+                Reset MK
+              </button>
+              <button @click="deleteUser(user)" class="inline-flex items-center gap-0.5 text-red-600 hover:text-red-800 text-sm">
+                <Trash2 class="w-3.5 h-3.5" />
+                Xóa
+              </button>
             </td>
           </tr>
         </tbody>
@@ -114,8 +128,9 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="saveUser" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-              💾 Lưu
+            <button @click="saveUser" class="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              <Save class="w-4 h-4" />
+              Lưu
             </button>
             <button @click="showModal = false" class="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">
               Hủy
@@ -129,6 +144,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Plus, Lock, Unlock, Check, Pencil, Key, Trash2, Save } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, notifyError, handleApiError } = useNotification();

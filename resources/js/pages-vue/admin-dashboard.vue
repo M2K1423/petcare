@@ -74,14 +74,14 @@
           <span>Thuốc sắp hết hạn:</span>
           <span class="font-bold flex items-center">
             <AlertTriangle v-if="alerts.filter(a => a.title === 'Expiring Medicines').length > 0" class="w-4 h-4 text-orange-600 inline" />
-            <span v-else class="text-green-600">✓</span>
+            <Check v-else class="w-4 h-4 text-green-600 inline" />
           </span>
         </div>
         <div class="flex justify-between items-center">
           <span>Thanh toán chờ xác nhận:</span>
           <span class="font-bold flex items-center">
             <Clock v-if="alerts.filter(a => a.title === 'Pending Payments').length > 0" class="w-4 h-4 text-yellow-600 inline animate-pulse" />
-            <span v-else class="text-green-600">✓</span>
+            <Check v-else class="w-4 h-4 text-green-600 inline" />
           </span>
         </div>
         <button @click="refreshDashboard" class="w-full mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition">
@@ -97,7 +97,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { ClipboardList, LayoutDashboard, RefreshCw, AlertTriangle, Clock } from '@lucide/vue';
+import { ClipboardList, LayoutDashboard, RefreshCw, AlertTriangle, Clock, Check } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 

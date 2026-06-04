@@ -1,14 +1,17 @@
 <template>
   <div class="space-y-6">
     <div class="flex gap-4">
-      <button @click="importInventory" class="bg-green-600 text-white px-6 py-2 rounded-lg">
-        📥 Nhập Từ File
+      <button @click="importInventory" class="inline-flex items-center gap-1.5 bg-green-600 text-white px-6 py-2 rounded-lg">
+        <Upload class="w-4 h-4" />
+        Nhập Từ File
       </button>
-      <button @click="exportInventory" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
-        📤 Xuất Ra File
+      <button @click="exportInventory" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-6 py-2 rounded-lg">
+        <Download class="w-4 h-4" />
+        Xuất Ra File
       </button>
-      <button @click="viewValue" class="bg-purple-600 text-white px-6 py-2 rounded-lg">
-        💰 Giá Trị Kho
+      <button @click="viewValue" class="inline-flex items-center gap-1.5 bg-purple-600 text-white px-6 py-2 rounded-lg">
+        <Coins class="w-4 h-4" />
+        Giá Trị Kho
       </button>
     </div>
 
@@ -80,6 +83,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Upload, Download, Coins } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, notifyInfo, handleApiError } = useNotification();
