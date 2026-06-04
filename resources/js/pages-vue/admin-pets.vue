@@ -33,10 +33,17 @@
             <td class="px-6 py-4">{{ pet.breed }}</td>
             <td class="px-6 py-4">{{ pet.birth_year }}</td>
             <td class="px-6 py-4 text-right">{{ pet.weight }}kg</td>
-            <td class="px-6 py-4 space-x-2 text-sm">
-              <button @click="viewPet(pet)" class="text-blue-600 hover:text-blue-800">👁️ Xem</button>
-              <button @click="viewAppointments(pet)" class="text-green-600 hover:text-green-800">📅</button>
-              <button @click="viewHealth(pet)" class="text-purple-600 hover:text-purple-800">⚕️</button>
+            <td class="px-6 py-4 space-x-3 text-sm flex items-center justify-end">
+              <button @click="viewPet(pet)" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                <Eye class="w-4 h-4" />
+                <span>Xem</span>
+              </button>
+              <button @click="viewAppointments(pet)" class="inline-flex items-center text-green-600 hover:text-green-800" title="Xem lịch hẹn">
+                <Calendar class="w-4 h-4" />
+              </button>
+              <button @click="viewHealth(pet)" class="inline-flex items-center text-purple-600 hover:text-purple-800" title="Xem hồ sơ sức khỏe">
+                <Activity class="w-4 h-4" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -71,7 +78,7 @@
           </div>
           <div>
             <strong class="text-gray-600">Giới Tính:</strong>
-            <p>{{ selectedPet?.gender === 'male' ? '🐕 Đực' : '🐈 Cái' }}</p>
+            <p>{{ selectedPet?.gender === 'male' ? 'Đực' : 'Cái' }}</p>
           </div>
         </div>
 
@@ -86,6 +93,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useNotification } from '../composables/useNotification';
+import { Eye, Calendar, Activity } from '@lucide/vue';
 
 const { notifyInfo, handleApiError } = useNotification();
 

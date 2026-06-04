@@ -7,7 +7,10 @@
                 <h1 class="mt-2 text-2xl font-extrabold tracking-tight text-[#333333] md:text-3xl">Chỉnh sửa thú cưng</h1>
                 <p class="mt-1 text-sm text-[#4A4A4A]">Cập nhật thông tin chi tiết cho thú cưng của bạn.</p>
             </div>
-            <a href="/owner/pets" class="rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">Quay lại danh sách</a>
+            <a href="/owner/pets" class="inline-flex items-center rounded-lg border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-1.5 text-xs font-semibold text-[#4A4A4A] transition hover:border-[#2A6496] hover:text-[#2A6496]">
+                <ArrowLeft class="w-3.5 h-3.5 mr-1" />
+                Quay lại danh sách
+            </a>
         </div>
         <p class="mt-3 text-sm text-[#4A4A4A]">{{ statusMessage }}</p>
     </header>
@@ -67,7 +70,8 @@
                 <textarea v-model="form.notes" id="pet-notes" name="notes" rows="3" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20"></textarea>
             </div>
 
-            <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] focus:outline-none focus:ring-2 focus:ring-[#2A6496]/35 disabled:opacity-50">
+            <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] focus:outline-none focus:ring-2 focus:ring-[#2A6496]/35 disabled:opacity-50 gap-1.5">
+                <Save v-if="!isSaving" class="w-4 h-4" />
                 {{ isSaving ? 'Đang lưu...' : 'Lưu thay đổi' }}
             </button>
         </form>
@@ -78,6 +82,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { ArrowLeft, Save } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

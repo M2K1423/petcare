@@ -3,7 +3,10 @@
     <div class="flex flex-col gap-6">
       <!-- Section header with gradient line -->
       <div class="border-b border-slate-100 pb-4">
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">💊 Cửa hàng thuốc y tế PetCare</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
+          <Pill class="w-6 h-6 text-indigo-500" />
+          <span>Cửa hàng thuốc y tế PetCare</span>
+        </h1>
         <p class="text-sm text-slate-400 mt-1">Tìm kiếm và mua trực tuyến các loại thuốc, thực phẩm bổ sung chính hãng được bác sĩ thú y khuyên dùng.</p>
       </div>
 
@@ -22,8 +25,8 @@
           <div>
             <label for="shop-category-filter" class="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Danh mục điều trị</label>
             <select v-model="selectedCategory" id="shop-category-filter" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-              <option value="all">🧪 Tất cả danh mục</option>
-              <option v-for="category in categories" :key="category" :value="category">📦 {{ category }}</option>
+              <option value="all">Tất cả danh mục</option>
+              <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
             </select>
           </div>
         </div>
@@ -36,7 +39,7 @@
         <!-- Medicine Grid -->
         <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <div v-if="filteredMedicines.length === 0" class="col-span-full py-16 flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/30">
-            <span class="text-4xl mb-2">🔍</span>
+            <Search class="w-10 h-10 text-slate-300 mb-2" />
             <p class="text-sm font-bold text-slate-500">Không tìm thấy sản phẩm thuốc phù hợp.</p>
             <p class="text-xs text-slate-400 mt-1">Vui lòng kiểm tra lại từ khóa tìm kiếm hoặc đổi danh mục khác.</p>
           </div>
@@ -44,7 +47,10 @@
           <article v-for="medicine in filteredMedicines" :key="medicine.id" class="medicine-card group bg-white border border-slate-100 rounded-2xl p-4 flex flex-col hover:border-indigo-500/50 hover:shadow-[0_12px_30px_rgba(0,0,0,0.04)] transition-all duration-300 h-full relative overflow-hidden">
             <!-- Out of stock overlay -->
             <div v-if="medicine.stock_quantity <= 0" class="absolute inset-0 bg-white/70 flex items-center justify-center font-bold text-rose-500 text-sm z-10 backdrop-blur-[1px]">
-              <span class="px-4 py-2 bg-rose-50 rounded-full border border-rose-200 shadow-sm">❌ Hết hàng</span>
+              <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-50 rounded-full border border-rose-200 shadow-sm">
+                <XCircle class="w-4 h-4 text-rose-500" />
+                <span>Hết hàng</span>
+              </span>
             </div>
 
             <!-- Product image -->
@@ -96,7 +102,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { Search, ShoppingCart } from '@lucide/vue';
+import { Search, ShoppingCart, Pill, XCircle } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

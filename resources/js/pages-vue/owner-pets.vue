@@ -3,7 +3,10 @@
     <div class="flex flex-col gap-6">
       <!-- Section header with gradient line -->
       <div class="border-b border-slate-100 pb-4">
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">🐾 Quản lý Thú cưng</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
+          <PawPrint class="w-6 h-6 text-indigo-500" />
+          Quản lý Thú cưng
+        </h1>
         <p class="text-sm text-slate-400 mt-1">Thêm mới, chỉnh sửa thông tin và theo dõi hồ sơ y tế các bé cưng của bạn.</p>
       </div>
 
@@ -70,8 +73,9 @@
               <textarea v-model="form.notes" id="pet-notes" name="notes" rows="2" placeholder="Sở thích, lưu ý chăm sóc đặc biệt..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"></textarea>
             </div>
 
-            <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:bg-indigo-700 hover:shadow-indigo-600/30 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:opacity-50">
-              {{ isSaving ? 'Đang tạo...' : '✨ Tạo hồ sơ thú cưng' }}
+            <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:bg-indigo-700 hover:shadow-indigo-600/30 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:opacity-50 gap-1.5">
+              <Sparkles v-if="!isSaving" class="w-4 h-4" />
+              {{ isSaving ? 'Đang tạo...' : 'Tạo hồ sơ thú cưng' }}
             </button>
           </form>
         </article>
@@ -89,12 +93,14 @@
           <!-- MỚI: Thanh tìm kiếm nhanh thú cưng -->
           <div class="mb-4 relative">
             <input v-model="searchQuery" type="text" placeholder="Tìm nhanh theo tên bé cưng, giống loại, ghi chú..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+              <Search class="w-4 h-4" />
+            </span>
           </div>
 
           <div class="space-y-4 max-h-[750px] overflow-y-auto pr-1">
             <div v-if="filteredPets.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
-              <span class="text-5xl mb-3">🐱🐶</span>
+              <PawPrint class="w-12 h-12 text-slate-300 mb-3" />
               <p class="text-sm font-bold text-slate-500">Không tìm thấy bé cưng nào phù hợp.</p>
               <p class="text-xs text-slate-400 mt-1">Vui lòng kiểm tra lại từ khóa tìm kiếm của bạn.</p>
             </div>
@@ -105,7 +111,7 @@
                 <div class="flex items-start gap-4">
                   <!-- Custom Avatar depending on species -->
                   <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-2xl group-hover:scale-105 transition-transform duration-300">
-                    {{ getSpeciesEmoji(pet.species?.name) }}
+                    <PawPrint class="w-7 h-7" />
                   </div>
                   <div>
                     <div class="flex items-center gap-2">
@@ -133,22 +139,31 @@
                 </div>
 
                 <div class="flex flex-wrap sm:flex-col justify-end gap-2.5 sm:self-center">
-                  <a :href="`/owner/pets/${pet.id}/edit`" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-indigo-500 hover:text-indigo-600">
-                    ⚙️ Chỉnh sửa
+                  <a :href="`/owner/pets/${pet.id}/edit`" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-indigo-500 hover:text-indigo-600 gap-1">
+                    <Pencil class="w-3 h-3 text-slate-400 group-hover:text-indigo-500" />
+                    Chỉnh sửa
                   </a>
-                  <a :href="`/owner/pets/${pet.id}/health-records`" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-amber-500 hover:text-amber-600">
-                    🏥 Bệnh án
+                  <a :href="`/owner/pets/${pet.id}/health-records`" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-amber-500 hover:text-amber-600 gap-1">
+                    <FileText class="w-3 h-3 text-slate-400 group-hover:text-amber-500" />
+                    Bệnh án
                   </a>
-                  <button @click="deletePet(pet.id)" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-rose-500 hover:text-rose-600">
-                    🗑️ Xóa hồ sơ
+                  <button @click="deletePet(pet.id)" class="btn-action inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-rose-500 hover:text-rose-600 gap-1">
+                    <Trash2 class="w-3 h-3 text-slate-400 group-hover:text-rose-500" />
+                    Xóa hồ sơ
                   </button>
                 </div>
               </div>
 
               <!-- Notes Callout -->
               <div v-if="pet.notes || pet.allergies" class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-1.5 text-xs text-slate-500">
-                <p v-if="pet.allergies" class="flex items-start gap-1"><span class="font-bold text-rose-500">⚠️ Dị ứng:</span> {{ pet.allergies }}</p>
-                <p v-if="pet.notes" class="flex items-start gap-1"><span class="font-bold text-slate-600">📝 Ghi chú:</span> {{ pet.notes }}</p>
+                <p v-if="pet.allergies" class="flex items-start gap-1">
+                  <AlertTriangle class="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
+                  <span class="font-bold text-rose-500">Dị ứng:</span> {{ pet.allergies }}
+                </p>
+                <p v-if="pet.notes" class="flex items-start gap-1">
+                  <FileText class="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                  <span class="font-bold text-slate-600">Ghi chú:</span> {{ pet.notes }}
+                </p>
               </div>
             </div>
           </div>
@@ -164,6 +179,7 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
+import { PawPrint, Sparkles, Search, Pencil, FileText, Trash2, AlertTriangle } from '@lucide/vue';
 
 const { notifySuccess, handleApiError } = useNotification();
 
@@ -207,29 +223,17 @@ function translateSpeciesName(name) {
     if (!name) return 'Chưa rõ';
     const normalized = name.trim().toLowerCase();
     const mapping = {
-        bird: 'Chim 🦜',
-        cat: 'Mèo 🐈',
-        dog: 'Chó 🐕',
-        fish: 'Cá 🐠',
-        rabbit: 'Thỏ 🐇',
-        hamster: 'Chuột Hamster 🐹',
+        bird: 'Chim',
+        cat: 'Mèo',
+        dog: 'Chó',
+        fish: 'Cá',
+        rabbit: 'Thỏ',
+        hamster: 'Chuột Hamster',
     };
     return mapping[normalized] || name;
 }
 
-function getSpeciesEmoji(name) {
-    if (!name) return '🐈';
-    const normalized = name.trim().toLowerCase();
-    const mapping = {
-        bird: '🦜',
-        cat: '🐈',
-        dog: '🐕',
-        fish: '🐠',
-        rabbit: '🐇',
-        hamster: '🐹',
-    };
-    return mapping[normalized] || '🐈';
-}
+
 
 function translateGender(value) {
     const mapping = {

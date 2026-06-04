@@ -3,8 +3,9 @@
     <div class="flex gap-4">
       <input v-model="search" type="text" placeholder="Tìm kiếm dịch vụ..." 
         class="flex-1 px-4 py-2 border rounded-lg">
-      <button @click="openCreateForm" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
-        ➕ Thêm Dịch Vụ
+      <button @click="openCreateForm" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+        <Plus class="w-4 h-4" />
+        Thêm Dịch Vụ
       </button>
     </div>
 
@@ -16,10 +17,12 @@
             <p class="text-sm text-gray-600">{{ service.description }}</p>
           </div>
           <button @click="toggleService(service)" :class="[
-            'px-3 py-1 rounded text-xs font-semibold',
+            'inline-flex items-center gap-1 px-3 py-1 rounded text-xs font-semibold',
             service.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
           ]">
-            {{ service.is_active ? '✓ Bật' : '❌ Tắt' }}
+            <Check v-if="service.is_active" class="w-3.5 h-3.5" />
+            <XCircle v-else class="w-3.5 h-3.5" />
+            {{ service.is_active ? 'Bật' : 'Tắt' }}
           </button>
         </div>
 
@@ -35,8 +38,14 @@
         </div>
 
         <div class="flex gap-2">
-          <button @click="editService(service)" class="flex-1 text-blue-600 hover:text-blue-800">✏️ Sửa</button>
-          <button @click="deleteService(service)" class="flex-1 text-red-600 hover:text-red-800">🗑️ Xóa</button>
+          <button @click="editService(service)" class="flex-1 inline-flex items-center justify-center gap-1 text-blue-600 hover:text-blue-800">
+            <Pencil class="w-3.5 h-3.5" />
+            Sửa
+          </button>
+          <button @click="deleteService(service)" class="flex-1 inline-flex items-center justify-center gap-1 text-red-600 hover:text-red-800">
+            <Trash2 class="w-3.5 h-3.5" />
+            Xóa
+          </button>
         </div>
       </div>
     </div>
@@ -67,8 +76,9 @@
           </div>
 
           <div class="flex gap-2">
-            <button @click="saveService" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-              💾 Lưu
+            <button @click="saveService" class="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              <Save class="w-4 h-4" />
+              Lưu
             </button>
             <button @click="showForm = false" class="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">
               Hủy
@@ -82,6 +92,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Plus, Check, XCircle, Pencil, Trash2, Save } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 import { callApi } from '../auth/http';
 

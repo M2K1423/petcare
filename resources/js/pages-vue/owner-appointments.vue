@@ -3,7 +3,10 @@
     <div class="flex flex-col gap-6">
       <!-- Section header with gradient line -->
       <div class="border-b border-slate-100 pb-4">
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">📅 Đặt lịch hẹn khám bệnh</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
+          <Calendar class="w-6 h-6 text-indigo-500" />
+          <span>Đặt lịch hẹn khám bệnh</span>
+        </h1>
         <p class="text-sm text-slate-400 mt-1">Đăng ký lịch khám với các bác sĩ chuyên khoa thú y hàng đầu của PetCare.</p>
       </div>
 
@@ -22,7 +25,7 @@
             <!-- Interactive Pet Checklist card -->
             <div class="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-4 transition-all duration-300 hover:border-slate-300">
               <div class="flex items-start gap-3">
-                <span class="text-2xl">🐕</span>
+                <PawPrint class="w-6 h-6 text-indigo-500 mt-0.5" />
                 <div>
                   <h4 class="text-sm font-bold text-slate-700">Kiểm tra thông tin thú cưng</h4>
                   <p class="text-xs text-slate-400 mt-1 leading-relaxed">
@@ -32,16 +35,17 @@
               </div>
               <a
                 href="/owner/pets"
-                class="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-indigo-50 px-4 py-2.5 text-xs font-bold text-indigo-600 hover:bg-indigo-100 transition-all duration-300"
+                class="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-indigo-50 px-4 py-2.5 text-xs font-bold text-indigo-600 hover:bg-indigo-100 transition-all duration-300"
               >
-                🐾 Quản lý hồ sơ bé cưng
+                <PawPrint class="w-3.5 h-3.5" />
+                <span>Quản lý hồ sơ bé cưng</span>
               </a>
             </div>
           </div>
 
           <!-- Bottom helpful prompt -->
-          <div class="mt-6 p-4 rounded-2xl bg-amber-50/40 border border-amber-100/50 flex gap-3 text-xs text-amber-700">
-            <span class="text-lg">💡</span>
+          <div class="mt-6 p-4 rounded-2xl bg-amber-50/40 border border-amber-100/50 flex gap-3 text-xs text-amber-700 items-start">
+            <Lightbulb class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <p class="leading-relaxed">
               Bạn có thể trò chuyện trực tiếp với <strong>Trợ lý AI PetCare</strong> qua ô chat bên cạnh để tham khảo ý kiến về triệu chứng trước khi chọn giờ khám nhé!
             </p>
@@ -62,7 +66,7 @@
               <select v-model="form.pet_id" required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
                 <option value="">Chọn thú cưng từ danh sách của bạn</option>
                 <option v-for="pet in pets" :key="pet.id" :value="pet.id">
-                  🐾 {{ pet.name }}{{ pet.species?.name ? ` (${translateSpecies(pet.species.name)})` : '' }}
+                  {{ pet.name }}{{ pet.species?.name ? ` (${translateSpecies(pet.species.name)})` : '' }}
                 </option>
               </select>
             </div>
@@ -72,7 +76,7 @@
               <select v-model="form.service_id" required class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
                 <option value="">Chọn dịch vụ khám thú cưng</option>
                 <option v-for="service in services" :key="service.id" :value="service.id">
-                  🩺 {{ service.name }} - {{ Number(service.price).toLocaleString('vi-VN') }}đ ({{ service.duration_minutes }} phút)
+                  {{ service.name }} - {{ Number(service.price).toLocaleString('vi-VN') }}đ ({{ service.duration_minutes }} phút)
                 </option>
               </select>
             </div>
@@ -114,8 +118,9 @@
             </div>
 
             <div class="sm:col-span-2 pt-2">
-              <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:bg-indigo-700 hover:shadow-indigo-600/30 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:opacity-50">
-                {{ isSaving ? 'Đang tạo...' : '✨ Đăng ký lịch hẹn khám' }}
+              <button type="submit" :disabled="isSaving" class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:bg-indigo-700 hover:shadow-indigo-600/30 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:opacity-50">
+                <Sparkles v-if="!isSaving" class="w-4 h-4" />
+                <span>{{ isSaving ? 'Đang tạo...' : 'Đăng ký lịch hẹn khám' }}</span>
               </button>
             </div>
           </form>
@@ -138,14 +143,15 @@
             
             <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
               <div v-if="filteredAppointments.length === 0" class="flex flex-col items-center justify-center py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-100">
-                <span class="text-3xl mb-1.5">📅</span>
+                <Calendar class="w-8 h-8 text-slate-300 mb-1.5" />
                 <p class="text-xs font-bold text-slate-500">Không tìm thấy lịch hẹn nào phù hợp.</p>
               </div>
               
               <div v-for="appointment in filteredAppointments" :key="appointment.id" class="appointment-item flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-[#FCFDFE] hover:border-slate-200 transition-all duration-300">
                 <div class="flex items-start gap-3">
                   <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center font-extrabold text-slate-500">
-                    {{ appointment.pet?.name ? appointment.pet.name.charAt(0).toUpperCase() : '🐈' }}
+                    <span v-if="appointment.pet?.name">{{ appointment.pet.name.charAt(0).toUpperCase() }}</span>
+                    <PawPrint v-else class="w-5 h-5 text-slate-400" />
                   </div>
                   <div>
                     <div class="flex items-center gap-2">
@@ -163,8 +169,9 @@
                   </div>
                 </div>
 
-                <button v-if="appointment.status === 'pending' || appointment.status === 'confirmed'" @click="cancelAppointment(appointment.id)" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-500 hover:border-rose-500 hover:text-rose-600 transition-all duration-200">
-                  ❌ Hủy
+                <button v-if="appointment.status === 'pending' || appointment.status === 'confirmed'" @click="cancelAppointment(appointment.id)" class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-500 hover:border-rose-500 hover:text-rose-600 transition-all duration-200">
+                  <XCircle class="w-4 h-4" />
+                  <span>Hủy</span>
                 </button>
               </div>
             </div>
@@ -178,7 +185,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
-import { Clock, Search } from '@lucide/vue';
+import { Clock, Search, Calendar, PawPrint, Lightbulb, Sparkles, XCircle } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

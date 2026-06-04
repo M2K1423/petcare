@@ -8,8 +8,12 @@
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           Trợ lý Ảo AI PetCare Đang Hoạt Động
         </span>
-        <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl">
-          {{ greeting }}, <span class="text-amber-200">{{ currentUser.name }}</span>!
+        <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl flex items-center gap-2">
+          <Sun v-if="greetingTime === 'morning'" class="w-8 h-8 text-amber-300" />
+          <CloudSun v-else-if="greetingTime === 'afternoon'" class="w-8 h-8 text-orange-200" />
+          <Moon v-else class="w-8 h-8 text-indigo-200" />
+          <span>{{ greetingText }}, </span>
+          <span class="text-amber-200">{{ currentUser.name }}</span>!
         </h1>
         <p class="mt-2 text-white/80 max-w-xl text-sm md:text-base">
           Chào mừng bạn quay trở lại với phòng khám thú y thông minh PetCare. Hãy theo dõi sức khỏe và lịch khám của các bé cưng ngay dưới đây nhé!
@@ -28,7 +32,7 @@
             <p class="mt-4 text-5xl font-extrabold tracking-tight text-slate-800 transition-colors group-hover:text-indigo-600">{{ pets.length }}</p>
           </div>
           <div class="rounded-2xl bg-indigo-50 p-4 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-            🐾
+            <PawPrint class="w-6 h-6" />
           </div>
         </div>
         <p class="mt-4 text-xs text-slate-400">Các hồ sơ sức khỏe và lịch sử khám đang hoạt động.</p>
@@ -43,7 +47,7 @@
             <p class="mt-4 text-5xl font-extrabold tracking-tight text-slate-800 transition-colors group-hover:text-amber-500">{{ appointments.length }}</p>
           </div>
           <div class="rounded-2xl bg-amber-50 p-4 text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-            📅
+            <Calendar class="w-6 h-6" />
           </div>
         </div>
         <p class="mt-4 text-xs text-slate-400">Tổng quan lịch hẹn khám bệnh và chăm sóc.</p>
@@ -62,7 +66,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500 border border-white"></span>
             </span>
-            ⏳
+            <Hourglass class="w-6 h-6" />
           </div>
         </div>
         <p class="mt-4 text-xs text-slate-400">Các yêu cầu xếp lịch đang được lễ tân xử lý.</p>
@@ -85,7 +89,9 @@
           <!-- Button 1 -->
           <a href="/owner/pets" class="quick-action-btn flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-indigo-50/40 hover:border-indigo-100 transition-all duration-300 group">
             <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform duration-300">🐾</div>
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform duration-300">
+                <PawPrint class="w-5 h-5" />
+              </div>
               <div class="text-left">
                 <p class="text-sm font-bold text-slate-700">Quản lý Thú cưng</p>
                 <p class="text-xs text-slate-400">Thêm mới hoặc sửa hồ sơ các bé</p>
@@ -99,7 +105,9 @@
           <!-- Button 2 -->
           <a href="/owner/appointments" class="quick-action-btn flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-amber-50/40 hover:border-amber-100 transition-all duration-300 group">
             <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform duration-300">📅</div>
+              <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform duration-300">
+                <Calendar class="w-5 h-5" />
+              </div>
               <div class="text-left">
                 <p class="text-sm font-bold text-slate-700">Đặt lịch hẹn mới</p>
                 <p class="text-xs text-slate-400">Đặt bác sĩ & thời gian khám nhanh chóng</p>
@@ -113,7 +121,9 @@
           <!-- Button 3 -->
           <a href="/owner/shop" class="quick-action-btn flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-emerald-50/40 hover:border-emerald-100 transition-all duration-300 group">
             <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform duration-300">💊</div>
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform duration-300">
+                <Pill class="w-5 h-5" />
+              </div>
               <div class="text-left">
                 <p class="text-sm font-bold text-slate-700">Cửa hàng thuốc y tế</p>
                 <p class="text-xs text-slate-400">Xem thuốc & các thực phẩm chức năng</p>
@@ -141,15 +151,15 @@
 
         <div class="mt-6 space-y-3 max-h-[300px] overflow-y-auto pr-1">
           <div v-if="appointments.length === 0" class="flex flex-col items-center justify-center py-10 text-center">
-            <span class="text-4xl mb-2">😴</span>
+            <CalendarOff class="w-10 h-10 text-slate-300 mb-2" />
             <p class="text-sm font-semibold text-slate-500">Bạn chưa có lịch hẹn khám nào.</p>
             <a href="/owner/appointments" class="mt-2 text-xs font-bold text-indigo-500 hover:underline">Đặt lịch ngay hôm nay!</a>
           </div>
           
           <div v-for="item in recentAppointments" :key="item.id" class="appointment-item flex items-center justify-between p-4 rounded-2xl border border-slate-50 bg-[#FCFDFE] hover:border-slate-200 transition-all duration-300">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-slate-100/80 flex items-center justify-center font-bold text-slate-500">
-                {{ item.pet?.name ? item.pet.name.charAt(0).toUpperCase() : '🐈' }}
+              <div class="w-10 h-10 rounded-xl bg-slate-100/80 flex items-center justify-center">
+                <PawPrint class="w-5 h-5 text-slate-400" />
               </div>
               <div>
                 <p class="text-sm font-bold text-slate-700">{{ item.pet?.name ?? 'Chưa xác định' }}</p>
@@ -173,7 +183,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { ChevronRight, Clock } from '@lucide/vue';
+import { ChevronRight, Clock, Calendar, PawPrint, Hourglass, Pill, CalendarOff, Sun, CloudSun, Moon } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 
@@ -186,11 +196,19 @@ const pendingCount = computed(() => appointments.value.filter(a => a.status === 
 const recentAppointments = computed(() => appointments.value.slice(0, 5));
 
 // Dynamic Greeting based on time
-const greeting = computed(() => {
+const greetingTime = computed(() => {
   const hr = new Date().getHours();
-  if (hr < 12) return 'Chào buổi sáng ☀️';
-  if (hr < 18) return 'Chào buổi chiều 🌤️';
-  return 'Chào buổi tối 🌙';
+  if (hr < 12) return 'morning';
+  if (hr < 18) return 'afternoon';
+  return 'evening';
+});
+
+const greetingText = computed(() => {
+  switch (greetingTime.value) {
+    case 'morning': return 'Chào buổi sáng';
+    case 'afternoon': return 'Chào buổi chiều';
+    default: return 'Chào buổi tối';
+  }
 });
 
 function formatDateTime(input) {

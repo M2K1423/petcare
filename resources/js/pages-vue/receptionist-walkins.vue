@@ -6,11 +6,15 @@
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 mb-2">
           Lễ tân sảnh chờ
         </span>
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">🚶‍♂️ Tiếp nhận Khách vãng lai</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
+          <UserPlus class="w-6 h-6 text-indigo-600" />
+          Tiếp nhận Khách vãng lai
+        </h1>
         <p class="text-sm text-slate-400 mt-0.5">Đăng ký nhanh hồ sơ khách hàng mới và xếp thú cưng trực tiếp vào hàng chờ khám đột xuất.</p>
       </div>
-      <a href="/receptionist/dashboard" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50">
-        ⬅️ Quay lại Bảng điều khiển
+      <a href="/receptionist/dashboard" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 gap-1.5">
+        <ArrowLeft class="w-3.5 h-3.5" />
+        Quay lại Bảng điều khiển
       </a>
     </header>
 
@@ -47,7 +51,7 @@
 
           <select v-model="form.species_id" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" required>
             <option value="" disabled>Chọn loài thú cưng...</option>
-            <option v-for="sp in species" :key="sp.id" :value="sp.id">🐾 {{ translateSpeciesName(sp.name) }}</option>
+            <option v-for="sp in species" :key="sp.id" :value="sp.id">{{ translateSpeciesName(sp.name) }}</option>
           </select>
         </fieldset>
 
@@ -58,8 +62,8 @@
             Phân công Bác sĩ điều trị
           </legend>
           <select v-model="form.doctor_id" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-            <option value="">🍀 Tự động phân công ngẫu nhiên bác sĩ đang rảnh</option>
-            <option v-for="doc in doctors" :key="doc.id" :value="doc.id">👨‍⚕️ BS. {{ doc.user?.name || `Bác sĩ #${doc.id}` }}</option>
+            <option value="">Tự động phân công ngẫu nhiên bác sĩ đang rảnh</option>
+            <option v-for="doc in doctors" :key="doc.id" :value="doc.id">BS. {{ doc.user?.name || `Bác sĩ #${doc.id}` }}</option>
           </select>
         </fieldset>
 
@@ -71,13 +75,13 @@
           </legend>
           
           <select v-model="conditionOption" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-            <option value="">🔎 Chọn nhóm triệu chứng phổ biến...</option>
-            <option value="Khám tổng quát">🩺 Khám tổng quát định kỳ</option>
-            <option value="Tiêm phòng">💉 Tiêm phòng vắc-xin</option>
-            <option value="Vấn đề tiêu hóa">🤢 Biểu hiện tiêu hóa (Bỏ ăn, nôn mửa)</option>
-            <option value="Vấn đề da liễu">🧼 Bệnh lý da liễu (Ngứa, rụng lông)</option>
-            <option value="Chấn thương">🩹 Chấn thương ngoại khoa (Đi khập khiễng)</option>
-            <option value="Other">📝 Lý do khác (Tự nhập chi tiết dưới đây)</option>
+            <option value="">Chọn nhóm triệu chứng phổ biến...</option>
+            <option value="Khám tổng quát">Khám tổng quát định kỳ</option>
+            <option value="Tiêm phòng">Tiêm phòng vắc-xin</option>
+            <option value="Vấn đề tiêu hóa">Biểu hiện tiêu hóa (Bỏ ăn, nôn mửa)</option>
+            <option value="Vấn đề da liễu">Bệnh lý da liễu (Ngứa, rụng lông)</option>
+            <option value="Chấn thương">Chấn thương ngoại khoa (Đi khập khiễng)</option>
+            <option value="Other">Lý do khác (Tự nhập chi tiết dưới đây)</option>
           </select>
           
           <input v-model="conditionCustom" :readonly="!isCustomCondition" type="text" :placeholder="isCustomCondition ? 'Nhập chi tiết bệnh lý hoặc lý do khám...' : 'Ghi chú thêm triệu chứng (Không bắt buộc)...'" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
@@ -87,12 +91,14 @@
         <div class="flex items-center gap-3 p-4 rounded-2xl bg-rose-50/50 border border-rose-100 transition-all duration-300 hover:bg-rose-50">
           <input v-model="form.is_emergency" type="checkbox" id="is_emergency" class="h-5 w-5 rounded border-rose-300 text-rose-600 focus:ring-rose-500 cursor-pointer">
           <label for="is_emergency" class="text-sm font-extrabold text-rose-600 cursor-pointer select-none flex items-center gap-1.5">
-            🚨 ĐÁNH DẤU CA CẤP CỨU KHẨN CẤP (Xử lý ngay lập tức)
+            <AlertTriangle class="w-4 h-4 text-rose-600 shrink-0" />
+            ĐÁNH DẤU CA CẤP CỨU KHẨN CẤP (Xử lý ngay lập tức)
           </label>
         </div>
 
         <button type="submit" :disabled="isSubmitting" class="w-full rounded-xl bg-indigo-600 px-4 py-3.5 font-bold text-white shadow-lg shadow-indigo-600/10 hover:bg-indigo-700 hover:shadow-indigo-600/20 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2">
-          {{ isSubmitting ? 'Đang xếp hàng chờ...' : '✨ Đăng ký & Đưa vào hàng chờ trực tiếp' }}
+          <Sparkles v-if="!isSubmitting" class="w-4 h-4" />
+          {{ isSubmitting ? 'Đang xếp hàng chờ...' : 'Đăng ký & Đưa vào hàng chờ trực tiếp' }}
         </button>
       </form>
     </article>
@@ -102,6 +108,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
+import { UserPlus, ArrowLeft, AlertTriangle, Sparkles } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

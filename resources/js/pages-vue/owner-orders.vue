@@ -3,7 +3,10 @@
     <div class="flex flex-col gap-6">
       <!-- Section header with gradient line -->
       <div class="border-b border-slate-100 pb-4">
-        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">📋 Đơn thuốc của tôi</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
+          <ClipboardList class="w-6 h-6 text-indigo-500" />
+          <span>Đơn thuốc của tôi</span>
+        </h1>
         <p class="text-sm text-slate-400 mt-1">Theo dõi chi tiết các đơn thuốc được kê, trạng thái xác nhận và lịch sử thanh toán.</p>
       </div>
 
@@ -15,7 +18,7 @@
 
       <div class="space-y-6">
         <div v-if="filteredOrders.length === 0" class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
-          <span class="text-5xl mb-3">📄</span>
+          <FileText class="w-12 h-12 text-slate-300 mb-3" />
           <p class="text-sm font-bold text-slate-500">Không tìm thấy đơn hàng nào phù hợp.</p>
         </div>
         
@@ -40,7 +43,8 @@
             <!-- Order Items Card -->
             <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
               <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-400 border-b border-slate-50 pb-2 flex items-center gap-1.5">
-                <span>📦</span> Chi tiết thuốc đã đặt
+                <Package class="w-4 h-4" />
+                <span>Chi tiết thuốc đã đặt</span>
               </p>
               <div class="mt-4 space-y-4">
                 <div v-for="item in (order.items || [])" :key="item.id" class="flex items-center justify-between gap-3 border-b border-slate-50/50 pb-3 last:border-b-0 last:pb-0">
@@ -56,7 +60,8 @@
             <!-- Payment details Card -->
             <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
               <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-400 border-b border-slate-50 pb-2 flex items-center gap-1.5">
-                <span>💳</span> Thông tin thanh toán
+                <CreditCard class="w-4 h-4" />
+                <span>Thông tin thanh toán</span>
               </p>
               <div class="mt-4 space-y-2 text-xs text-slate-500 leading-relaxed">
                 <p class="flex justify-between border-b border-slate-50 pb-2">
@@ -93,8 +98,9 @@
                 </p>
                 
                 <div v-if="order.payment?.status === 'pending'" class="mt-4 pt-2">
-                  <button @click="collectOwnerPayment(order.id, 'vnpay')" class="inline-flex w-full items-center justify-center rounded-xl bg-[#0055A6] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#00427F] disabled:opacity-50 transition-all duration-200" :disabled="isPaying">
-                    {{ isPaying ? 'Đang kết nối cổng thanh toán...' : '💳 Thanh toán trực tuyến VNPay' }}
+                  <button @click="collectOwnerPayment(order.id, 'vnpay')" class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#0055A6] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#00427F] disabled:opacity-50 transition-all duration-200" :disabled="isPaying">
+                    <CreditCard v-if="!isPaying" class="w-4 h-4" />
+                    <span>{{ isPaying ? 'Đang kết nối cổng thanh toán...' : 'Thanh toán trực tuyến VNPay' }}</span>
                   </button>
                 </div>
               </div>
@@ -109,7 +115,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { Clock, Search } from '@lucide/vue';
+import { Clock, Search, ClipboardList, FileText, Package, CreditCard } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';
@@ -163,10 +169,10 @@ function getOrderStatusLabel(status) {
 
 function getPaymentStatusLabel(status) {
   switch (status) {
-    case 'paid': return 'Đã thanh toán thành công ✅';
+    case 'paid': return 'Đã thanh toán thành công';
     case 'confirmed': return 'Đã duyệt đơn hàng';
     case 'cancelled': return 'Đã hủy giao dịch';
-    case 'pending': return 'Chờ thanh toán ⏳';
+    case 'pending': return 'Chờ thanh toán';
     default: return 'Đang chờ xử lý';
   }
 }

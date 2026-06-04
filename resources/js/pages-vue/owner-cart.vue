@@ -21,7 +21,10 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <input type="number" min="1" v-model.number="item.quantity" @change="updateQuantity(item)" class="w-20 rounded-xl border border-[#C1C4C9] px-3 py-2 text-sm outline-none focus:border-[#2A6496]">
-                                <button @click="removeItem(item.medicine.id)" class="rounded-lg bg-[#FEF3F2] px-3 py-2 text-sm text-[#B42318] transition hover:bg-[#FEE4E2]">Xóa</button>
+                                <button @click="removeItem(item.medicine.id)" class="inline-flex items-center rounded-lg bg-[#FEF3F2] px-3 py-2 text-sm text-[#B42318] transition hover:bg-[#FEE4E2] gap-1">
+                                    <Trash2 class="w-3.5 h-3.5" />
+                                    Xóa
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -48,7 +51,8 @@
                                 <p class="text-2xl font-extrabold text-[#2A6496]">{{ formatCurrency(total) }}</p>
                             </div>
                             <div>
-                                <button @click="checkoutFlow" :disabled="isCheckingOut" class="rounded-xl bg-[#2A6496] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:opacity-50">
+                                <button @click="checkoutFlow" :disabled="isCheckingOut" class="inline-flex items-center rounded-xl bg-[#2A6496] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#235780] disabled:opacity-50 gap-1.5">
+                                    <CreditCard v-if="!isCheckingOut" class="w-4 h-4" />
                                     {{ isCheckingOut ? 'Đang xử lý...' : 'Thanh toán' }}
                                 </button>
                             </div>
@@ -64,6 +68,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Trash2, CreditCard } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

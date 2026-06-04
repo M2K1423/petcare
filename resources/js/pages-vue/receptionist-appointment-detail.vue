@@ -5,7 +5,8 @@
             <h1 class="text-2xl font-bold text-gray-900">Chi tiết lịch hẹn</h1>
             <p class="text-sm text-gray-500">Xem đầy đủ thông tin của lịch hẹn đã chọn.</p>
         </div>
-        <a href="/receptionist/appointments" class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
+        <a href="/receptionist/appointments" class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 gap-1.5">
+            <ArrowLeft class="w-4 h-4" />
             Quay lại lịch hẹn
         </a>
     </div>
@@ -34,7 +35,8 @@
                         <option value="">-- Chọn bác sĩ --</option>
                         <option v-for="doc in doctors" :key="doc.id" :value="doc.id">BS. {{ doc.user?.name }}</option>
                     </select>
-                    <button @click="assignDoctor" :disabled="isAssigning" class="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition">
+                    <button @click="assignDoctor" :disabled="isAssigning" class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition gap-1">
+                        <UserCheck v-if="!isAssigning" class="w-3.5 h-3.5" />
                         {{ isAssigning ? 'Đang lưu...' : 'Phân công' }}
                     </button>
                 </div>
@@ -49,6 +51,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { ArrowLeft, UserCheck } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

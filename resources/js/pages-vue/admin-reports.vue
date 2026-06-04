@@ -22,8 +22,9 @@
         <input v-model="endDate" type="date" class="px-4 py-2 border rounded">
       </div>
       <div class="flex items-end">
-        <button @click="generateReport" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-          📊 Tạo Báo Cáo
+        <button @click="generateReport" class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+          <BarChart3 class="w-4 h-4" />
+          Tạo Báo Cáo
         </button>
       </div>
     </div>
@@ -86,7 +87,10 @@
             <td class="px-6 py-4 font-medium">{{ doctor.name }}</td>
             <td class="px-6 py-4 text-right">{{ doctor.appointments }}</td>
             <td class="px-6 py-4 text-right font-bold">{{ formatCurrency(doctor.revenue) }}</td>
-            <td class="px-6 py-4 text-right">{{ doctor.rating }}/5 ⭐</td>
+            <td class="px-6 py-4 text-right flex items-center justify-end">
+              {{ doctor.rating }}/5
+              <Star class="w-3.5 h-3.5 text-amber-400 fill-amber-400 ml-1" />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -136,6 +140,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { BarChart3, Star } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, handleApiError } = useNotification();

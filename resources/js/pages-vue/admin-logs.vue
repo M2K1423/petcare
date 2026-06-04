@@ -22,8 +22,9 @@
         <option value="Appointment">Lịch Hẹn</option>
       </select>
 
-      <button @click="clearOldLogs" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
-        🗑️ Xóa Cũ
+      <button @click="clearOldLogs" class="inline-flex items-center gap-1.5 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+        <Trash2 class="w-4 h-4" />
+        Xóa Cũ
       </button>
     </div>
 
@@ -66,13 +67,18 @@
             <td class="px-6 py-4 font-medium">{{ log.user?.name || 'Hệ Thống' }}</td>
             <td class="px-6 py-4">
               <span :class="[
-                'px-2 py-1 rounded text-xs font-semibold',
+                'inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold',
                 log.action === 'create' ? 'bg-green-100 text-green-800' :
                 log.action === 'update' ? 'bg-blue-100 text-blue-800' :
                 log.action === 'delete' ? 'bg-red-100 text-red-800' :
                 log.action === 'login' ? 'bg-purple-100 text-purple-800' :
                 'bg-gray-100 text-gray-800'
               ]">
+                <Sparkles v-if="log.action === 'create'" class="w-3 h-3" />
+                <Pencil v-else-if="log.action === 'update'" class="w-3 h-3" />
+                <Trash2 v-else-if="log.action === 'delete'" class="w-3 h-3" />
+                <Unlock v-else-if="log.action === 'login'" class="w-3 h-3" />
+                <Lock v-else-if="log.action === 'logout'" class="w-3 h-3" />
                 {{ actionLabel(log.action) }}
               </span>
             </td>
@@ -83,7 +89,10 @@
             <td class="px-6 py-4 text-xs text-gray-500">{{ log.ip_address || 'N/A' }}</td>
             <td class="px-6 py-4 text-xs">{{ formatDate(log.created_at) }}</td>
             <td class="px-6 py-4">
-              <button @click="viewDetails(log)" class="text-blue-600 hover:text-blue-800">👁️ Chi Tiết</button>
+              <button @click="viewDetails(log)" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                <Eye class="w-3.5 h-3.5" />
+                Chi Tiết
+              </button>
             </td>
           </tr>
         </tbody>
@@ -101,7 +110,10 @@
     <!-- Details Modal -->
     <div v-if="showDetail" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
       <div class="bg-white rounded-lg p-8 w-full max-w-2xl max-h-96 overflow-y-auto">
-        <h3 class="text-xl font-bold mb-4">📋 Chi Tiết Hoạt Động</h3>
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <ClipboardList class="w-5 h-5 text-indigo-500" />
+          Chi Tiết Hoạt Động
+        </h3>
 
         <div class="space-y-3 mb-6">
           <div>
@@ -110,7 +122,14 @@
           </div>
           <div>
             <strong class="text-gray-600">Hành Động:</strong>
-            <p>{{ actionLabel(selectedLog?.action) }}</p>
+            <p class="inline-flex items-center gap-1 mt-1">
+              <Sparkles v-if="selectedLog?.action === 'create'" class="w-3.5 h-3.5 text-green-600" />
+              <Pencil v-else-if="selectedLog?.action === 'update'" class="w-3.5 h-3.5 text-blue-600" />
+              <Trash2 v-else-if="selectedLog?.action === 'delete'" class="w-3.5 h-3.5 text-red-600" />
+              <Unlock v-else-if="selectedLog?.action === 'login'" class="w-3.5 h-3.5 text-purple-600" />
+              <Lock v-else-if="selectedLog?.action === 'logout'" class="w-3.5 h-3.5 text-gray-600" />
+              {{ actionLabel(selectedLog?.action) }}
+            </p>
           </div>
           <div>
             <strong class="text-gray-600">Entity:</strong>
@@ -152,6 +171,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Trash2, Eye, ClipboardList, Sparkles, Pencil, Unlock, Lock } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, handleApiError } = useNotification();
@@ -172,11 +192,11 @@ const formatDate = (date) => {
 
 const actionLabel = (action) => {
   const labels = {
-    'create': '✨ Tạo',
-    'update': '✏️ Sửa',
-    'delete': '🗑️ Xóa',
-    'login': '🔓 Đăng Nhập',
-    'logout': '🔒 Đăng Xuất'
+    'create': 'Tạo',
+    'update': 'Sửa',
+    'delete': 'Xóa',
+    'login': 'Đăng Nhập',
+    'logout': 'Đăng Xuất'
   };
   return labels[action] || action;
 };
