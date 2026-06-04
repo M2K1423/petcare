@@ -40,7 +40,7 @@
                                 {{ order.payment?.gateway_transaction_no ? `Paid - VNPAY ${order.payment.gateway_transaction_no}` : order.payment?.transaction_code ? `Paid - ${order.payment.transaction_code}` : 'Paid' }}
                             </span>
                             <button @click="printInvoice(order.payment.id)" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 flex items-center gap-2">
-                                <i class="fas fa-print"></i> In Hóa Đơn
+                                <Printer class="w-4 h-4" /> In Hóa Đơn
                             </button>
                         </template>
                     </div>
@@ -114,6 +114,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { Printer } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

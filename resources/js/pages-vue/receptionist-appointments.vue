@@ -17,14 +17,14 @@
                 <input v-model="selectedDate" type="date" class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 outline-none focus:border-blue-500">
                 <button @click="loadAppointments" class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Xem</button>
                 <button @click="setToday" class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Hôm nay</button>
-                <button @click="loadAppointments" class="text-sm text-blue-600 hover:text-blue-800"><i class="fas fa-sync-alt"></i> Làm mới</button>
+                <button @click="loadAppointments" class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"><RefreshCw class="w-3.5 h-3.5" /> Làm mới</button>
             </div>
         </div>
 
         <!-- MỚI: Thanh tìm kiếm nhanh lịch hẹn -->
         <div class="mb-4 relative">
           <input v-model="searchQuery" type="text" placeholder="Tìm theo tên bé cưng, tên chủ nuôi, số điện thoại..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+          <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
         </div>
 
         <div class="flex flex-col gap-3">
@@ -53,6 +53,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { RefreshCw, Search } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

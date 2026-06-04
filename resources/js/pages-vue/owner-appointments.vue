@@ -133,7 +133,7 @@
             <!-- MỚI: Thanh tìm kiếm nhanh lịch hẹn -->
             <div class="mb-4 relative">
               <input v-model="searchQuery" type="text" placeholder="Tìm theo tên bé, dịch vụ, triệu chứng khám..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+              <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             </div>
             
             <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
@@ -155,7 +155,7 @@
                       </span>
                     </div>
                     <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <Clock class="h-3.5 w-3.5 text-slate-400" />
                       {{ formatAppointmentDate(appointment.appointment_at) }}
                     </p>
                     <p class="text-[11px] text-indigo-500 font-bold mt-1">Dịch vụ: {{ appointment.service?.name || 'Khám tổng quát' }}</p>
@@ -178,6 +178,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
+import { Clock, Search } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

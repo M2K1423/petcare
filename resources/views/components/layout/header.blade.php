@@ -2,8 +2,10 @@
     <div class="flex w-full flex-wrap items-center gap-4 px-6 py-4 md:px-10">
         <!-- Button Toggle Sidebar for Mobile -->
         <button id="mobile-sidebar-toggle" class="mr-1 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#666666] shadow-sm hover:border-[#2A6496] hover:text-[#2A6496] transition lg:hidden" aria-label="Mở sidebar">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-6 w-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12.75 17.25h7.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
         </button>
 
@@ -18,9 +20,9 @@
         <div class="ml-auto flex w-full items-center gap-2 sm:w-auto md:gap-3">
             <label class="relative block min-w-0 flex-1 sm:w-56 md:w-64">
                 <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[#999999]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="m20 20-3.5-3.5"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
                     </svg>
                 </span>
                 <input
@@ -35,9 +37,9 @@
                 <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496] cursor-pointer">
                     <span class="sr-only">Thông báo</span>
                     <div class="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
-                            <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"></path>
-                            <path d="M10 17a2 2 0 0 0 4 0"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                         </svg>
                         <span id="notification-badge" class="hidden absolute -top-1 -right-1 h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] text-white"></span>
                     </div>
@@ -56,10 +58,10 @@
             <a href="{{ route('owner.cart') }}" id="cart-link" class="hidden h-10 w-10 items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#999999] transition hover:border-[#2A6496] hover:text-[#2A6496]">
                 <span class="sr-only">Giỏ hàng</span>
                 <div class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
-                        <path d="M6 6h15l-1.5 9h-13z"></path>
-                        <circle cx="9" cy="20" r="1"></circle>
-                        <circle cx="18" cy="20" r="1"></circle>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <circle cx="8" cy="21" r="1"></circle>
+                        <circle cx="19" cy="21" r="1"></circle>
+                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
                     </svg>
                     <span id="cart-badge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-4 px-1 rounded-full bg-[#1E7A34] text-[10px] text-white items-center justify-center"></span>
                 </div>
@@ -68,9 +70,9 @@
             <details class="group relative">
                 <summary class="inline-flex h-10 w-10 list-none items-center justify-center rounded-xl border border-[#C1C4C9] bg-[#FFFFFF] text-[#C1C4C9] transition hover:border-[#2A6496] hover:text-[#2A6496]">
                     <span class="sr-only">Menu người dùng</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4">
-                        <circle cx="12" cy="8" r="4"></circle>
-                        <path d="M4 20c1.8-3.2 4.5-5 8-5s6.2 1.8 8 5"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                 </summary>
 

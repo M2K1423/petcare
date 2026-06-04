@@ -159,7 +159,7 @@
                         </button>
                         <button @click="refreshData" type="button" class="rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] hover:border-[#2A6496] hover:text-[#2A6496]">Làm mới</button>
                         <button @click="printPrescription" type="button" class="rounded-xl border border-[#C1C4C9] bg-white px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm hover:bg-gray-50 flex items-center gap-2">
-                            <i class="fas fa-print"></i> In Đơn Thuốc
+                            <Printer class="w-4 h-4" /> In Đơn Thuốc
                         </button>
                     </div>
                 </form>
@@ -211,6 +211,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Printer } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

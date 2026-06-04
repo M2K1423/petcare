@@ -9,9 +9,7 @@
             <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-800">Chi tiết sản phẩm thuốc</h1>
           </div>
           <a href="/owner/shop" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-100 hover:border-slate-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+            <ArrowLeft class="h-4 w-4" />
             Quay lại cửa hàng
           </a>
         </div>
@@ -87,11 +85,11 @@
                   <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Chọn số lượng</span>
                   <div class="flex items-center gap-2 border border-slate-200 rounded-xl p-1 bg-slate-50 w-36">
                     <button type="button" @click="decQty" class="h-9 w-9 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-indigo-600 active:scale-95 transition" :disabled="quantity <= 1 || medicine.stock_quantity <= 0">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
+                      <Minus class="h-4 w-4" />
                     </button>
                     <input v-model.number="quantity" type="number" min="1" :max="medicine.stock_quantity" class="w-10 bg-transparent text-center font-bold text-sm text-slate-700 border-none outline-none select-none" readonly :disabled="medicine.stock_quantity <= 0">
                     <button type="button" @click="incQty" class="h-9 w-9 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-indigo-600 active:scale-95 transition" :disabled="quantity >= medicine.stock_quantity || medicine.stock_quantity <= 0">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                      <Plus class="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -105,7 +103,7 @@
               <!-- Button actions -->
               <div class="flex gap-4">
                 <button @click="addToCart" type="button" class="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 text-sm font-extrabold text-white shadow-lg shadow-indigo-600/10 hover:bg-indigo-700 hover:shadow-indigo-600/20 active:scale-[0.98] transition-all duration-200" :disabled="medicine.stock_quantity <= 0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  <ShoppingCart class="h-5 w-5 shrink-0" />
                   Thêm vào giỏ hàng
                 </button>
               </div>
@@ -120,6 +118,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { ArrowLeft, Minus, Plus, ShoppingCart } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

@@ -92,7 +92,7 @@
               </div>
             </div>
             <span class="text-slate-400 group-hover:translate-x-1 group-hover:text-indigo-500 transition-all duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <ChevronRight class="h-5 w-5" />
             </span>
           </a>
 
@@ -106,7 +106,7 @@
               </div>
             </div>
             <span class="text-slate-400 group-hover:translate-x-1 group-hover:text-amber-500 transition-all duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <ChevronRight class="h-5 w-5" />
             </span>
           </a>
 
@@ -120,7 +120,7 @@
               </div>
             </div>
             <span class="text-slate-400 group-hover:translate-x-1 group-hover:text-emerald-500 transition-all duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <ChevronRight class="h-5 w-5" />
             </span>
           </a>
         </div>
@@ -154,7 +154,7 @@
               <div>
                 <p class="text-sm font-bold text-slate-700">{{ item.pet?.name ?? 'Chưa xác định' }}</p>
                 <p class="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <Clock class="h-3.5 w-3.5 text-slate-400" />
                   {{ formatDateTime(item.appointment_at) }}
                 </p>
               </div>
@@ -173,6 +173,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { ChevronRight, Clock } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { Search, ShoppingCart, Box, Trash2, ArrowRight, X } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import { useNotification } from '../composables/useNotification';
 
@@ -183,7 +184,7 @@ onMounted(() => {
             <div class="p-4 border-b border-slate-200 bg-slate-50 flex gap-4 items-center shrink-0">
                 <div class="flex-1 relative">
                     <input v-model="searchTerm" type="text" placeholder="Tìm kiếm thuốc..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#1D4ED8] focus:border-[#1D4ED8] text-sm">
-                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <Search class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" />
                 </div>
                 <select v-model="categoryFilter" class="w-48 py-2.5 px-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#1D4ED8] text-sm bg-white">
                     <option value="all">Tất cả danh mục</option>
@@ -222,13 +223,13 @@ onMounted(() => {
         <div class="h-full bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
             <div class="p-4 bg-[#1D4ED8] text-white shrink-0">
                 <h2 class="font-bold text-lg flex items-center gap-2">
-                    <i class="fas fa-shopping-cart"></i> Giỏ Hàng Tại Quầy
+                    <ShoppingCart class="w-5 h-5 inline-block mr-1 text-white" /> Giỏ Hàng Tại Quầy
                 </h2>
             </div>
             
             <div class="flex-1 overflow-y-auto p-4 space-y-3">
                 <div v-if="cart.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400">
-                    <i class="fas fa-box-open text-4xl mb-3"></i>
+                    <Box class="w-12 h-12 mb-3 text-slate-400" />
                     <p>Chưa có sản phẩm</p>
                 </div>
                 
@@ -243,7 +244,7 @@ onMounted(() => {
                         <button @click="item.quantity < item.medicine.stock_quantity ? item.quantity++ : null" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-r-lg" :class="{'opacity-50': item.quantity >= item.medicine.stock_quantity}">+</button>
                     </div>
                     <button @click="removeFromCart(index)" class="w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0">
-                        <i class="fas fa-trash-alt"></i>
+                        <Trash2 class="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -254,7 +255,7 @@ onMounted(() => {
                     <span class="font-bold text-xl text-[#1D4ED8]">{{ formatCurrency(cartTotal) }}</span>
                 </div>
                 <button @click="openCheckout" :disabled="cart.length === 0" class="w-full bg-[#1D4ED8] text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                    Tiến hành Thanh toán <i class="fas fa-arrow-right"></i>
+                    Tiến hành Thanh toán <ArrowRight class="w-4 h-4 inline-block ml-1" />
                 </button>
             </div>
         </div>
@@ -266,7 +267,7 @@ onMounted(() => {
             <div class="p-5 border-b border-slate-100 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold text-slate-800">Xác nhận tạo đơn thuốc</h3>
                 <button @click="closeCheckout" class="text-slate-400 hover:text-slate-600 bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center">
-                    <i class="fas fa-times"></i>
+                    <X class="w-4 h-4" />
                 </button>
             </div>
             

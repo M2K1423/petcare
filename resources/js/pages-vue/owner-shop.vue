@@ -15,7 +15,7 @@
             <div class="relative mt-2">
               <input v-model="searchQuery" id="shop-medicine-search" type="text" placeholder="Tìm theo tên thuốc, danh mục điều trị, mô tả..." class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 py-3 text-sm text-slate-700 outline-none transition duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <Search class="h-5 w-5" />
               </span>
             </div>
           </div>
@@ -81,7 +81,7 @@
                   <input v-model.number="cartQuantities[medicine.id]" type="number" min="1" :max="medicine.stock_quantity" class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-2 py-2 text-center text-sm outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" :disabled="medicine.stock_quantity <= 0">
                 </div>
                 <button @click="addToCart(medicine)" type="button" class="flex-1 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-bold text-white shadow-md shadow-indigo-600/10 hover:bg-indigo-700 hover:shadow-indigo-600/20 transition-all duration-200 flex items-center justify-center gap-1.5" :disabled="medicine.stock_quantity <= 0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  <ShoppingCart class="h-4 w-4 shrink-0" />
                   <span class="whitespace-nowrap">Thêm</span>
                 </button>
               </div>
@@ -96,6 +96,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { Search, ShoppingCart } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

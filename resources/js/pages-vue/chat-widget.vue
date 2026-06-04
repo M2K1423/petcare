@@ -16,7 +16,7 @@
         <div class="bg-[#1D4ED8] p-4 text-white flex justify-between items-center shrink-0">
           <div class="flex items-center gap-3">
             <button v-if="currentSession && isStaff" @click="goBack" class="p-1.5 -ml-1.5 hover:bg-white/20 rounded-lg transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              <ChevronLeft class="w-5 h-5" />
             </button>
             <div>
               <h3 class="font-semibold text-base leading-tight">
@@ -28,7 +28,7 @@
             </div>
           </div>
           <button @click="toggleOpen" class="p-1.5 -mr-1.5 hover:bg-white/20 rounded-lg transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <X class="w-5 h-5" />
           </button>
         </div>
 
@@ -53,7 +53,7 @@
                 <p class="font-medium text-slate-900 truncate group-hover:text-[#1D4ED8] transition-colors">{{ staff.name }}</p>
                 <p class="text-xs text-slate-500">{{ staff.role.name }}</p>
               </div>
-              <svg class="w-4 h-4 text-slate-400 group-hover:text-[#1D4ED8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              <ChevronRight class="w-4 h-4 text-slate-400 group-hover:text-[#1D4ED8]" />
             </button>
           </div>
         </div>
@@ -95,7 +95,7 @@
                   <p class="font-medium text-slate-900 truncate group-hover:text-[#1D4ED8] transition-colors">{{ target.name }}</p>
                   <p class="text-xs text-slate-500">{{ target.role.name }}</p>
                 </div>
-                <svg class="w-4 h-4 text-slate-400 group-hover:text-[#1D4ED8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <ChevronRight class="w-4 h-4 text-slate-400 group-hover:text-[#1D4ED8]" />
               </button>
             </div>
           </div>
@@ -106,7 +106,7 @@
               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D4ED8]"></div>
             </div>
             <div v-else-if="sessions.length === 0" class="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400">
-              <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+              <MessageSquare class="w-12 h-12 mb-3" />
               <p>Không có tin nhắn nào</p>
             </div>
             <div v-else class="divide-y divide-slate-100 overflow-y-auto pointer-events-auto">
@@ -184,7 +184,7 @@
                 :disabled="!newMessage.trim() || isSending"
                 class="w-11 h-11 shrink-0 bg-[#1D4ED8] text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <svg v-if="!isSending" class="w-5 h-5 translate-x-px -translate-y-px" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+                <SendHorizontal v-if="!isSending" class="w-5 h-5 translate-x-px -translate-y-px" />
                 <div v-else class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
               </button>
             </form>
@@ -199,8 +199,8 @@
       @click="toggleOpen"
       class="w-14 h-14 bg-[#1D4ED8] text-white rounded-full shadow-[0_8px_20px_-4px_rgba(29,78,216,0.5)] flex items-center justify-center hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all pointer-events-auto relative z-10"
     >
-      <svg v-if="!isOpen" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-      <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      <MessageSquareMore v-if="!isOpen" class="w-7 h-7" />
+      <X v-else class="w-6 h-6" />
       
       <!-- Unread Badge -->
       <span v-if="totalUnread > 0 && !isOpen" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 border-2 border-white rounded-full text-[10px] font-bold flex items-center justify-center">
@@ -212,6 +212,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { ChevronLeft, X, ChevronRight, MessageSquare, SendHorizontal, MessageSquareMore } from '@lucide/vue';
 import { callApi } from '../auth/http';
 
 const http = {

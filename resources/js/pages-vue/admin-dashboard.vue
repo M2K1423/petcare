@@ -43,7 +43,10 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="font-semibold text-lg">📋 Hoạt Động Gần Đây</h3>
+        <h3 class="font-semibold text-lg flex items-center gap-2">
+            <ClipboardList class="w-5 h-5 text-slate-500" />
+            <span>Hoạt Động Gần Đây</span>
+        </h3>
       </div>
       <div class="divide-y">
         <div v-for="activity in recentActivity" :key="activity.id" class="px-6 py-3 text-sm hover:bg-gray-50">
@@ -57,7 +60,10 @@
     <!-- Quick Stats -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="font-semibold text-lg">📊 Thống Kê</h3>
+        <h3 class="font-semibold text-lg flex items-center gap-2">
+            <LayoutDashboard class="w-5 h-5 text-slate-500" />
+            <span>Thống Kê</span>
+        </h3>
       </div>
       <div class="space-y-3 p-6">
         <div class="flex justify-between items-center">
@@ -66,14 +72,21 @@
         </div>
         <div class="flex justify-between items-center">
           <span>Thuốc sắp hết hạn:</span>
-          <span class="font-bold text-orange-600">{{ alerts.filter(a => a.title === 'Expiring Medicines').length > 0 ? '⚠️' : '✓' }}</span>
+          <span class="font-bold flex items-center">
+            <AlertTriangle v-if="alerts.filter(a => a.title === 'Expiring Medicines').length > 0" class="w-4 h-4 text-orange-600 inline" />
+            <span v-else class="text-green-600">✓</span>
+          </span>
         </div>
         <div class="flex justify-between items-center">
           <span>Thanh toán chờ xác nhận:</span>
-          <span class="font-bold text-yellow-600">{{ alerts.filter(a => a.title === 'Pending Payments').length > 0 ? '⏳' : '✓' }}</span>
+          <span class="font-bold flex items-center">
+            <Clock v-if="alerts.filter(a => a.title === 'Pending Payments').length > 0" class="w-4 h-4 text-yellow-600 inline animate-pulse" />
+            <span v-else class="text-green-600">✓</span>
+          </span>
         </div>
-        <button @click="refreshDashboard" class="w-full mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-          🔄 Làm Mới
+        <button @click="refreshDashboard" class="w-full mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2 transition">
+          <RefreshCw class="w-4 h-4" />
+          <span>Làm Mới</span>
         </button>
       </div>
     </div>
@@ -84,6 +97,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { ClipboardList, LayoutDashboard, RefreshCw, AlertTriangle, Clock } from '@lucide/vue';
 import { useNotification } from '../composables/useNotification';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 
