@@ -20,6 +20,7 @@ Route::middleware(['auth', 'role:owner'])->group(function (): void {
     Route::view('/owner/shop', 'owner.shop')->name('owner.shop');
     Route::view('/owner/cart', 'owner.cart')->name('owner.cart');
     Route::view('/owner/orders', 'owner.orders')->name('owner.orders');
+    Route::view('/owner/ai-diagnosis', 'owner.ai-diagnosis')->name('owner.ai-diagnosis');
     
     Route::get('/owner/shop/medicines/{medicine}', function (int $medicine) {
         return view('owner.medicine-detail', [
@@ -118,6 +119,7 @@ Route::middleware(['auth', 'role:vet'])->group(function (): void {
             'appointmentId' => $appointment,
         ]);
     })->whereNumber('appointment')->name('vet.appointments.show');
+    Route::view('/vet/ai-diagnosis', 'vet.ai-diagnosis')->name('vet.ai-diagnosis');
 });
 
 // Receptionist Routes

@@ -85,6 +85,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/sessions/{chatSession}/messages', [\App\Http\Controllers\Api\ChatController::class, 'sendMessage'])->name('api.chat.sessions.messages.store');
         Route::patch('/sessions/{chatSession}/close', [\App\Http\Controllers\Api\ChatController::class, 'closeSession'])->name('api.chat.sessions.close');
     });
+    
+    // AI Diagnosis Route
+    Route::post('/ai/diagnose', [\App\Http\Controllers\Api\AiDiagnosisController::class, 'diagnose'])->name('api.ai.diagnose');
 
     Route::middleware('role:owner')->get('/owner/dashboard', function (Request $request) {
         return response()->json([
