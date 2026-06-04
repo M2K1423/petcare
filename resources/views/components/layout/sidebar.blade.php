@@ -91,15 +91,16 @@
                 <span>Lịch Sử Đơn Hàng</span>
             </a>
 
-            <a href="#" class="flex items-center gap-3 px-3 py-2 text-[#B8C7DE] transition hover:bg-[#1A304E] hover:text-[#F5FAFF]">
+            <a href="{{ route('owner.ai-diagnosis') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('owner.ai-diagnosis') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
                 <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                     </svg>
                 </span>
-                <span>Thông báo</span>
+                <span>Chẩn đoán AI</span>
             </a>
+
+
         </div>
         
         <!-- DÀNH CHO LỄ TÂN -->
@@ -344,6 +345,15 @@
                     </svg>
                 </span>
                 <span>Lịch theo tuần</span>
+            </a>
+
+            <a href="{{ route('vet.ai-diagnosis') }}" class="flex items-center gap-3 px-3 py-2 transition {{ request()->routeIs('vet.ai-diagnosis') ? 'bg-[#1E3657] text-[#F5FAFF]' : 'text-[#B8C7DE] hover:bg-[#1A304E] hover:text-[#F5FAFF]' }}">
+                <span class="inline-flex h-5 w-5 items-center justify-center text-[#88A8D8]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </span>
+                <span>Chẩn đoán AI</span>
             </a>
         </div>
 

@@ -20,6 +20,7 @@ const pageLoaders = {
 	'owner-medicine-detail': () => import('./pages-vue/owner-medicine-detail.vue'),
 	'owner-orders': () => import('./pages-vue/owner-orders.vue'),
 	'owner-cart': () => import('./pages-vue/owner-cart.vue'),
+	'ai-diagnosis': () => import('./pages-vue/ai-diagnosis.vue'),
 	'vet-appointments': () => import('./pages-vue/vet-appointments.vue'),
 	'vet-appointments-week': () => import('./pages-vue/vet-appointments-week.vue'),
 	'vet-appointment-detail': () => import('./pages-vue/vet-appointment-detail.vue'),
