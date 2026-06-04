@@ -38,9 +38,8 @@ class AiDiagnosisController extends Controller
             ]
         ];
 
-        // AI Service runs on port 8001
-        $aiUrl = env('AI_SERVICE_URL', 'http://localhost:8001/api/v1/chat');
-        $apiKey = env('AI_SERVICE_API_KEY', 'petcare-ai-key');
+        $aiUrl = config('services.ai.url');
+        $apiKey = config('services.ai.key');
 
         try {
             $response = Http::withHeaders([

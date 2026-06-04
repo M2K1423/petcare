@@ -326,7 +326,7 @@ const startDiagnosis = async () => {
     }
   } catch (error) {
     notifyError(error, 'Lỗi chẩn đoán y khoa AI');
-    diagnosisResult.value = `### ❌ Lỗi hệ thống chẩn đoán\n\nKhông thể kết nối hoặc nhận câu trả lời từ máy chủ AI. Vui lòng kiểm tra:\n- Dịch vụ AI Service (cổng 8001) đã được bật chưa.\n- API Key cấu hình trong .env có chính xác không.\n\nChi tiết lỗi: *${error.message || 'Lỗi kết nối mạng'}*`;
+    diagnosisResult.value = `### ❌ Lỗi hệ thống chẩn đoán\n\nKhông thể kết nối hoặc nhận câu trả lời từ máy chủ AI. Vui lòng kiểm tra:\n- Dịch vụ AI Service đã được khởi động chưa.\n- API Key cấu hình trong .env có chính xác không.\n\nChi tiết lỗi: *${error.message || 'Lỗi kết nối mạng'}*`;
   } finally {
     isLoading.value = false;
     stopLoadingAnimation();
