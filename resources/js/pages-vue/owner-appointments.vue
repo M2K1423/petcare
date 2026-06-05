@@ -173,6 +173,11 @@
                   <XCircle class="w-4 h-4" />
                   <span>Hủy</span>
                 </button>
+
+                <a v-if="appointment.status === 'completed'" :href="`/owner/health-records?pet_id=${appointment.pet_id}`" class="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50/20 px-3.5 py-2 text-xs font-bold text-amber-600 hover:border-amber-500 hover:bg-amber-50/40 transition-all duration-300">
+                  <FileText class="w-4 h-4 text-amber-500" />
+                  <span>Xem bệnh án</span>
+                </a>
               </div>
             </div>
           </div>
@@ -185,7 +190,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
-import { Clock, Search, Calendar, PawPrint, Lightbulb, Sparkles, XCircle } from '@lucide/vue';
+import { Clock, Search, Calendar, PawPrint, Lightbulb, Sparkles, XCircle, FileText } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useNotification } from '../composables/useNotification';

@@ -170,9 +170,14 @@
               </div>
             </div>
             
-            <span :class="getStatusClass(item.status)" class="text-xs font-bold px-3 py-1.5 rounded-full border">
-              {{ getStatusLabel(item.status) }}
-            </span>
+            <div class="flex items-center gap-2">
+              <span :class="getStatusClass(item.status)" class="text-xs font-bold px-3 py-1.5 rounded-full border">
+                {{ getStatusLabel(item.status) }}
+              </span>
+              <a v-if="item.status === 'completed'" :href="`/owner/health-records?pet_id=${item.pet_id}`" class="inline-flex items-center justify-center p-1.5 rounded-lg border border-amber-200 bg-amber-50/20 text-amber-600 hover:bg-amber-50/40 transition-all duration-300" title="Xem bệnh án">
+                <FileText class="w-4 h-4 text-amber-500" />
+              </a>
+            </div>
           </div>
         </div>
       </article>
@@ -183,7 +188,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { ChevronRight, Clock, Calendar, PawPrint, Hourglass, Pill, CalendarOff, Sun, CloudSun, Moon } from '@lucide/vue';
+import { ChevronRight, Clock, Calendar, PawPrint, Hourglass, Pill, CalendarOff, Sun, CloudSun, Moon, FileText } from '@lucide/vue';
 import { callApi } from '../auth/http';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 

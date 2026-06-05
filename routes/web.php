@@ -40,6 +40,8 @@ Route::middleware(['auth', 'role:owner'])->group(function (): void {
         ]);
     })->whereNumber('pet')->name('owner.pets.health-records');
 
+    Route::view('/owner/health-records', 'owner.health-records')->name('owner.health-records');
+
     Route::get('/owner/dashboard', function (Request $request) {
         return response()->json([
             'dashboard' => 'Owner dashboard',
