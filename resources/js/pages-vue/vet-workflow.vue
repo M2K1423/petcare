@@ -329,6 +329,11 @@ const currentModule = computed(() => {
             title: 'Lập bệnh án',
             desc: 'Tạo cập nhật bệnh án, phác đồ điều trị, ghi chú theo dõi, tiến triển bệnh.',
             fieldsHtml: `
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <div><label class="text-sm font-semibold text-[#333333]">Nhiệt độ (C)</label><input name="temperature_c" value="${medicalRecord.temperature_c ?? ''}" type="number" step="0.1" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Cân nặng (kg)</label><input name="weight_kg" value="${medicalRecord.weight_kg ?? ''}" type="number" step="0.01" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Nhịp tim (bpm)</label><input name="heart_rate_bpm" value="${medicalRecord.heart_rate_bpm ?? ''}" type="number" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                </div>
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Phác đồ điều trị</label><textarea name="treatment_protocol" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.treatment_protocol ?? '')}</textarea></div>
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Tiến triển bệnh</label><textarea name="disease_progress" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.disease_progress ?? '')}</textarea></div>
@@ -368,7 +373,12 @@ const currentModule = computed(() => {
             desc: 'Theo dõi lịch sử tiêm và lập kế hoạch mũi tiếp theo qua kế hoạch tái khám.',
             fieldsHtml: `
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Chẩn đoán</label><textarea name="diagnosis" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.diagnosis ?? '')}</textarea></div>
-                <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Kế hoạch tiêm phòng và mũi sau</label><textarea name="follow_up_plan" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.follow_up_plan ?? '')}</textarea></div>
+                <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Kế hoạch tiêm phòng và mũi sau</label><textarea name="follow_up_plan" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.follow_up_plan ?? '')}</textarea></div>
+                <div class="mt-4">
+                    <label class="text-sm font-semibold text-[#333333]">Ghi nhận tiêm phòng thực tế (JSON)</label>
+                    <p class="text-[11px] text-slate-500 mb-2">Ví dụ: [{"vaccine_name":"Dại","vaccinated_on":"2026-06-05","next_due_on":"2027-06-05","batch_number":"Batch001","notes":""}]</p>
+                    <textarea name="vaccinations" rows="6" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 font-mono text-xs text-[#333333] outline-none">${escapeHtml(JSON.stringify(medicalRecord.vaccinations ?? [], null, 2))}</textarea>
+                </div>
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Ngày tái khám / nhắc mũi</label><input name="follow_up_at" type="date" value="${escapeHtml(detailData.follow_up_at?.slice(0, 10) ?? '')}" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
                 <input type="hidden" name="workflow_status" value="follow_up">
             `,
@@ -398,6 +408,11 @@ const currentModule = computed(() => {
             title: 'Ký xác nhận chuyên môn',
             desc: 'Duyệt bệnh án và kết luận điều trị.',
             fieldsHtml: `
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <div><label class="text-sm font-semibold text-[#333333]">Nhiệt độ (C)</label><input name="temperature_c" value="${medicalRecord.temperature_c ?? ''}" type="number" step="0.1" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Cân nặng (kg)</label><input name="weight_kg" value="${medicalRecord.weight_kg ?? ''}" type="number" step="0.01" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                    <div><label class="text-sm font-semibold text-[#333333]">Nhịp tim (bpm)</label><input name="heart_rate_bpm" value="${medicalRecord.heart_rate_bpm ?? ''}" type="number" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none"></div>
+                </div>
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Chẩn đoán kết luận</label><textarea name="diagnosis" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none" required>${escapeHtml(medicalRecord.final_diagnosis ?? medicalRecord.diagnosis ?? '')}</textarea></div>
                 <div class="mt-4"><label class="text-sm font-semibold text-[#333333]">Kết luận điều trị</label><textarea name="notes" rows="3" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none">${escapeHtml(medicalRecord.notes ?? '')}</textarea></div>
                 <div class="mt-4 flex items-center gap-2"><input name="sign_off" value="1" type="checkbox" ${medicalRecord.signed_off_at ? 'checked' : ''} class="h-4 w-4 rounded border-[#C1C4C9]"><label class="text-sm font-semibold text-[#333333]">Ký duyệt hồ sơ</label></div>
@@ -469,9 +484,10 @@ async function saveModule(event) {
 
     const form = event.target;
     const formData = new FormData(form);
-    const diagnosis = String(formData.get('diagnosis') ?? '').trim();
 
-    if (!diagnosis) {
+    const diagnosisEl = form.querySelector('[name="diagnosis"]');
+    const diagnosisVal = String(formData.get('diagnosis') ?? '').trim();
+    if (diagnosisEl && diagnosisEl.required && !diagnosisVal) {
         notifyError('Cần nhập chẩn đoán.');
         return;
     }
@@ -479,42 +495,32 @@ async function saveModule(event) {
     isSaving.value = true;
 
     try {
-        const payload = {
-            diagnosis,
-            record_date: new Date().toISOString().slice(0, 10),
-            symptoms: String(formData.get('symptoms') ?? '').trim() || null,
-            abnormal_signs: String(formData.get('abnormal_signs') ?? '').trim() || null,
-            preliminary_diagnosis: String(formData.get('preliminary_diagnosis') ?? '').trim() || null,
-            final_diagnosis: String(formData.get('final_diagnosis') ?? '').trim() || null,
-            pathology: String(formData.get('pathology') ?? '').trim() || null,
-            severity_level: String(formData.get('severity_level') ?? '').trim() || null,
-            prescription: String(formData.get('prescription') ?? '').trim() || null,
-            treatment_protocol: String(formData.get('treatment_protocol') ?? '').trim() || null,
-            disease_progress: String(formData.get('disease_progress') ?? '').trim() || null,
-            follow_up_plan: String(formData.get('follow_up_plan') ?? '').trim() || null,
-            notes: String(formData.get('notes') ?? '').trim() || null,
-            workflow_status: String(formData.get('workflow_status') ?? '').trim() || 'examining',
-            follow_up_at: String(formData.get('follow_up_at') ?? '').trim() || null,
-            sign_off: formData.get('sign_off') ? true : false,
-        };
+        const payload = {};
 
-        const temperature = String(formData.get('temperature_c') ?? '').trim();
-        const weight = String(formData.get('weight_kg') ?? '').trim();
-        const heartRate = String(formData.get('heart_rate_bpm') ?? '').trim();
+        // Find all fields with a name in the form and add them to the payload
+        const formElements = form.querySelectorAll('[name]');
+        formElements.forEach(el => {
+            const name = el.name;
+            if (!name) return;
 
-        payload.temperature_c = temperature ? Number(temperature) : null;
-        payload.weight_kg = weight ? Number(weight) : null;
-        payload.heart_rate_bpm = heartRate ? Number(heartRate) : null;
+            let value = formData.get(name);
 
-        const serviceOrdersRaw = String(formData.get('service_orders') ?? '').trim();
-        const prescriptionsRaw = String(formData.get('prescriptions') ?? '').trim();
-        const proceduresRaw = String(formData.get('procedures') ?? '').trim();
-        const progressLogsRaw = String(formData.get('progress_logs') ?? '').trim();
+            if (el.type === 'checkbox') {
+                value = el.checked;
+            } else if (el.type === 'number') {
+                value = value !== '' ? Number(value) : null;
+            } else if (name === 'service_orders' || name === 'prescriptions' || name === 'procedures' || name === 'progress_logs' || name === 'vaccinations') {
+                value = value ? parseJsonArray(value) : null;
+            } else {
+                value = typeof value === 'string' ? value.trim() : value;
+                if (value === '') value = null;
+            }
 
-        payload.service_orders = serviceOrdersRaw ? parseJsonArray(serviceOrdersRaw) : null;
-        payload.prescriptions = prescriptionsRaw ? parseJsonArray(prescriptionsRaw) : null;
-        payload.procedures = proceduresRaw ? parseJsonArray(proceduresRaw) : null;
-        payload.progress_logs = progressLogsRaw ? parseJsonArray(progressLogsRaw) : null;
+            payload[name] = value;
+        });
+
+        // Always ensure record_date is sent
+        payload.record_date = new Date().toISOString().slice(0, 10);
 
         await callApi(`/api/vet/appointments/${selectedAppointmentId.value}/medical-record`, 'PUT', payload);
 

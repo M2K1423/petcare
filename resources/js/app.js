@@ -15,6 +15,7 @@ const pageLoaders = {
 	'owner-pets': () => import('./pages-vue/owner-pets.vue'),
 	'owner-pet-edit': () => import('./pages-vue/owner-pet-edit.vue'),
 	'owner-pet-health-records': () => import('./pages-vue/owner-pet-health-records.vue'),
+	'owner-health-records': () => import('./pages-vue/owner-health-records.vue'),
 	'owner-appointments': () => import('./pages-vue/owner-appointments.vue'),
 	'owner-shop': () => import('./pages-vue/owner-shop.vue'),
 	'owner-medicine-detail': () => import('./pages-vue/owner-medicine-detail.vue'),

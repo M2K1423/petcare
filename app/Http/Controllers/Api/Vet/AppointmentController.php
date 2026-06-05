@@ -133,7 +133,7 @@ class AppointmentController extends Controller
             'owner',
             'doctor.user',
             'service',
-            'medicalRecord',
+            'medicalRecord.vaccinations',
         ]);
 
         $previousMedicalRecords = MedicalRecord::query()
@@ -243,12 +243,12 @@ class AppointmentController extends Controller
             'symptoms' => 'nullable|string|max:2000',
             'abnormal_signs' => 'nullable|string|max:2000',
             'preliminary_diagnosis' => 'nullable|string|max:2000',
-            'diagnosis' => 'required|string|max:2000',
+            'diagnosis' => 'nullable|string|max:2000',
             'final_diagnosis' => 'nullable|string|max:2000',
             'pathology' => 'nullable|string|max:255',
             'severity_level' => 'nullable|in:mild,moderate,severe,critical',
-            'prescription' => 'nullable|string|max:2000|required_without:treatment',
-            'treatment' => 'nullable|string|max:2000|required_without:prescription',
+            'prescription' => 'nullable|string|max:2000',
+            'treatment' => 'nullable|string|max:2000',
             'treatment_protocol' => 'nullable|string|max:4000',
             'disease_progress' => 'nullable|string|max:4000',
             'follow_up_plan' => 'nullable|string|max:2000',
@@ -274,9 +274,14 @@ class AppointmentController extends Controller
             'workflow_status' => ['nullable', 'string', 'in:' . implode(',', $this->workflowStatuses())],
             'follow_up_at' => 'nullable|date',
             'sign_off' => 'nullable|boolean',
+            'vaccinations' => 'nullable|array',
+            'vaccinations.*.id' => 'nullable|integer|exists:vaccinations,id',
+            'vaccinations.*.vaccine_name' => 'required_with:vaccinations|string|max:255',
+            'vaccinations.*.vaccinated_on' => 'required_with:vaccinations|date',
+            'vaccinations.*.next_due_on' => 'nullable|date',
+            'vaccinations.*.batch_number' => 'nullable|string|max:100',
+            'vaccinations.*.notes' => 'nullable|string|max:1000',
         ]);
-
-        $prescription = $validated['prescription'] ?? $validated['treatment'] ?? null;
 
         if ($appointment->status === 'cancelled') {
             return response()->json([
@@ -284,35 +289,79 @@ class AppointmentController extends Controller
             ], 422);
         }
 
-        $appointment = DB::transaction(function () use ($appointment, $doctor, $validated, $prescription) {
-            $medicalRecord = MedicalRecord::query()->updateOrCreate(
-                ['appointment_id' => $appointment->id],
-                [
-                    'pet_id' => $appointment->pet_id,
-                    'doctor_id' => $doctor->id,
-                    'temperature_c' => $validated['temperature_c'] ?? null,
-                    'weight_kg' => $validated['weight_kg'] ?? null,
-                    'heart_rate_bpm' => $validated['heart_rate_bpm'] ?? null,
-                    'symptoms' => $validated['symptoms'] ?? null,
-                    'abnormal_signs' => $validated['abnormal_signs'] ?? null,
-                    'diagnosis' => $validated['diagnosis'],
-                    'preliminary_diagnosis' => $validated['preliminary_diagnosis'] ?? null,
-                    'final_diagnosis' => $validated['final_diagnosis'] ?? $validated['diagnosis'],
-                    'pathology' => $validated['pathology'] ?? null,
-                    'severity_level' => $validated['severity_level'] ?? null,
-                    'treatment' => $prescription,
-                    'treatment_protocol' => $validated['treatment_protocol'] ?? null,
-                    'disease_progress' => $validated['disease_progress'] ?? null,
-                    'follow_up_plan' => $validated['follow_up_plan'] ?? null,
-                    'service_orders' => $validated['service_orders'] ?? null,
-                    'prescriptions' => $validated['prescriptions'] ?? null,
-                    'procedures' => $validated['procedures'] ?? null,
-                    'progress_logs' => $validated['progress_logs'] ?? null,
-                    'signed_off_at' => ! empty($validated['sign_off']) ? Carbon::now() : null,
-                    'notes' => $validated['notes'] ?? null,
-                    'record_date' => $validated['record_date'] ?? Carbon::today()->toDateString(),
-                ],
-            );
+        $appointment = DB::transaction(function () use ($appointment, $doctor, $validated, $request) {
+            $medicalRecord = MedicalRecord::query()->firstOrNew(['appointment_id' => $appointment->id]);
+            $medicalRecord->pet_id = $appointment->pet_id;
+            $medicalRecord->doctor_id = $doctor->id;
+
+            $fields = [
+                'temperature_c',
+                'weight_kg',
+                'heart_rate_bpm',
+                'symptoms',
+                'abnormal_signs',
+                'diagnosis',
+                'preliminary_diagnosis',
+                'final_diagnosis',
+                'pathology',
+                'severity_level',
+                'treatment_protocol',
+                'disease_progress',
+                'follow_up_plan',
+                'service_orders',
+                'prescriptions',
+                'procedures',
+                'progress_logs',
+                'notes',
+                'record_date',
+            ];
+
+            foreach ($fields as $field) {
+                if ($request->has($field)) {
+                    $medicalRecord->{$field} = $validated[$field] ?? null;
+                }
+            }
+
+            if ($request->has('prescription')) {
+                $medicalRecord->treatment = $validated['prescription'] ?? null;
+            } elseif ($request->has('treatment')) {
+                $medicalRecord->treatment = $validated['treatment'] ?? null;
+            }
+
+            if ($request->has('sign_off')) {
+                $medicalRecord->signed_off_at = ! empty($validated['sign_off']) ? Carbon::now() : null;
+            }
+
+            if (! $medicalRecord->exists && ! $request->has('record_date')) {
+                $medicalRecord->record_date = Carbon::today()->toDateString();
+            }
+
+            $medicalRecord->save();
+
+            if ($request->has('vaccinations')) {
+                $sentVaccinations = $validated['vaccinations'] ?? [];
+                $keepIds = collect($sentVaccinations)->pluck('id')->filter()->toArray();
+
+                $medicalRecord->vaccinations()->whereNotIn('id', $keepIds)->delete();
+
+                foreach ($sentVaccinations as $vaccData) {
+                    $vacc = null;
+                    if (!empty($vaccData['id'])) {
+                        $vacc = $medicalRecord->vaccinations()->find($vaccData['id']);
+                    }
+                    if (!$vacc) {
+                        $vacc = new \App\Models\Vaccination();
+                        $vacc->medical_record_id = $medicalRecord->id;
+                        $vacc->pet_id = $appointment->pet_id;
+                    }
+                    $vacc->vaccine_name = $vaccData['vaccine_name'];
+                    $vacc->vaccinated_on = $vaccData['vaccinated_on'];
+                    $vacc->next_due_on = $vaccData['next_due_on'] ?? null;
+                    $vacc->batch_number = $vaccData['batch_number'] ?? null;
+                    $vacc->notes = $vaccData['notes'] ?? null;
+                    $vacc->save();
+                }
+            }
 
             if (! $medicalRecord->record_code) {
                 $medicalRecord->forceFill([
@@ -350,7 +399,7 @@ class AppointmentController extends Controller
                 'owner',
                 'doctor.user',
                 'service',
-                'medicalRecord',
+                'medicalRecord.vaccinations',
             ]);
         });
 

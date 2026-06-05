@@ -62,10 +62,68 @@
         <article class="rounded-3xl border border-[#DDE1E6] bg-[#FFFFFF] p-6 shadow-[0_16px_36px_rgba(0,0,0,0.05)]">
             <h2 class="text-lg font-bold text-[#333333]">Lưu bệnh án</h2>
             <form @submit.prevent="saveMedicalRecord" class="mt-5 space-y-4">
+                <!-- Vitals Row -->
+                <div class="grid gap-4 sm:grid-cols-3">
+                    <div>
+                        <label for="record-temperature" class="text-sm font-semibold text-[#333333]">Nhiệt độ (°C)</label>
+                        <input v-model="form.temperature_c" id="record-temperature" type="number" step="0.1" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="VD: 38.5">
+                    </div>
+                    <div>
+                        <label for="record-weight" class="text-sm font-semibold text-[#333333]">Cân nặng (kg)</label>
+                        <input v-model="form.weight_kg" id="record-weight" type="number" step="0.01" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="VD: 5.5">
+                    </div>
+                    <div>
+                        <label for="record-heart-rate" class="text-sm font-semibold text-[#333333]">Nhịp tim (bpm)</label>
+                        <input v-model="form.heart_rate_bpm" id="record-heart-rate" type="number" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="VD: 120">
+                    </div>
+                </div>
+
+                <!-- Symptoms & Abnormal Signs Row -->
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="record-symptoms" class="text-sm font-semibold text-[#333333]">Triệu chứng chính</label>
+                        <textarea v-model="form.symptoms" id="record-symptoms" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Triệu chứng chính..."></textarea>
+                    </div>
+                    <div>
+                        <label for="record-abnormal-signs" class="text-sm font-semibold text-[#333333]">Dấu hiệu bất thường khác</label>
+                        <textarea v-model="form.abnormal_signs" id="record-abnormal-signs" rows="2" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Dấu hiệu bất thường..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Diagnoses Row -->
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="record-preliminary-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán sơ bộ</label>
+                        <input v-model="form.preliminary_diagnosis" id="record-preliminary-diagnosis" type="text" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="VD: Nghi viêm dạ dày">
+                    </div>
+                    <div>
+                        <label for="record-final-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán cuối cùng</label>
+                        <input v-model="form.final_diagnosis" id="record-final-diagnosis" type="text" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="VD: Viêm dạ dày cấp tính">
+                    </div>
+                </div>
+
+                <!-- Pathology & Severity Row -->
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="record-pathology" class="text-sm font-semibold text-[#333333]">Bệnh lý</label>
+                        <input v-model="form.pathology" id="record-pathology" type="text" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="VD: Bệnh đường tiêu hóa">
+                    </div>
+                    <div>
+                        <label for="record-severity-level" class="text-sm font-semibold text-[#333333]">Mức độ bệnh</label>
+                        <select v-model="form.severity_level" id="record-severity-level" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]">
+                            <option value="">Chọn mức độ</option>
+                            <option value="mild">Nhẹ (Mild)</option>
+                            <option value="moderate">Trung bình (Moderate)</option>
+                            <option value="severe">Nặng (Severe)</option>
+                            <option value="critical">Nguy kịch (Critical)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Diagnosis & Exam Details Combined -->
                 <div>
-                    <label for="record-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán & Nội dung khám</label>
-                    <textarea v-model="form.diagnosis" id="record-diagnosis" rows="5" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Nhập chi tiết chẩn đoán và nội dung khám bệnh..." required></textarea>
+                    <label for="record-diagnosis" class="text-sm font-semibold text-[#333333]">Chẩn đoán & Nội dung khám chính</label>
+                    <textarea v-model="form.diagnosis" id="record-diagnosis" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Nhập chi tiết chẩn đoán và nội dung khám bệnh..." required></textarea>
                 </div>
 
                 <!-- Prescription -->
@@ -94,6 +152,53 @@
                 <div>
                     <label for="record-prescription" class="text-sm font-semibold text-[#333333]">Đơn thuốc & Điều trị</label>
                     <textarea v-model="form.prescription" id="record-prescription" rows="4" class="mt-2 w-full rounded-2xl border border-[#C1C4C9] bg-white px-4 py-3 text-sm text-[#333333] outline-none transition focus:border-[#2A6496]" placeholder="Danh sách đơn thuốc..." required></textarea>
+                </div>
+
+                <!-- Vaccinations Recorder -->
+                <div class="rounded-2xl border border-emerald-100 bg-[#ECFDF5]/30 p-4">
+                    <label class="text-xs font-bold uppercase tracking-[0.08em] text-emerald-800">Ghi nhận tiêm phòng thực tế</label>
+                    <div class="mt-2 grid gap-3 sm:grid-cols-[1.5fr_1fr_1fr_0.5fr] items-end">
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-600">Tên Vắc-xin</label>
+                            <input v-model="newVaccine.name" type="text" placeholder="VD: Dại, 5-trong-1..." class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-600">Ngày tiêm</label>
+                            <input v-model="newVaccine.vaccinated_on" type="date" class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-600">Ngày nhắc lại (nếu có)</label>
+                            <input v-model="newVaccine.next_due_on" type="date" class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-emerald-500">
+                        </div>
+                        <button @click.prevent="addVaccineItem" type="button" class="inline-flex items-center justify-center rounded-xl border border-emerald-600 bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition gap-1 h-[38px]">
+                            <Plus class="w-4 h-4" />
+                            Thêm
+                        </button>
+                    </div>
+
+                    <!-- Vaccinations Table -->
+                    <div v-if="form.vaccinations_list.length > 0" class="mt-3 overflow-x-auto rounded-xl border border-emerald-100 bg-white">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-emerald-50 text-[10px] font-bold uppercase text-emerald-800">
+                                <tr>
+                                    <th class="px-3 py-2">Tên Vắc-xin</th>
+                                    <th class="px-3 py-2">Ngày tiêm</th>
+                                    <th class="px-3 py-2">Nhắc lại</th>
+                                    <th class="px-3 py-2 text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-emerald-50">
+                                <tr v-for="(v, idx) in form.vaccinations_list" :key="idx" class="hover:bg-slate-50/50">
+                                    <td class="px-3 py-2 font-bold text-slate-700">{{ v.vaccine_name }}</td>
+                                    <td class="px-3 py-2">{{ v.vaccinated_on }}</td>
+                                    <td class="px-3 py-2 text-rose-600 font-semibold">{{ v.next_due_on || 'Không có' }}</td>
+                                    <td class="px-3 py-2 text-center">
+                                        <button @click.prevent="removeVaccineItem(idx)" class="text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Workflow status & Follow-up Date Row -->
@@ -148,6 +253,37 @@ const allMedicines = ref([]);
 const selectedMedId = ref('');
 const medDosage = ref('');
 
+const newVaccine = reactive({
+    name: '',
+    vaccinated_on: new Date().toISOString().slice(0, 10),
+    next_due_on: '',
+    batch_number: '',
+    notes: ''
+});
+
+function addVaccineItem() {
+    if (!newVaccine.name.trim()) {
+        alert('Vui lòng nhập tên vắc-xin.');
+        return;
+    }
+    form.vaccinations_list.push({
+        vaccine_name: newVaccine.name.trim(),
+        vaccinated_on: newVaccine.vaccinated_on,
+        next_due_on: newVaccine.next_due_on || null,
+        batch_number: newVaccine.batch_number || null,
+        notes: newVaccine.notes || null
+    });
+    newVaccine.name = '';
+    newVaccine.next_due_on = '';
+    newVaccine.batch_number = '';
+    newVaccine.notes = '';
+    notifySuccess('Đã thêm vắc-xin vào danh sách!');
+}
+
+function removeVaccineItem(index) {
+    form.vaccinations_list.splice(index, 1);
+}
+
 function addMedicine() {
     if (!selectedMedId.value) {
         alert('Vui lòng chọn thuốc.');
@@ -186,6 +322,7 @@ const form = reactive({
     record_date: '',
     temperature_c: null,
     weight_kg: null,
+    vaccinations_list: [],
     heart_rate_bpm: null,
     symptoms: '',
     abnormal_signs: '',
@@ -258,6 +395,14 @@ function fillRecordForm(record, dataStatus, dataFollowUp) {
     form.symptoms = record?.symptoms ?? '';
     form.abnormal_signs = record?.abnormal_signs ?? '';
     form.preliminary_diagnosis = record?.preliminary_diagnosis ?? '';
+    form.vaccinations_list = (record?.vaccinations ?? []).map(v => ({
+        id: v.id,
+        vaccine_name: v.vaccine_name,
+        vaccinated_on: v.vaccinated_on ? v.vaccinated_on.slice(0, 10) : '',
+        next_due_on: v.next_due_on ? v.next_due_on.slice(0, 10) : '',
+        batch_number: v.batch_number || '',
+        notes: v.notes || ''
+    }));
     form.diagnosis = record?.diagnosis ?? '';
     form.final_diagnosis = record?.final_diagnosis ?? '';
     form.pathology = record?.pathology ?? '';
@@ -294,9 +439,9 @@ async function saveMedicalRecord() {
     try {
         const payload = {
             record_date: form.record_date || new Date().toISOString().slice(0, 10),
-            temperature_c: form.temperature_c,
-            weight_kg: form.weight_kg,
-            heart_rate_bpm: form.heart_rate_bpm,
+            temperature_c: form.temperature_c !== '' && form.temperature_c !== null ? Number(form.temperature_c) : null,
+            weight_kg: form.weight_kg !== '' && form.weight_kg !== null ? Number(form.weight_kg) : null,
+            heart_rate_bpm: form.heart_rate_bpm !== '' && form.heart_rate_bpm !== null ? Number(form.heart_rate_bpm) : null,
             symptoms: form.symptoms || null,
             abnormal_signs: form.abnormal_signs || null,
             preliminary_diagnosis: form.preliminary_diagnosis || null,
@@ -308,6 +453,7 @@ async function saveMedicalRecord() {
             treatment_protocol: form.treatment_protocol || null,
             disease_progress: form.disease_progress || null,
             follow_up_plan: form.follow_up_plan || null,
+            vaccinations: form.vaccinations_list,
             service_orders: parseJsonArray(form.service_orders),
             prescriptions: parseJsonArray(form.prescriptions),
             procedures: parseJsonArray(form.procedures),

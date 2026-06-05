@@ -16,20 +16,10 @@ class PetHealthRecordController extends Controller
         $pet->load(['species:id,name']);
 
         $medicalRecords = $pet->medicalRecords()
+            ->with(['doctor.user:id,name'])
             ->latest('record_date')
             ->latest('id')
-            ->get([
-                'id',
-                'pet_id',
-                'appointment_id',
-                'doctor_id',
-                'symptoms',
-                'diagnosis',
-                'treatment',
-                'notes',
-                'record_date',
-                'created_at',
-            ]);
+            ->get();
 
         $vaccinations = $pet->vaccinations()
             ->latest('vaccinated_on')
