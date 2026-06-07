@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { login, registerOwner } from '../auth/service';
+import { login, registerOwner, forgotPassword, resetPassword } from '../auth/service';
 import { createStatusUpdater } from '../auth/status';
 
 function initLoginPage(): void {
@@ -71,9 +71,79 @@ function initRegisterPage(): void {
     });
 }
 
+function initForgotPasswordPage(): void {
+    const forgotForm = document.getElementById('sanctum-forgot-form') as HTMLFormElement | null;
+    if (!forgotForm) return;
+
+    const setStatus = createStatusUpdater();
+
+    forgotForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(forgotForm);
+        const email = String(formData.get('email') ?? '').trim();
+
+        try {
+            const data = await forgotPassword(email);
+            let successMsg = data.message ?? 'Mã OTP đã được gửi.';
+            if (data.otp_demo) {
+                successMsg += ` [OTP Test: ${data.otp_demo}]`;
+            }
+            setStatus(successMsg, 'success');
+            forgotForm.reset();
+
+            setTimeout(() => {
+                window.location.href = '/sanctum-auth/reset-password?email=' + encodeURIComponent(email);
+            }, 3000);
+        } catch (error) {
+            setStatus((error as Error).message, 'error');
+        }
+    });
+}
+
+function initResetPasswordPage(): void {
+    const resetForm = document.getElementById('sanctum-reset-form') as HTMLFormElement | null;
+    if (!resetForm) return;
+
+    const setStatus = createStatusUpdater();
+
+    // Điền email từ query string nếu có
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    if (emailInput && urlParams.has('email')) {
+        emailInput.value = urlParams.get('email') ?? '';
+    }
+
+    resetForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(resetForm);
+        const payload = {
+            email: String(formData.get('email') ?? '').trim(),
+            otp: String(formData.get('otp') ?? '').trim(),
+            password: String(formData.get('password') ?? ''),
+            password_confirmation: String(formData.get('password_confirmation') ?? ''),
+        };
+
+        try {
+            const data = await resetPassword(payload);
+            setStatus(data.message ?? 'Khôi phục mật khẩu thành công.', 'success');
+            resetForm.reset();
+
+            setTimeout(() => {
+                window.location.href = '/sanctum-auth';
+            }, 2000);
+        } catch (error) {
+            setStatus((error as Error).message, 'error');
+        }
+    });
+}
+
 onMounted(() => {
     initLoginPage();
     initRegisterPage();
+    initForgotPasswordPage();
+    initResetPasswordPage();
 });
 </script>
 

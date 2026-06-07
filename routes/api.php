@@ -36,6 +36,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [SanctumAuthController::class, 'register'])->name('api.auth.register');
 Route::post('/auth/login', [SanctumAuthController::class, 'login'])->name('api.auth.login');
+Route::post('/auth/forgot-password', [\App\Http\Controllers\Api\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('api.auth.password.email');
+Route::post('/auth/reset-password', [\App\Http\Controllers\Api\Auth\ForgotPasswordController::class, 'reset'])->name('api.auth.password.update');
 Route::get('/payments/vnpay/ipn', [VnpayController::class, 'ipn'])->name('api.payments.vnpay.ipn');
 
 // API cho AI Service (Xác thực bằng X-API-Key)

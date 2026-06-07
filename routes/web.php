@@ -11,6 +11,8 @@ Route::get('/', function () {
 Route::redirect('/login', '/sanctum-auth')->name('login');
 Route::view('/sanctum-auth', 'auth.sanctum')->name('sanctum.auth');
 Route::view('/sanctum-auth/register', 'auth.sanctum-register')->name('sanctum.auth.register');
+Route::view('/sanctum-auth/forgot-password', 'auth.forgot-password')->name('password.request');
+Route::view('/sanctum-auth/reset-password', 'auth.reset-password')->name('password.reset');
 // Owner Routes
 Route::middleware(['auth', 'role:owner'])->group(function (): void {
     Route::view('/owner/overview', 'owner.overview')->name('owner.overview');
