@@ -10,7 +10,7 @@
         </button>
 
         <a id="clinic-logo-link" href="{{ route('sanctum.auth') }}" class="group inline-flex items-center gap-3">
-            <span class="grid h-9 w-9 place-content-center rounded-full border border-[#C1C4C9] bg-[#FFFFFF] text-xs font-bold text-[#999999]">PAW</span>
+            <img src="{{ asset('images/logo.png') }}" class="h-9 w-9 rounded-full object-cover border border-[#C1C4C9] bg-white shadow-sm" alt="PetWell Logo" />
             <span>
                 <span class="block text-sm font-semibold tracking-[0.22em] text-[#333333]">PETWELL</span>
                 <span class="block text-[11px] uppercase tracking-[0.18em] text-[#666666]">Cổng phòng khám</span>

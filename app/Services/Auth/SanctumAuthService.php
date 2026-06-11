@@ -66,6 +66,7 @@ class SanctumAuthService
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role' => $user->role?->slug,
             ] : null,
             'redirect_url' => $this->dashboardUrlForRole($user?->role?->slug),
@@ -73,7 +74,7 @@ class SanctumAuthService
     }
 
     /**
-     * @param  array{name:string,email:string}  $payload
+     * @param  array{name:string,email:string,phone:?string}  $payload
      */
     public function updateProfile(?User $user, array $payload): array
     {
@@ -86,6 +87,7 @@ class SanctumAuthService
         $user->forceFill([
             'name' => $payload['name'],
             'email' => $payload['email'],
+            'phone' => $payload['phone'] ?? null,
         ])->save();
 
         return [
@@ -94,6 +96,7 @@ class SanctumAuthService
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role' => $user->role?->slug,
             ],
         ];
@@ -122,6 +125,7 @@ class SanctumAuthService
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role' => $user->role?->slug,
             ],
             'redirect_url' => $this->dashboardUrlForRole($user->role?->slug),
