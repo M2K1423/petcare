@@ -277,20 +277,13 @@ onMounted(() => {
 
 <style scoped>
 .welcome-banner {
-  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #4299e1 100%);
-  background-size: 200% 200%;
-  animation: gradientFlow 10s ease infinite;
+  background: linear-gradient(to right, rgba(20, 40, 80, 0.85) 0%, rgba(40, 90, 160, 0.6) 100%), url('/images/welcome_banner_bg.png');
+  background-size: cover;
+  background-position: center;
 }
 
 .banner-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.08;
-  background-image: radial-gradient(#ffffff 2px, transparent 2px);
-  background-size: 24px 24px;
+  display: none;
 }
 
 @keyframes gradientFlow {

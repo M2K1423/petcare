@@ -19,6 +19,11 @@
                 </div>
 
                 <div class="md:col-span-2">
+                    <label class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Số điện thoại</label>
+                    <input v-model="form.phone" type="tel" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2 text-sm text-[#333333] outline-none" placeholder="Nhập số điện thoại" />
+                </div>
+
+                <div class="md:col-span-2">
                     <button type="submit" :disabled="isSaving" class="inline-flex items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] disabled:opacity-50">
                         {{ isSaving ? 'Đang lưu...' : 'Lưu hồ sơ' }}
                     </button>
@@ -66,7 +71,8 @@ const statusClass = ref('mt-4 text-sm text-[#4A4A4A]');
 const user = ref({});
 const form = reactive({
     name: '',
-    email: ''
+    email: '',
+    phone: ''
 });
 
 function setStatus(message, kind = 'neutral') {
@@ -95,6 +101,7 @@ async function loadProfile() {
         user.value = response.user;
         form.name = user.value.name ?? '';
         form.email = user.value.email ?? '';
+        form.phone = user.value.phone ?? '';
         setStatus('Hồ sơ của bạn đã sẵn sàng để chỉnh sửa.');
     } catch (error) {
         setStatus(error.message, 'error');
@@ -108,13 +115,15 @@ async function updateProfile() {
     try {
         const response = await callApi('/api/auth/profile', 'PUT', {
             name: form.name,
-            email: form.email
+            email: form.email,
+            phone: form.phone
         });
 
         if (response.user) {
             user.value = response.user;
             form.name = user.value.name ?? '';
             form.email = user.value.email ?? '';
+            form.phone = user.value.phone ?? '';
         }
 
         setStatus(response.message ?? 'Đã cập nhật hồ sơ thành công.', 'success');
