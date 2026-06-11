@@ -29,3 +29,11 @@ export async function logout() {
 export async function me() {
     return callApi('/api/auth/me', 'GET');
 }
+
+export async function forgotPassword(email: string) {
+    return callApi<{ message?: string; otp_demo?: string }>('/api/auth/forgot-password', 'POST', { email });
+}
+
+export async function resetPassword(payload: Record<string, unknown>) {
+    return callApi<{ message?: string }>('/api/auth/reset-password', 'POST', payload);
+}

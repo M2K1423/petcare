@@ -10,8 +10,6 @@
         <option value="admin">Admin</option>
         <option value="vet">Bác sĩ</option>
         <option value="receptionist">Lễ tân</option>
-        <option value="cashier">Thu ngân</option>
-        <option value="technician">Kỹ thuật viên</option>
         <option value="owner">Chủ nuôi</option>
       </select>
 
@@ -149,6 +147,43 @@ import { useNotification } from '../composables/useNotification';
 
 const { notifySuccess, notifyError, handleApiError } = useNotification();
 
+let csrfReady = false;
+
+const getCookieValue = (name) => {
+  const cookies = document.cookie ? document.cookie.split('; ') : [];
+  for (const cookie of cookies) {
+    const [key, ...parts] = cookie.split('=');
+    if (key === name) {
+      return decodeURIComponent(parts.join('='));
+    }
+  }
+  return '';
+};
+
+const apiFetch = async (url, options = {}) => {
+  const method = options.method || 'GET';
+  if (method !== 'GET' && !csrfReady) {
+    await fetch('/sanctum/csrf-cookie', {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      credentials: 'same-origin',
+    });
+    csrfReady = true;
+  }
+  const xsrfToken = getCookieValue('XSRF-TOKEN');
+  
+  const headers = {
+    ...options.headers,
+    ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
+  };
+  
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: 'same-origin',
+  });
+};
+
 const searchQuery = ref('');
 const filterRole = ref('');
 const currentPage = ref(1);
@@ -184,7 +219,7 @@ const isLoading = ref(true);
 const fetchUsers = async () => {
   isLoading.value = true;
   try {
-    const res = await fetch('/api/admin/users', {
+    const res = await apiFetch('/api/admin/users', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
     if (!res.ok) {
@@ -200,23 +235,13 @@ const fetchUsers = async () => {
   }
 };
 
-const fetchRoles = async () => {
-  try {
-    const res = await fetch('/api/admin/users?role=admin', {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
-    });
-    // Fetch roles from another endpoint or hardcode them
+const fetchRoles = () => {
     roles.value = [
-      { id: 1, name: 'Admin' },
+      { id: 4, name: 'Admin' },
       { id: 2, name: 'Bác Sĩ' },
       { id: 3, name: 'Lễ Tân' },
-      { id: 4, name: 'Thu Ngân' },
-      { id: 5, name: 'Kỹ Thuật Viên' },
-      { id: 6, name: 'Chủ Nuôi' },
+      { id: 1, name: 'Chủ Nuôi' },
     ];
-  } catch (err) {
-    console.error('Lỗi tải roles:', err);
-  }
 };
 
 const openCreateModal = () => {
@@ -242,7 +267,7 @@ const saveUser = async () => {
     
     const method = editingUser.value ? 'PUT' : 'POST';
     
-    const res = await fetch(url, {
+    const res = await apiFetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
@@ -266,7 +291,7 @@ const saveUser = async () => {
 const toggleLock = async (user) => {
   try {
     const endpoint = user.is_locked ? 'unlock' : 'lock';
-    const res = await fetch(`/api/admin/users/${user.id}/${endpoint}`, {
+    const res = await apiFetch(`/api/admin/users/${user.id}/${endpoint}`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
     });
@@ -285,7 +310,7 @@ const resetPassword = async (user) => {
   const newPassword = prompt('Nhập mật khẩu mới:');
   if (newPassword) {
     try {
-      const res = await fetch(`/api/admin/users/${user.id}/reset-password`, {
+      const res = await apiFetch(`/api/admin/users/${user.id}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -307,7 +332,7 @@ const resetPassword = async (user) => {
 const deleteUser = async (user) => {
   if (confirm(`Xác nhận xóa người dùng ${user.name}?`)) {
     try {
-      const res = await fetch(`/api/admin/users/${user.id}`, {
+      const res = await apiFetch(`/api/admin/users/${user.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('petcare_sanctum_token')}` }
       });

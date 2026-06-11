@@ -27,6 +27,9 @@
             <div>
                 <label for="password" class="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-[#4A4A4A]">Mật khẩu</label>
                 <input id="password" name="password" type="password" required placeholder="Nhập mật khẩu của bạn" class="w-full rounded-xl border border-[#DDE1E6] bg-[#F1F3F5] px-3 py-2.5 text-sm text-[#333333] outline-none transition focus:border-[#2A6496] focus:ring-2 focus:ring-[#2A6496]/20" />
+                <div class="mt-2 text-right">
+                    <a href="{{ route('password.request') }}" class="text-xs font-semibold text-[#2A6496] transition hover:underline">Quên mật khẩu?</a>
+                </div>
             </div>
 
             <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl border border-[#2A6496] bg-[#2A6496] px-4 py-2.5 text-sm font-semibold text-[#FFFFFF] transition hover:bg-[#235780] focus:outline-none focus:ring-2 focus:ring-[#2A6496]/35">Đăng nhập</button>
