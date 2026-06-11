@@ -22,7 +22,7 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $query = Appointment::with(['pet', 'owner', 'doctor', 'service']);
+        $query = Appointment::with(['pet', 'owner', 'doctor.user', 'service']);
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -68,7 +68,7 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($appointment->load(['pet', 'owner', 'doctor', 'service', 'medicalRecords']));
+        return response()->json($appointment->load(['pet', 'owner', 'doctor.user', 'service', 'medicalRecords']));
     }
 
     public function assignDoctor(Request $request, Appointment $appointment)
@@ -107,7 +107,7 @@ class AppointmentController extends Controller
             "Assigned doctor to appointment #{$appointment->id}"
         );
 
-        return response()->json(['message' => 'Doctor assigned', 'appointment' => $appointment->load(['doctor'])]);
+        return response()->json(['message' => 'Doctor assigned', 'appointment' => $appointment->load(['doctor.user'])]);
     }
 
     public function updateStatus(Request $request, Appointment $appointment)
@@ -199,7 +199,7 @@ class AppointmentController extends Controller
         }
 
         $appointments = Appointment::whereDate('appointment_at', now())
-            ->with(['pet', 'owner', 'doctor', 'service'])
+            ->with(['pet', 'owner', 'doctor.user', 'service'])
             ->orderBy('appointment_at', 'asc')
             ->get();
 
@@ -217,7 +217,7 @@ class AppointmentController extends Controller
 
         $appointments = Appointment::where('appointment_at', '>', now())
             ->whereIn('status', ['pending', 'confirmed'])
-            ->with(['pet', 'owner', 'doctor', 'service'])
+            ->with(['pet', 'owner', 'doctor.user', 'service'])
             ->orderBy('appointment_at', 'asc')
             ->limit(20)
             ->get();
