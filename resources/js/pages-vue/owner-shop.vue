@@ -131,7 +131,8 @@ function getMedicineWarning(medicine) {
 
     const today = new Date();
     const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const expiry = new Date(`${medicine.expiration_date}T00:00:00`);
+    const datePart = medicine.expiration_date.substring(0, 10);
+    const expiry = new Date(`${datePart}T00:00:00`);
     const diffDays = Math.ceil((expiry.getTime() - current.getTime()) / 86400000);
 
     if (diffDays < 0) return 'Hết hạn';
