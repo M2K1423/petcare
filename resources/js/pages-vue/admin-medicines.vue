@@ -62,7 +62,8 @@ function getExpiryMeta(expirationDate?: string | null): { label: string; tone: s
     }
 
     const today = getToday();
-    const expiry = new Date(`${expirationDate}T00:00:00`);
+    const datePart = expirationDate.substring(0, 10);
+    const expiry = new Date(`${datePart}T00:00:00`);
     const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / 86400000);
 
     if (diffDays < 0) {
@@ -113,6 +114,16 @@ function formatCurrency(value: number | string): string {
     return `${Number(value || 0).toLocaleString('vi-VN')} VND`;
 }
 
+function formatDate(dateStr?: string | null): string {
+    if (!dateStr) return 'Chưa cập nhật';
+    const datePart = dateStr.substring(0, 10);
+    const parts = datePart.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+}
+
 function setStatus(message: string, tone: 'success' | 'error'): void {
     if (tone === 'success') {
         notifySuccess(message);
@@ -142,7 +153,7 @@ function fillForm(medicine: Medicine): void {
     if (imageUrlInput) imageUrlInput.value = medicine.image_url ?? '';
     if (priceInput) priceInput.value = String(Number(medicine.price || 0));
     if (stockInput) stockInput.value = String(medicine.stock_quantity ?? 0);
-    if (expirationInput) expirationInput.value = medicine.expiration_date ?? '';
+    if (expirationInput) expirationInput.value = medicine.expiration_date ? medicine.expiration_date.substring(0, 10) : '';
     if (descriptionInput) descriptionInput.value = medicine.description ?? '';
     if (formTitleEl) formTitleEl.textContent = `Cập nhật thuốc #${medicine.id}`;
 }
@@ -199,7 +210,7 @@ function renderTable(medicines: Medicine[]): void {
                             <td class="px-4 py-4">
                                 <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${stockMeta.tone}">${medicine.stock_quantity}</span>
                             </td>
-                            <td class="px-4 py-4 text-[#4A4A4A]">${medicine.expiration_date || 'Chưa cập nhật'}</td>
+                            <td class="px-4 py-4 text-[#4A4A4A]">${formatDate(medicine.expiration_date)}</td>
                             <td class="px-4 py-4">
                                 <div class="flex justify-end gap-2">
                                     <button type="button" data-action="edit" data-id="${medicine.id}" class="rounded-xl border border-[#C1C4C9] bg-[#F1F3F5] px-3 py-2 text-xs font-semibold text-[#333333] transition hover:border-[#2A6496] hover:text-[#2A6496]">Sửa</button>
